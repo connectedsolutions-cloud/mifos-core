@@ -1,0 +1,8 @@
+{
+  "/fineract-provider/**": {
+    "target": "http://localhost:8443",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

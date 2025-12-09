@@ -1,0 +1,25 @@
+FROM node:24-alpine3.22
+
+# Set the environment variable to increase Node.js memory limit
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Install git (needed for npm install)
+RUN apk add --no-cache git
+
+WORKDIR /usr/src/app
+
+# Set PATH to include node_modules/.bin
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Expose Angular dev server port
+EXPOSE 4200
+
+# Default command (can be overridden in docker-compose)
+CMD ["npm", "run", "start"]
+

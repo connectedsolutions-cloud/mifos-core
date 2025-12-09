@@ -147,7 +147,16 @@ export class SettingsService {
    * Returns list of default server
    */
   get servers() {
-    return JSON.parse(localStorage.getItem('mifosXServers'));
+    const servers = localStorage.getItem('mifosXServers');
+    if (!servers) {
+      return null;
+    }
+    try {
+      return JSON.parse(servers);
+    } catch (e) {
+      console.error('Error parsing mifosXServers from localStorage:', e);
+      return null;
+    }
   }
 
   /**
@@ -160,8 +169,12 @@ export class SettingsService {
     if (environment.baseApiUrl && environment.baseApiUrl !== '') {
       return environment.baseApiUrl;
     } else {
-      return this.servers()[0];
+      const servers = this.servers;
+      if (servers && Array.isArray(servers) && servers.length > 0) {
+        return servers[0];
+      }
     }
+    return window.location.origin;
   }
 
   /**

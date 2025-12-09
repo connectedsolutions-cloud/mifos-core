@@ -25,7 +25,10 @@ export const environment = {
   apiVersion: loadedEnv['apiVersion'] || '/v1',
   serverUrl: '',
   oauth: {
-    enabled: loadedEnv['oauthServerEnabled'] || false, // For connecting to Mifos X using OAuth2 Authentication change the value to true
+    enabled:
+      typeof loadedEnv['oauthServerEnabled'] === 'string'
+        ? loadedEnv['oauthServerEnabled'] === 'true'
+        : loadedEnv['oauthServerEnabled'] === true, // For connecting to Mifos X using OAuth2 Authentication change the value to true
     serverUrl: loadedEnv['oauthServerUrl'] || '',
     appId: loadedEnv['oauthAppId'] || ''
   },
@@ -65,11 +68,12 @@ export const environment = {
   minPasswordLength: loadedEnv['minPasswordLength'] || 12,
 
   OIDC: {
-    oidcServerEnabled: window['env']['oidcServerEnabled'] || false,
-    oidcBaseUrl: window['env']['oidcBaseUrl'] || '',
-    oidcClientId: window['env']['oidcClientId'] || '',
-    oidcApiUrl: window['env']['oidcApiUrl'] || '',
-    oidcFrontUrl: window['env']['oidcFrontUrl'] || ''
+    oidcServerEnabled:
+      window['env']?.['oidcServerEnabled'] === 'true' || window['env']?.['oidcServerEnabled'] === true || false,
+    oidcBaseUrl: window['env']?.['oidcBaseUrl'] || '',
+    oidcClientId: window['env']?.['oidcClientId'] || '',
+    oidcApiUrl: window['env']?.['oidcApiUrl'] || '',
+    oidcFrontUrl: window['env']?.['oidcFrontUrl'] || ''
   }
 };
 

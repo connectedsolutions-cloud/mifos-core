@@ -6,6 +6,7 @@ import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/c
 import { Observable } from 'rxjs';
 
 /** Environment Configuration */
+import { environment } from 'environments/environment';
 import { SettingsService } from 'app/settings/settings.service';
 
 /**
@@ -28,16 +29,20 @@ export class ApiPrefixInterceptor implements HttpInterceptor {
     if (versionRegex.test(request.url)) {
       baseUrl = this.settingsService.baseServerUrl;
     }
+
     if (request.url.includes('/actuator/')) {
+      // For actuator endpoints, always use the full backend URL
+      // This bypasses the proxy and makes direct requests to the backend
       baseUrl = this.settingsService.serverHost;
     }
 
     /**
-     * Ignore URLs that are complete for i18n
+     * Ignore URLs that are complete for i18n or already absolute
      */
     if (!request.url.includes('http:') && !request.url.includes('https:')) {
       request = request.clone({ url: baseUrl + request.url });
     }
+
     return next.handle(request);
   }
 }

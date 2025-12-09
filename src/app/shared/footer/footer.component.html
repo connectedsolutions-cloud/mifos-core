@@ -1,20 +1,20 @@
 <div class="layout-column m-b-20 f12" ngClass="{{ styleClass }}" id="footer" *ngIf="displayBackEndInfo">
-  <mat-divider class="divider align-center"></mat-divider>
+  <mat-divider *ngIf="false" class="divider align-center"></mat-divider>
   <div class="layout-column m-b-20 content-wrapper footer-center">
     <table class="versions">
-      <tr>
+      <tr *ngIf="false">
         <td class="footer-content">Mifos</td>
         <td class="right footer-content">
           {{ versions.mifos }} - <b>{{ hash }}</b>
         </td>
       </tr>
-      <tr>
+      <tr *ngIf="false">
         <td class="footer-content">{{ 'labels.text.Fineract' | translate }}</td>
         <td class="right footer-content">
           {{ versions.fineract.version }} - <b>{{ versions.fineract.hash }}</b>
         </td>
       </tr>
-      <tr *ngIf="displayBackEndInfo">
+      <tr *ngIf="false">
         <td class="footer-content">{{ 'labels.inputs.Server' | translate }}</td>
         <td class="right footer-content">
           {{ server }}
@@ -28,8 +28,8 @@
       </tr>
     </table>
   </div>
-  <mat-divider class="divider align-center"></mat-divider>
+  <mat-divider *ngIf="false" class="divider align-center"></mat-divider>
 </div>
-<div class="layout-column m-b-20 copy-label">
+<div *ngIf="false" class="layout-column m-b-20 copy-label">
   <p class="footer-content align-center">{{ 'APP_NAME' | translate }} {{ 'labels.text.by' | translate }} Mifos</p>
 </div>
