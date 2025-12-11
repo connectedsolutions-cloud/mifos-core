@@ -1196,7 +1196,8 @@
         "LIABILITY": "ODPOVĚDNOST",
         "EQUITY": "SPRAVEDLNOST",
         "INCOME": "PŘÍJEM",
-        "EXPENSE": "NÁKLADY"
+        "EXPENSE": "NÁKLADY",
+        "ORDER_ACCOUNT": "Řádový Účet"
       },
       "ACCOUNTING": "ÚČETNICTVÍ",
       "Percentage is required": "Je vyžadováno procento",

@@ -21,6 +21,8 @@ export interface GLAccount {
   type: OptionData;
   usage: OptionData;
   parentId?: number;
+  accLevel?: number;
+  accLastLevel?: number;
 }
 
 export interface AccountingMapping {

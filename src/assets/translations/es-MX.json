@@ -1196,7 +1196,8 @@
         "LIABILITY": "PASIVO",
         "EQUITY": "PATRIMONIO",
         "INCOME": "INGRESO",
-        "EXPENSE": "EGRESO"
+        "EXPENSE": "EGRESO",
+        "ORDER_ACCOUNT": "Cuenta de Orden"
       },
       "ACCOUNTING": "CONTABILIDAD",
       "Percentage is required": "Se requiere porcentaje",

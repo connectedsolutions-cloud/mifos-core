@@ -1197,7 +1197,8 @@
         "LIABILITY": "RESPONSABILITÉ",
         "EQUITY": "ÉQUITÉ",
         "INCOME": "REVENU",
-        "EXPENSE": "FRAIS"
+        "EXPENSE": "FRAIS",
+        "ORDER_ACCOUNT": "Compte d'Ordre"
       },
       "Percentage is required": "Le pourcentage est requis",
       "ACCOUNTING": "COMPTABILITÉ",

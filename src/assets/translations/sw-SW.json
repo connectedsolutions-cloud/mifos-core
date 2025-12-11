@@ -1196,7 +1196,8 @@
         "LIABILITY": "DHIMA",
         "EQUITY": "USAWA",
         "INCOME": "MAPATO",
-        "EXPENSE": "GHARAMA"
+        "EXPENSE": "GHARAMA",
+        "ORDER_ACCOUNT": "Akaunti ya Agizo"
       },
       "ACCOUNTING": "UHASIBU",
       "Percentage is required": "Asilimia inahitajika",

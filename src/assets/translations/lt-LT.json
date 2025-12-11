@@ -1197,7 +1197,8 @@
         "LIABILITY": "ATSAKOMYBĖ",
         "EQUITY": "NUOSAVYBĖ",
         "INCOME": "PAJAMOS",
-        "EXPENSE": "IŠLAIDOS"
+        "EXPENSE": "IŠLAIDOS",
+        "ORDER_ACCOUNT": "Užsakymo Sąskaita"
       },
       "Percentage is required": "Reikalingas procentas",
       "ACCOUNTING": "APSKAITA",

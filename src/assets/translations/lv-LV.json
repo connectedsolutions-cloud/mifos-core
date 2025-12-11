@@ -1197,7 +1197,8 @@
         "LIABILITY": "ATBILDĪBA",
         "EQUITY": "KAPITĀLS",
         "INCOME": "IENĀKUMI",
-        "EXPENSE": "IZDEVUMI"
+        "EXPENSE": "IZDEVUMI",
+        "ORDER_ACCOUNT": "Pasūtījuma Konts"
       },
       "Percentage is required": "Nepieciešams procents",
       "ACCOUNTING": "GRĀMATVEDĪBA",

@@ -91,7 +91,9 @@ export class EditGlAccountComponent implements OnInit {
         this.glAccount.manualEntriesAllowed,
         Validators.required
       ],
-      description: [this.glAccount.description]
+      description: [this.glAccount.description],
+      accLevel: [this.glAccount.accLevel],
+      accLastLevel: [this.glAccount.accLastLevel]
     });
   }
 
@@ -122,6 +124,10 @@ export class EditGlAccountComponent implements OnInit {
         case 5:
           this.parentData = this.glAccount.expenseHeaderAccountOptions;
           this.tagData = this.glAccount.allowedExpensesTagOptions;
+          break;
+        case 6:
+          this.parentData = this.glAccount.orderAccountHeaderAccountOptions;
+          this.tagData = this.glAccount.allowedOrderAccountTagOptions;
           break;
       }
     });

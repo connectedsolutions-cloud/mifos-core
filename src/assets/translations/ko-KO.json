@@ -1198,7 +1198,8 @@
         "LIABILITY": "책임",
         "EQUITY": "형평성",
         "INCOME": "소득",
-        "EXPENSE": "비용"
+        "EXPENSE": "비용",
+        "ORDER_ACCOUNT": "주문 계정"
       },
       "Percentage is required": "백분율이 필요합니다",
       "ACCOUNTING": "회계",

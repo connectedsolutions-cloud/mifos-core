@@ -1197,7 +1197,8 @@
         "LIABILITY": "HAFTUNG",
         "EQUITY": "EIGENKAPITAL",
         "INCOME": "EINKOMMEN",
-        "EXPENSE": "KOSTEN"
+        "EXPENSE": "KOSTEN",
+        "ORDER_ACCOUNT": "Auftragskonto"
       },
       "Percentage is required": "Prozentsatz ist erforderlich",
       "ACCOUNTING": "BUCHHALTUNG",

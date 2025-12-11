@@ -1201,7 +1201,8 @@
         "LIABILITY": "LIABILITY",
         "EQUITY": "EQUITY",
         "INCOME": "INCOME",
-        "EXPENSE": "EXPENSE"
+        "EXPENSE": "EXPENSE",
+        "ORDER_ACCOUNT": "Order Account"
       },
       "Percentage is required": "Percentage is required",
       "ACCOUNTING": "ACCOUNTING",

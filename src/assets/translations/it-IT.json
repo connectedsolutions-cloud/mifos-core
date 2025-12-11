@@ -1197,7 +1197,8 @@
         "LIABILITY": "RESPONSABILITÀ",
         "EQUITY": "EQUITÀ",
         "INCOME": "REDDITO",
-        "EXPENSE": "SPESE"
+        "EXPENSE": "SPESE",
+        "ORDER_ACCOUNT": "Conto d'Ordine"
       },
       "Percentage is required": "Percentuale richiesta",
       "ACCOUNTING": "CONTABILITÀ",

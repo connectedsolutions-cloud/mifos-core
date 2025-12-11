@@ -122,7 +122,9 @@ export class CreateGlAccountComponent implements OnInit, AfterViewInit {
       parentId: [this.parentId || undefined],
       tagId: [''],
       manualEntriesAllowed: [true],
-      description: ['']
+      description: [''],
+      accLevel: [undefined],
+      accLastLevel: [undefined]
     });
   }
 
@@ -151,6 +153,10 @@ export class CreateGlAccountComponent implements OnInit, AfterViewInit {
         case 5:
           this.parentData = this.chartOfAccountsData.expenseHeaderAccountOptions;
           this.tagData = this.chartOfAccountsData.allowedExpensesTagOptions;
+          break;
+        case 6:
+          this.parentData = this.chartOfAccountsData.orderAccountHeaderAccountOptions;
+          this.tagData = this.chartOfAccountsData.allowedOrderAccountTagOptions;
           break;
       }
     });

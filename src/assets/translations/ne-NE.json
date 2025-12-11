@@ -1197,7 +1197,8 @@
         "LIABILITY": "दायित्व",
         "EQUITY": "इक्विटी",
         "INCOME": "आय",
-        "EXPENSE": "खर्च"
+        "EXPENSE": "खर्च",
+        "ORDER_ACCOUNT": "आदेश खाता"
       },
       "Percentage is required": "प्रतिशत आवश्यक छ",
       "ACCOUNTING": "लेखा",

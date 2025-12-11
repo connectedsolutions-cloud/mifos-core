@@ -45,6 +45,9 @@ export class GlAccountAndChartOfAccountsTemplateResolver {
           case 'LIABILITY':
             accountOptions = glAccountData.liabilityHeaderAccountOptions;
             break;
+          case 'ORDER_ACCOUNT':
+            accountOptions = glAccountData.orderAccountHeaderAccountOptions;
+            break;
         }
         if (glAccountData.parentId) {
           glAccountData.parent = accountOptions.find((accountOption: any) => {
