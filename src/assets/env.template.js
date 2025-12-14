@@ -53,6 +53,9 @@
   // Enable or Disable HTTP Cache
   window['env']['httpCacheEnabled'] = '$MIFOS_HTTP_CACHE_ENABLED';
 
+  // Enable or Disable Warning Dialog
+  window['env']['warningDialogEnabled'] = '$MIFOS_WARNING_DIALOG_ENABLED';
+
   window['env']['vNextApiUrl'] = '$VNEXT_API_URL';
   window['env']['vNextApiProvider'] = '$VNEXT_API_PROVIDER';
   window['env']['vNextApiVersion'] = '$VNEXT_API_VERSION';

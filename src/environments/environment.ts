@@ -39,6 +39,7 @@ export const environment = {
     appId: loadedEnv.oauthAppId || ''
   },
   warningDialog: {
+    enabled: loadedEnv.warningDialogEnabled !== 'false', // Set to 'false' to disable the warning dialog
     title: 'Warning',
     content:
       'This system is for authorized use only. Unauthorized access will result in possible legal action. By accessing this system, you acknowledge that you are authorized to do so and that all data stored and processed here is confidential.',
@@ -59,7 +60,7 @@ export const environment = {
   waitTimeForCOBCatchUp: loadedEnv.waitTimeForCOBCatchUp || 30,
   session: {
     timeout: {
-      idleTimeout: loadedEnv.sessionIdleTimeout || 300000 // 5 minutes
+      idleTimeout: loadedEnv.sessionIdleTimeout || 1800000 // 30 minutes
     }
   },
   httpCacheEnabled: loadedEnv.httpCacheEnabled || false,

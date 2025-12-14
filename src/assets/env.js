@@ -53,6 +53,9 @@
   // Enable or Disable HTTP Cache
   window['env']['httpCacheEnabled'] = 'true';
 
+  // Enable or Disable Warning Dialog
+  window['env']['warningDialogEnabled'] = 'false';
+
   window['env']['vNextApiUrl'] = '';
   window['env']['vNextApiProvider'] = '';
   window['env']['vNextApiVersion'] = '';
