@@ -548,6 +548,32 @@
   .mdc-floating-label {
     font-size: 14px !important;
   }
+
+  // Input text color
+  .mat-mdc-input-element,
+  input.mat-mdc-input-element,
+  textarea.mat-mdc-input-element {
+    color: rgb(0 0 0 / 87%) !important;
+  }
+
+  // Floating label colors
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    color: rgb(0 0 0 / 60%) !important;
+  }
+
+  .mat-mdc-floating-label--float-above,
+  .mdc-floating-label--float-above {
+    color: rgb(0 0 0 / 87%) !important;
+  }
+
+  // Form field text
+  .mat-mdc-form-field-input-control {
+    input,
+    textarea {
+      color: rgb(0 0 0 / 87%) !important;
+    }
+  }
 }
 
 @media (width <= 768px) {
@@ -583,10 +609,6 @@
   align-items: center;
   width: 100%;
   gap: 10px;
-}
-
-.menu-right-section fa-icon {
-  z-index: 1000;
 }
 
 .menu-right-section {
@@ -635,4 +657,113 @@ mifosx-notifications-page td {
 .client-Name {
   position: absolute;
   left: 490px;
+}
+
+// Ensure FontAwesome icons are visible
+fa-icon {
+  color: rgb(0 0 0 / 87%) !important;
+}
+
+// Ensure Material icons are visible
+mat-icon,
+.material-icons {
+  color: rgb(0 0 0 / 87%) !important;
+}
+
+// Ensure buttons have visible text
+button,
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  color: inherit !important;
+
+  mat-icon,
+  fa-icon {
+    color: inherit !important;
+  }
+
+  // Fix for invisible button label - ensure all button labels are visible
+  .mdc-button__label {
+    opacity: 1 !important;
+  }
+}
+
+// More specific selectors come after less specific ones
+.menu-right-section fa-icon {
+  z-index: 1000;
+}
+
+.mdc-icon-button mat-icon {
+  color: rgb(0 0 0 / 87%) !important;
+}
+
+button.mat-mdc-button-disabled .mdc-button__label,
+button:disabled .mdc-button__label,
+.mat-mdc-button.mat-mdc-button-disabled .mdc-button__label,
+.mat-mdc-button:disabled .mdc-button__label,
+.mat-mdc-raised-button.mat-mdc-button-disabled .mdc-button__label,
+.mat-mdc-raised-button:disabled .mdc-button__label,
+.mat-mdc-outlined-button.mat-mdc-button-disabled .mdc-button__label,
+.mat-mdc-outlined-button:disabled .mdc-button__label {
+  opacity: 1 !important;
+}
+
+// Ensure labels are visible
+label,
+mat-label {
+  color: rgb(0 0 0 / 60%) !important;
+}
+
+// Ensure select options are visible
+.mat-mdc-select-value,
+.mat-mdc-select-value-text {
+  color: rgb(0 0 0 / 87%) !important;
+}
+
+// Dark theme overrides
+.dark-theme {
+  .mat-mdc-form-field {
+    .mat-mdc-input-element,
+    input.mat-mdc-input-element,
+    textarea.mat-mdc-input-element {
+      color: rgb(255 255 255 / 87%) !important;
+    }
+
+    .mat-mdc-floating-label,
+    .mdc-floating-label {
+      color: rgb(255 255 255 / 60%) !important;
+    }
+
+    .mat-mdc-floating-label--float-above,
+    .mdc-floating-label--float-above {
+      color: rgb(255 255 255 / 87%) !important;
+    }
+
+    .mat-mdc-form-field-input-control {
+      input,
+      textarea {
+        color: rgb(255 255 255 / 87%) !important;
+      }
+    }
+  }
+
+  mat-icon,
+  .material-icons,
+  .mdc-icon-button mat-icon {
+    color: rgb(255 255 255 / 87%) !important;
+  }
+
+  fa-icon {
+    color: rgb(255 255 255 / 87%) !important;
+  }
+
+  label,
+  mat-label {
+    color: rgb(255 255 255 / 60%) !important;
+  }
+
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text {
+    color: rgb(255 255 255 / 87%) !important;
+  }
 }

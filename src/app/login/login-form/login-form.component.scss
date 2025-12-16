@@ -19,6 +19,14 @@
     color: white;
     border-radius: 8px;
     margin-bottom: 0.5rem;
+
+    // Fix for invisible button label when disabled
+    &.mat-mdc-button-disabled,
+    &[disabled] {
+      .mdc-button__label {
+        opacity: 1 !important;
+      }
+    }
   }
 
   mat-spinner {

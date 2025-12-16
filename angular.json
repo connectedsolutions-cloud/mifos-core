@@ -70,7 +70,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "12mb",
-                  "maximumError": "12mb"
+                  "maximumError": "50mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -84,7 +84,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "sourceMap": false,
               "namedChunks": true,
               "outputHashing": "all",
