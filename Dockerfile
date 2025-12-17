@@ -1,7 +1,7 @@
 ###############
 ### STAGE 1: Build app
 ###############
-ARG BUILDER_IMAGE=node:24-alpine3.22
+ARG BUILDER_IMAGE=node:22-alpine
 ARG NGINX_IMAGE=nginx:1.29-alpine3.22-slim
 
 FROM $BUILDER_IMAGE AS builder
@@ -10,9 +10,14 @@ ARG BUILD_ENVIRONMENT_OPTIONS="--configuration production"
 ARG PUPPETEER_DOWNLOAD_HOST_ARG=https://storage.googleapis.com
 ARG PUPPETEER_CHROMIUM_REVISION_ARG=1011831
 ARG PUPPETEER_SKIP_DOWNLOAD_ARG
+ARG TARGETPLATFORM
 
 # Set the environment variable to increase Node.js memory limit
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Force npm to rebuild native dependencies for the target platform
+# This is critical when cross-compiling (e.g., ARM64 -> AMD64)
+ENV npm_config_build_from_source=true
 
 RUN apk add --no-cache git
 
@@ -33,6 +38,10 @@ RUN npm config set fetch-retry-maxtimeout 120000
 RUN npm config set registry $NPM_REGISTRY_URL --location=global
 
 RUN npm ci
+
+# Rebuild native dependencies for the target platform (important for cross-compilation)
+# This ensures Sass and other native modules are built for the correct architecture
+RUN npm rebuild || true
 
 RUN sh -c "ng build --output-path=/dist $BUILD_ENVIRONMENT_OPTIONS"
 
