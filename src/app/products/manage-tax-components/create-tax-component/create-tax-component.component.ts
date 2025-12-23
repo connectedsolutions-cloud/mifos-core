@@ -109,12 +109,30 @@ export class CreateTaxComponentComponent implements OnInit {
    */
   setConditionalControls() {
     this.taxComponentForm.get('debitAccountType').valueChanges.subscribe((debitAccountTypeId) => {
-      this.debitAccountData = this.getAccountsData(debitAccountTypeId);
-      this.taxComponentForm.addControl('debitAccountId', new UntypedFormControl('', Validators.required));
+      if (debitAccountTypeId && debitAccountTypeId !== '') {
+        this.debitAccountData = this.getAccountsData(debitAccountTypeId);
+        if (!this.taxComponentForm.get('debitAccountId')) {
+          this.taxComponentForm.addControl('debitAccountId', new UntypedFormControl('', Validators.required));
+        }
+      } else {
+        this.debitAccountData = [];
+        if (this.taxComponentForm.get('debitAccountId')) {
+          this.taxComponentForm.removeControl('debitAccountId');
+        }
+      }
     });
     this.taxComponentForm.get('creditAccountType').valueChanges.subscribe((creditAccountTypeId) => {
-      this.creditAccountData = this.getAccountsData(creditAccountTypeId);
-      this.taxComponentForm.addControl('creditAccountId', new UntypedFormControl('', Validators.required));
+      if (creditAccountTypeId && creditAccountTypeId !== '') {
+        this.creditAccountData = this.getAccountsData(creditAccountTypeId);
+        if (!this.taxComponentForm.get('creditAccountId')) {
+          this.taxComponentForm.addControl('creditAccountId', new UntypedFormControl('', Validators.required));
+        }
+      } else {
+        this.creditAccountData = [];
+        if (this.taxComponentForm.get('creditAccountId')) {
+          this.taxComponentForm.removeControl('creditAccountId');
+        }
+      }
     });
   }
 
@@ -149,11 +167,50 @@ export class CreateTaxComponentComponent implements OnInit {
     if (taxComponentFormData.startDate instanceof Date) {
       taxComponentFormData.startDate = this.dateUtils.formatDate(prevStartDate, dateFormat);
     }
-    const data = {
-      ...taxComponentFormData,
+
+    // Map form field names to backend-expected parameter names (backend has typos in parameter names)
+    // Backend validation: if debitAccountType OR debitAccountId is provided, BOTH must be provided
+    const data: any = {
+      name: taxComponentFormData.name,
+      percentage: taxComponentFormData.percentage,
+      startDate: taxComponentFormData.startDate,
       dateFormat,
       locale
     };
+
+    // Only include debit account fields if BOTH type and ID are provided
+    // Backend validation: if debitAccountType OR debitAccountId is provided, BOTH must be provided
+    const debitAccountTypeControl = this.taxComponentForm.get('debitAccountType');
+    const debitAccountIdControl = this.taxComponentForm.get('debitAccountId');
+    const debitAccountType = debitAccountTypeControl ? debitAccountTypeControl.value : null;
+    const debitAccountId = debitAccountIdControl ? debitAccountIdControl.value : null;
+
+    // Check if both values are valid
+    // Note: Account IDs are numbers, so we check for truthy values (not null, undefined, 0, or empty string)
+    const hasValidDebitAccountType = debitAccountType != null && debitAccountType !== '' && debitAccountType !== 0;
+    const hasValidDebitAccountId = debitAccountId != null && debitAccountId !== '' && debitAccountId !== 0;
+
+    if (hasValidDebitAccountType && hasValidDebitAccountId) {
+      data.debitAccountType = debitAccountType;
+      data.debitAccountId = debitAccountId;
+    }
+
+    // Only include credit account fields if BOTH type and ID are provided
+    // Backend validation: if creditAccountType OR creditAccountId is provided, BOTH must be provided
+    const creditAccountTypeControl = this.taxComponentForm.get('creditAccountType');
+    const creditAccountIdControl = this.taxComponentForm.get('creditAccountId');
+    const creditAccountType = creditAccountTypeControl ? creditAccountTypeControl.value : null;
+    const creditAccountId = creditAccountIdControl ? creditAccountIdControl.value : null;
+
+    // Check if both values are valid
+    const hasValidCreditAccountType = creditAccountType != null && creditAccountType !== '' && creditAccountType !== 0;
+    const hasValidCreditAccountId = creditAccountId != null && creditAccountId !== '' && creditAccountId !== 0;
+
+    if (hasValidCreditAccountType && hasValidCreditAccountId) {
+      data.creditAccountType = creditAccountType;
+      data.creditAccountId = creditAccountId;
+    }
+
     this.productsService.createTaxComponent(data).subscribe((response: any) => {
       this.router.navigate(
         [

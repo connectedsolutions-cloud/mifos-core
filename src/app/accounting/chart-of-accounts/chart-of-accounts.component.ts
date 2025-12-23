@@ -43,6 +43,8 @@ import { MatButtonToggleGroup, MatButtonToggle } from '@angular/material/button-
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
+import { MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -75,9 +77,13 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatTreeNodeDef,
     MatTreeNode,
     MatTreeNodeToggle,
+    MatButton,
     MatIconButton,
     MatNestedTreeNode,
-    MatTreeNodeOutlet
+    MatTreeNodeOutlet,
+    MatCardHeader,
+    MatCardTitle,
+    MatIcon
   ]
 })
 export class ChartOfAccountsComponent implements AfterViewInit, OnInit {
@@ -150,7 +156,10 @@ export class ChartOfAccountsComponent implements AfterViewInit, OnInit {
     this.tableDataSource = new MatTableDataSource(this.glAccountData);
     this.glAccountTreeService.treeDataChange.subscribe((glAccountTreeData: GLAccountNode[]) => {
       this.nestedTreeDataSource.data = glAccountTreeData;
-      this.nestedTreeControl.expand(this.nestedTreeDataSource.data[0]);
+      // Expand the first root-level account if it exists
+      if (this.nestedTreeDataSource.data && this.nestedTreeDataSource.data.length > 0) {
+        this.nestedTreeControl.expand(this.nestedTreeDataSource.data[0]);
+      }
       this.nestedTreeControl.dataNodes = glAccountTreeData;
     });
   }
@@ -205,6 +214,13 @@ export class ChartOfAccountsComponent implements AfterViewInit, OnInit {
   }
 
   /**
+   * Close the detail section.
+   */
+  closeDetailSection() {
+    this.glAccount = null;
+  }
+
+  /**
    * Checks if selected node in tree has children.
    */
   hasNestedChild = (_: number, node: GLAccountNode) => node.children.length;
@@ -255,5 +271,34 @@ export class ChartOfAccountsComponent implements AfterViewInit, OnInit {
    */
   toggleExpandCollapse() {
     this.isTreeExpanded = this.treeControlService.toggleExpandCollapse(this.nestedTreeControl, this.isTreeExpanded);
+  }
+
+  /**
+   * Checks if a node is a root-level account (parentId = 0).
+   * @param {GLAccountNode} node GL Account node to check.
+   * @returns {boolean} True if the node is a root-level account.
+   */
+  isRootLevelAccount(node: GLAccountNode): boolean {
+    if (!node || !node.glCode) {
+      return false;
+    }
+    // Check if the node exists in the root data array
+    return this.nestedTreeDataSource.data?.some((rootNode) => rootNode === node) || false;
+  }
+
+  /**
+   * Navigates to the view account page.
+   */
+  navigateToViewAccount() {
+    if (this.glAccount && this.glAccount.glCode) {
+      // Find the account ID by matching the glCode
+      const account = this.glAccountData.find((acc: any) => acc.glCode === this.glAccount.glCode);
+      if (account && account.id) {
+        this.router.navigate([
+          '/accounting/chart-of-accounts/gl-accounts/view',
+          account.id
+        ]);
+      }
+    }
   }
 }

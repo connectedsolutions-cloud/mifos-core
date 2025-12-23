@@ -579,7 +579,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'paymentTypeId',
         label: 'Payment Type',
-        value: values ? values.paymentTypeId : this.paymentTypeData[0].id,
+        value: values
+          ? values.paymentTypeId
+          : this.paymentTypeData && this.paymentTypeData.length > 0
+            ? this.paymentTypeData[0].id
+            : '',
         options: { label: 'name', value: 'id', data: this.paymentTypeData },
         required: true,
         order: 1
@@ -587,7 +591,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'fundSourceAccountId',
         label: 'Fund Source',
-        value: values ? values.fundSourceAccountId : this.assetAccountData[0].id,
+        value: values
+          ? values.fundSourceAccountId
+          : this.assetAccountData && this.assetAccountData.length > 0
+            ? this.assetAccountData[0].id
+            : '',
         options: { label: 'name', value: 'id', data: this.assetAccountData },
         required: true,
         order: 2
@@ -602,7 +610,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'chargeId',
         label: 'Fees',
-        value: values ? values.chargeId : this.chargeData[0].id,
+        value: values ? values.chargeId : this.chargeData && this.chargeData.length > 0 ? this.chargeData[0].id : '',
         options: { label: 'name', value: 'id', data: this.chargeData },
         required: true,
         order: 1
@@ -610,7 +618,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'incomeAccountId',
         label: 'Income Account',
-        value: values ? values.incomeAccountId : this.incomeAndLiabilityAccountData[0].id,
+        value: values
+          ? values.incomeAccountId
+          : this.incomeAndLiabilityAccountData && this.incomeAndLiabilityAccountData.length > 0
+            ? this.incomeAndLiabilityAccountData[0].id
+            : '',
         options: { label: 'name', value: 'id', data: this.incomeAndLiabilityAccountData },
         required: true,
         order: 2
@@ -625,7 +637,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'chargeId',
         label: 'Penalty',
-        value: values ? values.chargeId : this.penaltyData[0].id,
+        value: values ? values.chargeId : this.penaltyData && this.penaltyData.length > 0 ? this.penaltyData[0].id : '',
         options: { label: 'name', value: 'id', data: this.penaltyData },
         required: true,
         order: 1
@@ -633,7 +645,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'incomeAccountId',
         label: 'Income Account',
-        value: values ? values.incomeAccountId : this.incomeAccountData[0].id,
+        value: values
+          ? values.incomeAccountId
+          : this.incomeAccountData && this.incomeAccountData.length > 0
+            ? this.incomeAccountData[0].id
+            : '',
         options: { label: 'name', value: 'id', data: this.incomeAccountData },
         required: true,
         order: 2
@@ -649,7 +665,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'chargeOffReasonCodeValueId',
         label: 'Charge-off reason',
-        value: values ? values.chargeOffReasonCodeValueId : reasonOptions[0].id,
+        value: values
+          ? values.chargeOffReasonCodeValueId
+          : reasonOptions && reasonOptions.length > 0
+            ? reasonOptions[0].id
+            : '',
         options: { label: 'name', value: 'id', data: reasonOptions },
         required: true,
         order: 1
@@ -657,7 +677,11 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       new SelectBase({
         controlName: 'expenseAccountId',
         label: 'Expense Account',
-        value: values ? values.expenseAccountId : this.expenseAccountData[0].id,
+        value: values
+          ? values.expenseAccountId
+          : this.expenseAccountData && this.expenseAccountData.length > 0
+            ? this.expenseAccountData[0].id
+            : '',
         options: { label: 'name', value: 'id', data: this.expenseAccountData },
         required: true,
         order: 2

@@ -16,6 +16,7 @@ import {
   MatRow
 } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -69,7 +70,8 @@ export class ReportsComponent implements OnInit {
    */
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translateService: TranslateService
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.route.data.subscribe((data: { reports: any }) => {
@@ -141,5 +143,16 @@ export class ReportsComponent implements OnInit {
         return dataStr.indexOf(transformedFilter) !== -1;
       }
     };
+  }
+
+  /**
+   * Gets the translated report name with fallback to original name.
+   * @param {string} reportName Original report name.
+   * @returns {string} Translated report name or original if translation not found.
+   */
+  getTranslatedReportName(reportName: string): string {
+    const key = 'labels.reports.' + reportName;
+    const translation = this.translateService.instant(key);
+    return translation !== key ? translation : reportName;
   }
 }

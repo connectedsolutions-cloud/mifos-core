@@ -54,7 +54,12 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-checkbox class="flex-96" labelPosition="before" formControlName="isEqualAmortization">
+    <mat-checkbox
+      class="flex-96"
+      labelPosition="before"
+      matTooltip="{{ 'tooltips.Is Equal Amortization' | translate }}"
+      formControlName="isEqualAmortization"
+    >
       {{ 'labels.inputs.products.loan.Is Equal Amortization?' | translate }}
     </mat-checkbox>
 
@@ -71,6 +76,19 @@
     <mat-divider class="flex-98"></mat-divider>
 
     <h4 class="mat-h4 flex-98">{{ 'labels.inputs.Loan Schedule' | translate }}</h4>
+
+    <mat-accordion class="flex-96 margin-b">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ 'labels.inputs.Loan Schedule Type Information' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="mat-typography">
+          <p [innerHTML]="'labels.descriptions.Cumulative vs Progressive Loan Schedule' | translate"></p>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
 
     <mat-form-field class="flex-30">
       <mat-label>{{ 'labels.inputs.Loan Schedule Type' | translate }}</mat-label>
@@ -401,7 +419,7 @@
     <mat-checkbox
       class="flex-48 margin-v"
       labelPosition="before"
-      matTooltip="{{ 'tooltips.Fields are used to define the minimum, maximum gap' | translate }}"
+      matTooltip="{{ 'tooltips.Allows modifying the loan repayment schedule after creation' | translate }}"
       formControlName="allowVariableInstallments"
     >
       {{ 'labels.inputs.Are Variable Installments allowed?' | translate }}
@@ -415,7 +433,13 @@
 
       <mat-form-field class="flex-48">
         <mat-label>{{ 'labels.inputs.Minimum gap between Installments' | translate }}</mat-label>
-        <input type="number" matInput formControlName="minimumGap" required />
+        <input
+          type="number"
+          matInput
+          formControlName="minimumGap"
+          required
+          matTooltip="{{ 'tooltips.Minimum gap between installments in days' | translate }}"
+        />
         <mat-error>
           {{ 'labels.inputs.Minimum gap between Installments' | translate }} {{ 'labels.commons.is' | translate }}
           <strong>{{ 'labels.commons.required' | translate }}</strong>
@@ -424,7 +448,13 @@
 
       <mat-form-field class="flex-48">
         <mat-label>{{ 'labels.inputs.Maximum gap between Installments' | translate }}</mat-label>
-        <input type="number" matInput formControlName="maximumGap" required />
+        <input
+          type="number"
+          matInput
+          formControlName="maximumGap"
+          required
+          matTooltip="{{ 'tooltips.Maximum gap between installments in days' | translate }}"
+        />
         <mat-error>
           {{ 'labels.inputs.Maximum gap between Installments' | translate }} {{ 'labels.commons.is' | translate }}
           <strong>{{ 'labels.commons.required' | translate }}</strong>
@@ -455,7 +485,11 @@
     >
       <mat-form-field class="flex-48">
         <mat-label>{{ 'labels.inputs.Pre-closure interest calculation rule' | translate }}</mat-label>
-        <mat-select formControlName="preClosureInterestCalculationStrategy" required>
+        <mat-select
+          formControlName="preClosureInterestCalculationStrategy"
+          required
+          matTooltip="{{ 'tooltips.Pre-closure interest calculation rule explanation' | translate }}"
+        >
           <mat-option
             *ngFor="let preClosureInterestCalculationStrategy of preClosureInterestCalculationStrategyData"
             [value]="preClosureInterestCalculationStrategy.id"
@@ -471,7 +505,12 @@
 
       <mat-form-field class="flex-48">
         <mat-label>{{ 'labels.inputs.Advance payments adjustment type' | translate }}</mat-label>
-        <mat-select formControlName="rescheduleStrategyMethod" required [disabled]="rescheduleStrategyTypeDisabled">
+        <mat-select
+          formControlName="rescheduleStrategyMethod"
+          required
+          [disabled]="rescheduleStrategyTypeDisabled"
+          matTooltip="{{ 'tooltips.Advance payments adjustment type explanation' | translate }}"
+        >
           <mat-option
             *ngFor="let rescheduleStrategyType of rescheduleStrategyTypeData"
             [value]="rescheduleStrategyType.id"
@@ -603,7 +642,11 @@
 
       <mat-form-field class="flex-31">
         <mat-label>{{ 'labels.inputs.Frequency for recalculate Outstanding Principal' | translate }}</mat-label>
-        <mat-select formControlName="recalculationRestFrequencyType" required>
+        <mat-select
+          formControlName="recalculationRestFrequencyType"
+          required
+          matTooltip="{{ 'tooltips.Frequency for recalculate Outstanding Principal explanation' | translate }}"
+        >
           <mat-option
             *ngFor="let interestRecalculationFrequencyType of interestRecalculationFrequencyTypeData"
             [value]="interestRecalculationFrequencyType.id"

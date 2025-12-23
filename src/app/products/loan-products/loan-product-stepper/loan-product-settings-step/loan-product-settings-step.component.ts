@@ -18,6 +18,12 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatStepperPrevious, MatStepperNext } from '@angular/material/stepper';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from '@angular/material/expansion';
 
 @Component({
   selector: 'mifosx-loan-product-settings-step',
@@ -31,7 +37,11 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatIconButton,
     FaIconComponent,
     MatStepperPrevious,
-    MatStepperNext
+    MatStepperNext,
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle
   ]
 })
 export class LoanProductSettingsStepComponent implements OnInit {

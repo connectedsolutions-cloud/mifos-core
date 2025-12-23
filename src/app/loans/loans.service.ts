@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { Dates } from 'app/core/utils/dates';
 import { SettingsService } from 'app/settings/settings.service';
 import { DisbursementData } from './models/loan-account.model';
+import { LoanProducts } from 'app/products/loan-products/loan-products';
 
 /**
  * Loans service.
@@ -719,6 +720,16 @@ export class LoansService {
     if (!loansAccountData.multiDisburseLoan) {
       delete loansAccountData.disbursementData;
     }
+
+    // Remove allowFullTermForTranche if it's not applicable
+    // This parameter is only supported when multiDisburseLoan is true AND loanScheduleType is PROGRESSIVE
+    const loanScheduleType =
+      loansAccountTemplate?.loanScheduleType?.code || loansAccountTemplate?.product?.loanScheduleType?.code;
+    const multiDisburseLoan = loansAccountData.multiDisburseLoan || loansAccountTemplate?.multiDisburseLoan;
+    if (!multiDisburseLoan || loanScheduleType !== LoanProducts.LOAN_SCHEDULE_TYPE_PROGRESSIVE) {
+      delete loansAccountData.allowFullTermForTranche;
+    }
+
     delete loansAccountData.isValid;
     loansAccountData.principal = loansAccountData.principalAmount;
     delete loansAccountData.principalAmount;
@@ -728,6 +739,7 @@ export class LoansService {
     // allowPartialPeriodInterestCalculation. Until that is fixed, we need to replace the field name in the payload.
     loansAccountData.allowPartialPeriodInterestCalcualtion = loansAccountData.allowPartialPeriodInterestCalculation;
     delete loansAccountData.allowPartialPeriodInterestCalculation;
+
     return loansAccountData;
   }
 

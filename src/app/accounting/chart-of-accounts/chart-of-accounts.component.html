@@ -125,6 +125,9 @@
             <span (click)="viewGLAccountNode(node)">
               <span *ngIf="node.glCode" class="m-r-10">{{ '(' + node.glCode + ')' }}</span>
               {{ node.name }}
+              <span *ngIf="isRootLevelAccount(node) && node.type" class="m-l-10">
+                - {{ 'labels.inputs.accounting.' + node.type | translate }}
+              </span>
             </span>
           </li>
         </mat-tree-node>
@@ -141,6 +144,9 @@
               <span (click)="viewGLAccountNode(node)">
                 <span *ngIf="node.glCode" class="m-r-10">{{ '(' + node.glCode + ')' }}</span>
                 {{ node.name }}
+                <span *ngIf="isRootLevelAccount(node) && node.type" class="m-l-10">
+                  - {{ 'labels.inputs.accounting.' + node.type | translate }}
+                </span>
               </span>
             </div>
             <ul [class.gl-account-tree-invisible]="!nestedTreeControl.isExpanded(node)">
@@ -153,6 +159,32 @@
 
     <div class="flex-48" *ngIf="glAccount">
       <mat-card>
+        <div class="card-header-container">
+          <mat-card-header style="padding-top: 16px; padding-left: 0px !important; margin-bottom: 24px !important">
+            <mat-card-title style="padding-left: 0px !important">
+              {{ 'labels.inputs.Account Details' | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <button
+            mat-icon-button
+            (click)="closeDetailSection()"
+            [attr.aria-label]="'labels.buttons.Close' | translate"
+            class="close-button"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div style="padding: 0 16px 16px 16px">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="navigateToViewAccount()"
+            [attr.aria-label]="'labels.buttons.Edit' | translate"
+          >
+            <fa-icon icon="edit" class="m-r-10"></fa-icon>
+            {{ 'labels.buttons.Edit' | translate }}
+          </button>
+        </div>
         <mat-card-content>
           <div class="layout-row-wrap">
             <div class="flex-50 header">

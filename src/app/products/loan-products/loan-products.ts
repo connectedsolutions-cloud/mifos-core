@@ -78,6 +78,15 @@ export class LoanProducts {
     loanProduct.allowPartialPeriodInterestCalcualtion = loanProduct.allowPartialPeriodInterestCalculation;
     delete loanProduct.allowPartialPeriodInterestCalculation;
 
+    // Remove allowFullTermForTranche if it's not applicable
+    // This parameter is only supported when multiDisburseLoan is true AND loanScheduleType is PROGRESSIVE
+    if (
+      !loanProduct.multiDisburseLoan ||
+      loanProduct.loanScheduleType !== LoanProducts.LOAN_SCHEDULE_TYPE_PROGRESSIVE
+    ) {
+      delete loanProduct.allowFullTermForTranche;
+    }
+
     // Set Default values If they were not set
     itemsByDefault.forEach((config: GlobalConfiguration) => {
       const propertyName = this.resolvePropertyName(config.name);

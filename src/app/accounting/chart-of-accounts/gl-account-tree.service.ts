@@ -35,7 +35,7 @@ export class GlAccountTreeService {
    * @param {any} glAccountData Chart of accounts data.
    */
   initialize(glAccountData: any) {
-    const treeData = this.buildGLAccountTree(glAccountData);
+    const treeData = this.buildGLAccountGlobalTree(glAccountData);
     this.treeDataChange.next(treeData);
   }
 
@@ -104,6 +104,61 @@ export class GlAccountTreeService {
           glAccountTree[0].children[4].children.push(glAccounts[glAccount.id]);
         }
       } else {
+        if (glAccounts[glAccount.parentId]) {
+          glAccounts[glAccount.parentId].children.push(glAccounts[glAccount.id]);
+        }
+      }
+    }
+
+    return glAccountTree;
+  }
+
+  /**
+   * Builds and returns the chart of accounts tree based on parent-child relationships only.
+   * Groups accounts by parentId without type-based categories.
+   * @param {any} glAccountData Chart of accounts data.
+   * @returns {GLAccountNode[]} Chart of accounts tree nodes (root-level accounts only).
+   */
+  buildGLAccountGlobalTree(glAccountData: GLAccount[]): GLAccountNode[] {
+    const glAccountTree: GLAccountNode[] = [];
+
+    if (glAccountData.length === 0) {
+      return glAccountTree;
+    }
+
+    // Sort by parent id (so that child nodes can be added properly)
+    if (!glAccountData[0].parentId) {
+      glAccountData[0].parentId = 0;
+    }
+    glAccountData.sort((glAccountOne: GLAccount, glAccountTwo: GLAccount) => {
+      if (!glAccountOne.parentId) {
+        glAccountOne.parentId = 0;
+      }
+      return glAccountOne.parentId - glAccountTwo.parentId;
+    });
+
+    const glAccounts: GLAccountNode[] = [];
+
+    // Add gl accounts to any array where index for each is denoted by its id
+    for (const glAccount of glAccountData) {
+      glAccounts[glAccount.id] = new GLAccountNode(
+        glAccount.name,
+        glAccount.glCode,
+        glAccount.type.value,
+        glAccount.usage.value,
+        glAccount.manualEntriesAllowed,
+        glAccount.description
+      );
+    }
+
+    // Construct gl account tree by adding all nodes with parentId = 0 to root array,
+    // and rest as children to respective parent nodes.
+    for (const glAccount of glAccountData) {
+      if (glAccount.parentId === 0 || !glAccount.parentId) {
+        // Add directly to root array (no type filtering)
+        glAccountTree.push(glAccounts[glAccount.id]);
+      } else {
+        // Add as children to their parent node
         if (glAccounts[glAccount.parentId]) {
           glAccounts[glAccount.parentId].children.push(glAccounts[glAccount.id]);
         }

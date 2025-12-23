@@ -52,3 +52,18 @@ table {
 .manual-entries-not-allowed {
   color: #f44366;
 }
+
+.card-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 0;
+
+  mat-card-header {
+    flex: 1;
+  }
+
+  .close-button {
+    margin-left: auto;
+  }
+}
