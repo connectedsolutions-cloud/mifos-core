@@ -1,3 +1,58 @@
 .password-never-expires-wrapper {
   padding: 17.5px 0;
 }
+
+.staff-offices-info {
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.staff-offices-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(0 0 0 / 60%);
+  margin-bottom: 8px;
+}
+
+.staff-offices-list {
+  margin-bottom: 8px;
+}
+
+.staff-office-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  margin: 2px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1976d2;
+
+  &.mismatch {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+}
+
+.office-mismatch-warning {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #e65100;
+
+  .warning-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    color: #ff9800;
+  }
+}

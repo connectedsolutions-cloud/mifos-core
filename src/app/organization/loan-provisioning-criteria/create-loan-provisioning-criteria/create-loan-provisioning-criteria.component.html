@@ -28,7 +28,61 @@
       </form>
     </div>
 
-    <div class="mat-elevation-z1">
+    <!-- Category Management Section -->
+    <div class="mat-elevation-z1 m-t-20">
+      <div
+        class="layout-row"
+        style="display: flex; flex-direction: row; align-items: center; justify-content: space-between"
+      >
+        <h3>{{ 'labels.inputs.Manage Categories' | translate }}</h3>
+        <button mat-raised-button color="primary" (click)="addCategory()">
+          <fa-icon icon="plus" class="m-r-10"></fa-icon>
+          {{ 'labels.buttons.Add Category' | translate }}
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <mat-list>
+        <mat-list-item *ngFor="let category of orderedCategories; let i = index" class="category-list-item">
+          <div class="layout-row layout-align-space-between-center flex-fill">
+            <div class="flex-fill">
+              <div class="mat-body-strong">{{ category.categoryName }}</div>
+              <div class="mat-caption" *ngIf="category.categoryDescription" style="margin-left: 16px">
+                {{ category.categoryDescription }}
+              </div>
+            </div>
+            <div class="layout-row gap-10px">
+              <button
+                mat-icon-button
+                [disabled]="i === 0"
+                (click)="moveCategoryUp(i)"
+                [title]="'labels.buttons.Move Up' | translate"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                [disabled]="i === orderedCategories.length - 1"
+                (click)="moveCategoryDown(i)"
+                [title]="'labels.buttons.Move Down' | translate"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteCategory(category)"
+                [title]="'labels.buttons.Delete' | translate"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <mat-divider *ngIf="i < orderedCategories.length - 1"></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <div class="mat-elevation-z1 m-t-20">
       <mat-hint *ngIf="!provisioningCriteriaFormValid">
         {{ 'labels.text.Provisioning criteria definitions' | translate }}</mat-hint
       >

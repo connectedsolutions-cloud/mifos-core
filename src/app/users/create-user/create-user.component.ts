@@ -114,8 +114,8 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
         ],
         sendPasswordToEmail: [true],
         passwordNeverExpires: [false],
-        officeId: [
-          '',
+        officeIds: [
+          [],
           Validators.required
         ],
         staffId: [''],
@@ -129,14 +129,17 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Sets the staff data each time the user selects a new office
+   * Sets the staff data each time the user selects offices
    */
   setStaffData() {
-    this.userForm.get('officeId').valueChanges.subscribe((officeId: string) => {
+    this.userForm.get('officeIds').valueChanges.subscribe((officeIds: number[]) => {
       this.staffData = [];
-      this.usersService.getStaff(officeId).subscribe((staff: any) => {
-        this.staffData = staff;
-      });
+      // Use first selected office for staff lookup, or allow staff from any selected office
+      if (officeIds && officeIds.length > 0) {
+        this.usersService.getStaff(officeIds[0]).subscribe((staff: any) => {
+          this.staffData = staff;
+        });
+      }
     });
   }
 
@@ -172,6 +175,10 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
    */
   submit() {
     const user = this.userForm.value;
+    // Convert officeIds array to the format expected by API
+    if (user.officeIds && Array.isArray(user.officeIds)) {
+      user.officeIds = user.officeIds.map((id: any) => id.toString());
+    }
     if (this.userForm.value.staffId == null || this.userForm.value.staffId === '') {
       delete user.staffId;
     }

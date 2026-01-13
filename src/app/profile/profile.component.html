@@ -37,10 +37,20 @@
       </div>
       <div class="info-box">
         <div class="header">
-          {{ 'labels.inputs.Office' | translate }}
+          {{ 'labels.inputs.Current Office' | translate }}
         </div>
-        <div>
+        <div *ngIf="availableOffices.length <= 1">
           {{ profileData.officeName }}
+        </div>
+        <div *ngIf="availableOffices.length > 1">
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>{{ 'labels.inputs.Select Office' | translate }}</mat-label>
+            <mat-select [value]="profileData.officeId" (selectionChange)="switchOffice($event.value)">
+              <mat-option *ngFor="let office of availableOffices" [value]="office.id">
+                {{ office.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
       <div class="info-box">

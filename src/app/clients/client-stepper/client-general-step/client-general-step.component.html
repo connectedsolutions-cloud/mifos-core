@@ -165,6 +165,15 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Gestor' | translate }}</mat-label>
+      <mat-select formControlName="gestorId">
+        <mat-option *ngFor="let gestor of gestorOptions" [value]="gestor.id">
+          {{ gestor.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-checkbox
       *ngIf="createClientForm.value.legalFormId === 1"
       class="flex-48 margin-v"
@@ -226,7 +235,7 @@
 
     <br />
 
-    <mat-checkbox labelPosition="before" formControlName="active" class="margin-v flex-48">
+    <mat-checkbox *ngIf="canActivateOnCreate" labelPosition="before" formControlName="active" class="margin-v flex-48">
       {{ 'labels.inputs.Active' | translate }}?
     </mat-checkbox>
 

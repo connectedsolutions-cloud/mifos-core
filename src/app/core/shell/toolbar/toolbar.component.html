@@ -55,6 +55,10 @@
 
   <span class="toolbar-spacer"></span>
 
+  <div *ngIf="currentOfficeName" class="white-text-office-name" style="margin-right: 16px">
+    {{ currentOfficeName }}
+  </div>
+
   <div #globalSearch class="white-text-search">
     <mifosx-search-tool tabindex="0"></mifosx-search-tool>
   </div>

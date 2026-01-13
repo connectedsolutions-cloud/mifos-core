@@ -58,13 +58,13 @@
           </div>
 
           <mat-form-field class="flex-48">
-            <mat-label>{{ 'labels.inputs.Office' | translate }}</mat-label>
-            <mat-select required formControlName="officeId" (selectionChange)="officeChanged($event.value)">
+            <mat-label>{{ 'labels.inputs.Offices' | translate }}</mat-label>
+            <mat-select required formControlName="officeIds" multiple>
               <mat-option *ngFor="let office of officesData" [value]="office.id">
                 {{ office.name }}
               </mat-option>
             </mat-select>
-            <mat-error *ngIf="editUserForm.controls.officeId.hasError('required')">
+            <mat-error *ngIf="editUserForm.controls.officeIds.hasError('required')">
               {{ 'labels.inputs.Office' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
@@ -78,6 +78,29 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+
+          <!-- Staff Offices Information -->
+          <div
+            class="flex-48"
+            *ngIf="selectedStaffDetails && selectedStaffDetails.offices && selectedStaffDetails.offices.length > 0"
+          >
+            <div class="staff-offices-info">
+              <mat-label class="staff-offices-label"> {{ 'labels.inputs.Staff Offices' | translate }}: </mat-label>
+              <div class="staff-offices-list">
+                <span
+                  *ngFor="let office of selectedStaffDetails.offices; let last = last"
+                  class="staff-office-badge"
+                  [class.mismatch]="!hasOfficeOverlap()"
+                >
+                  {{ office.name }}<span *ngIf="!last">, </span>
+                </span>
+              </div>
+              <div class="office-mismatch-warning" *ngIf="!hasOfficeOverlap()">
+                <mat-icon class="warning-icon">warning</mat-icon>
+                <span>{{ 'labels.commons.No office overlap between user and staff' | translate }}</span>
+              </div>
+            </div>
+          </div>
 
           <mat-form-field class="flex-48">
             <mat-label>{{ 'labels.inputs.Roles' | translate }}</mat-label>

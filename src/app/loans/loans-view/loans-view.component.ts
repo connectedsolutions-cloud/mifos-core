@@ -2,6 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { Dates } from 'app/core/utils/dates';
+import { SettingsService } from 'app/settings/settings.service';
 
 /** Custom Services */
 import { LoansService } from '../loans.service';
@@ -41,6 +44,7 @@ import { LoanProducts } from 'app/products/loan-products/loan-products';
   styleUrls: ['./loans-view.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
+    FormsModule,
     MatCardHeader,
     MatCardTitleGroup,
     SvgIconComponent,
@@ -94,12 +98,19 @@ export class LoansViewComponent implements OnInit {
   loanReAged = false;
   loanReAmortized = false;
 
+  /** Simulation properties */
+  simulatedDate: Date | null = null;
+  minSimulatedDate: Date = new Date(2000, 0, 1);
+  maxSimulatedDate: Date = new Date();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public loansService: LoansService,
     private translateService: TranslateService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private dateUtils: Dates,
+    private settingsService: SettingsService
   ) {
     this.route.data.subscribe(
       (data: { loanDetailsData: any; loanDatatables: any; loanArrearsDelinquencyConfig: any }) => {
@@ -122,6 +133,10 @@ export class LoansViewComponent implements OnInit {
           });
         }
         this.setConditionalButtons();
+        // Initialize simulation date if loan is in simulation mode
+        if (this.loanDetailsData.isSimulation && this.loanDetailsData.simulatedDate) {
+          this.simulatedDate = new Date(this.loanDetailsData.simulatedDate);
+        }
       }
     );
     this.loanId = this.route.snapshot.params['loanId'];
@@ -453,6 +468,94 @@ export class LoansViewComponent implements OnInit {
       if (response.delete) {
         this.loansService.deleteLoanAccount(this.loanId).subscribe(() => {
           this.router.navigate(['../../'], { relativeTo: this.route });
+        });
+      }
+    });
+  }
+
+  /**
+   * Handles simulation toggle
+   */
+  onSimulationToggle() {
+    const isSimulation = this.loanDetailsData.isSimulation;
+    const simulatedDate =
+      isSimulation && this.simulatedDate
+        ? this.dateUtils.formatDate(this.simulatedDate, this.settingsService.dateFormat)
+        : null;
+    const locale = this.settingsService.language.code;
+    const dateFormat = this.settingsService.dateFormat;
+
+    this.loansService
+      .updateLoanSimulation(this.loanId, {
+        isSimulation: isSimulation,
+        simulatedDate: simulatedDate,
+        dateFormat: dateFormat,
+        locale: locale
+      })
+      .subscribe((response: any) => {
+        this.loanDetailsData.isSimulation = response.changes.isSimulation;
+        if (response.changes.simulatedDate) {
+          this.simulatedDate = new Date(response.changes.simulatedDate);
+          this.loanDetailsData.simulatedDate = response.changes.simulatedDate;
+        } else if (!isSimulation) {
+          this.simulatedDate = null;
+          this.loanDetailsData.simulatedDate = null;
+        }
+        this.reload();
+      });
+  }
+
+  /**
+   * Handles simulated date change
+   */
+  onSimulatedDateChange() {
+    if (this.simulatedDate) {
+      const formattedDate = this.dateUtils.formatDate(this.simulatedDate, this.settingsService.dateFormat);
+      const locale = this.settingsService.language.code;
+      const dateFormat = this.settingsService.dateFormat;
+      this.loansService
+        .updateLoanSimulation(this.loanId, {
+          isSimulation: true,
+          simulatedDate: formattedDate,
+          dateFormat: dateFormat,
+          locale: locale
+        })
+        .subscribe((response: any) => {
+          if (response.changes.simulatedDate) {
+            this.simulatedDate = new Date(response.changes.simulatedDate);
+            this.loanDetailsData.simulatedDate = response.changes.simulatedDate;
+          }
+        });
+    }
+  }
+
+  /**
+   * Runs simulation COB
+   */
+  runSimulationCOB() {
+    if (!this.simulatedDate) {
+      return;
+    }
+    this.loansService.runSimulationCOB(this.loanId).subscribe(() => {
+      this.reload();
+    });
+  }
+
+  /**
+   * Cleans up simulation
+   */
+  cleanupSimulation() {
+    const cleanupDialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        heading: 'Cleanup Simulation',
+        message:
+          'Are you sure you want to cleanup the simulation? This will reverse all simulation transactions and reset the loan state.'
+      }
+    });
+    cleanupDialogRef.afterClosed().subscribe((response: any) => {
+      if (response.confirm) {
+        this.loansService.cleanupSimulation(this.loanId).subscribe(() => {
+          this.reload();
         });
       }
     });

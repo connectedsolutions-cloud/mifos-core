@@ -1,8 +1,67 @@
-.loans-overview {
-  font-size: 14px;
-}
-
+// Override table text colors
 .account-overview {
+  color: #505050 !important;
   min-width: 80%;
   font-weight: 400;
+
+  td,
+  b,
+  span {
+    color: #505050 !important;
+  }
+}
+
+.account-card {
+  .header {
+    // Override global theme: set custom background color for loan view header only
+    background-color: #dbe9f2 !important;
+
+    // Override text colors in header for better contrast with light background
+    .header-title-group {
+      // Target text elements specifically, excluding interactive elements
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      span,
+      td,
+      th,
+      div,
+      mifosx-entity-name,
+      mifosx-account-number,
+      mifosx-external-identifier {
+        color: #505050 !important;
+      }
+
+      .account-card-title {
+        color: #505050 !important;
+        width: 90%;
+      }
+
+      // Ensure mat-card-subtitle text is also #505050
+      mat-card-subtitle {
+        color: #505050 !important;
+      }
+    }
+
+    // Override signature button if present
+    .profile-image-container {
+      .signature {
+        background-color: #dbe9f2 !important;
+        color: #505050;
+
+        &:hover {
+          background-color: #c8dde8 !important;
+        }
+      }
+    }
+  }
+}
+
+.loans-overview {
+  font-size: 14px;
+  color: #505050 !important;
 }

@@ -12,6 +12,7 @@ import { Dates } from 'app/core/utils/dates';
 
 /** Custom Services */
 import { SettingsService } from 'app/settings/settings.service';
+import { AuthenticationService } from 'app/core/authentication/authentication.service';
 import { MatDivider } from '@angular/material/divider';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -53,6 +54,8 @@ export class ClientGeneralStepComponent implements OnInit {
   officeOptions: any;
   /** Staff Options */
   staffOptions: any;
+  /** Gestor Options */
+  gestorOptions: any;
   /** Legal Form Options */
   legalFormOptions: any;
   /** Client Type Options */
@@ -67,20 +70,35 @@ export class ClientGeneralStepComponent implements OnInit {
   genderOptions: any;
   /** Saving Product Options */
   savingProductOptions: any;
+  /** Whether user has permission to activate clients on create */
+  canActivateOnCreate = false;
 
   /**
    * @param {FormBuilder} formBuilder Form Builder
    * @param {Dates} dateUtils Date Utils
    * @param {SettingsService} settingsService Setting service
    * @param {ClientsService} clientService Client service
+   * @param {AuthenticationService} authenticationService Authentication service
    */
   constructor(
     private formBuilder: UntypedFormBuilder,
     private dateUtils: Dates,
     private settingsService: SettingsService,
-    private clientService: ClientsService
+    private clientService: ClientsService,
+    private authenticationService: AuthenticationService
   ) {
     this.setClientForm();
+    this.checkPermission();
+  }
+
+  /**
+   * Checks if user has permission to activate clients on create
+   */
+  checkPermission() {
+    const credentials = this.authenticationService.getCredentials();
+    if (credentials?.permissions) {
+      this.canActivateOnCreate = credentials.permissions.includes('ACTIVATE_CLIENT_ON_CREATE');
+    }
   }
 
   ngOnInit() {
@@ -99,6 +117,7 @@ export class ClientGeneralStepComponent implements OnInit {
         Validators.required
       ],
       staffId: [''],
+      gestorId: [''],
       legalFormId: [
         '',
         Validators.required
@@ -130,6 +149,7 @@ export class ClientGeneralStepComponent implements OnInit {
   setOptions() {
     this.officeOptions = this.clientTemplate.officeOptions;
     this.staffOptions = this.clientTemplate.staffOptions;
+    this.gestorOptions = this.clientTemplate.staffOptions;
     this.legalFormOptions = this.clientTemplate.clientLegalFormOptions;
     this.clientTypeOptions = this.clientTemplate.clientTypeOptions;
     this.clientClassificationTypeOptions = this.clientTemplate.clientClassificationOptions;
@@ -204,6 +224,7 @@ export class ClientGeneralStepComponent implements OnInit {
     this.createClientForm.get('officeId').valueChanges.subscribe((officeId: number) => {
       this.clientService.getClientWithOfficeTemplate(officeId).subscribe((clientTemplate: any) => {
         this.staffOptions = clientTemplate.staffOptions;
+        this.gestorOptions = clientTemplate.staffOptions;
       });
     });
   }

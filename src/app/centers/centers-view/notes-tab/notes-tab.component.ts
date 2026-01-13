@@ -18,7 +18,7 @@ import { DateFormatPipe } from '../../../pipes/date-format.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
-  selector: 'mifosx-notes-tab',
+  selector: 'mifosx-center-notes-tab',
   templateUrl: './notes-tab.component.html',
   styleUrls: ['./notes-tab.component.scss'],
   imports: [

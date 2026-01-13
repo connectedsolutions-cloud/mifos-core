@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientAssignStaffComponent } from './client-assign-staff/client-assign-staff.component';
+import { ClientAssignGestorComponent } from './client-assign-gestor/client-assign-gestor.component';
 import { CloseClientComponent } from './close-client/close-client.component';
 import { ViewSurveyComponent } from './view-survey/view-survey.component';
 import { RejectClientComponent } from './reject-client/reject-client.component';
@@ -30,6 +31,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     ClientAssignStaffComponent,
+    ClientAssignGestorComponent,
     CloseClientComponent,
     ViewSurveyComponent,
     RejectClientComponent,
@@ -52,6 +54,7 @@ export class ClientActionsComponent {
   /** Flag object to store possible actions and render appropriate UI to the user */
   actions: {
     'Assign Staff': boolean;
+    'Assign Gestor': boolean;
     Close: boolean;
     Reject: boolean;
     Survey: boolean;
@@ -70,6 +73,7 @@ export class ClientActionsComponent {
     'Create Collateral': boolean;
   } = {
     'Assign Staff': false,
+    'Assign Gestor': false,
     Close: false,
     Reject: false,
     Survey: false,

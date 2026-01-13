@@ -21,7 +21,7 @@
             <mat-label>{{ 'labels.inputs.Legal Form' | translate }}</mat-label>
             <mat-select formControlName="legalFormId">
               <mat-option *ngFor="let legalForm of legalFormOptions" [value]="legalForm.id">
-                {{ legalForm.value }}
+                {{ legalForm.value | translateKey: 'inputs' }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -155,13 +155,22 @@
           </mat-form-field>
         </div>
 
-        <!-- Staff and Is Staff Row -->
+        <!-- Staff, Gestor and Is Staff Row -->
         <div class="responsive-row align-center">
           <mat-form-field class="flex-48">
             <mat-label>{{ 'labels.inputs.Staff' | translate }}</mat-label>
             <mat-select formControlName="staffId">
               <mat-option *ngFor="let staff of staffOptions" [value]="staff.id">
                 {{ staff.displayName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="flex-48">
+            <mat-label>{{ 'labels.inputs.Gestor' | translate }}</mat-label>
+            <mat-select formControlName="gestorId">
+              <mat-option *ngFor="let gestor of gestorOptions" [value]="gestor.id">
+                {{ gestor.displayName }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -174,6 +183,15 @@
           >
             {{ 'labels.inputs.Is staff' | translate }}?
           </mat-checkbox>
+
+          <mat-form-field class="flex-48">
+            <mat-label>{{ 'labels.inputs.Tags' | translate }}</mat-label>
+            <mat-select formControlName="tagIds" multiple>
+              <mat-option *ngFor="let tag of tagOptions" [value]="tag.id">
+                {{ tag.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div

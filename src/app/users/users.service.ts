@@ -36,6 +36,11 @@ export class UsersService {
    * @returns {Observable<any>}
    */
   createUser(user: any): Observable<any> {
+    // Convert officeId to officeIds array if needed for backward compatibility
+    if (user.officeId && !user.officeIds) {
+      user.officeIds = [user.officeId];
+      delete user.officeId;
+    }
     return this.http.post('/users', user);
   }
 
@@ -45,7 +50,22 @@ export class UsersService {
    * @returns {Observable<any>} User.
    */
   editUser(userId: string, user: any): Observable<any> {
+    // Convert officeId to officeIds array if needed for backward compatibility
+    if (user.officeId && !user.officeIds) {
+      user.officeIds = [user.officeId];
+      delete user.officeId;
+    }
     return this.http.put(`/users/${userId}`, user);
+  }
+
+  /**
+   * Switch user's current office context
+   * @param {string} userId user ID of user.
+   * @param {number} officeId office ID to switch to.
+   * @returns {Observable<any>}
+   */
+  switchOffice(userId: string, officeId: number): Observable<any> {
+    return this.http.post(`/users/${userId}/switchOffice`, { officeId });
   }
 
   /**
@@ -81,5 +101,14 @@ export class UsersService {
   getStaff(officeId: any): Observable<any> {
     const httpParams = new HttpParams().set('officeId', officeId.toString()).set('status', 'all');
     return this.http.get('/staff', { params: httpParams });
+  }
+
+  /**
+   * @param {string} staffId ID of staff to retrieve details for.
+   * @returns {Observable<any>} Staff details including offices.
+   */
+  getStaffDetails(staffId: string): Observable<any> {
+    const httpParams = new HttpParams().set('template', 'true');
+    return this.http.get(`/staff/${staffId}`, { params: httpParams });
   }
 }

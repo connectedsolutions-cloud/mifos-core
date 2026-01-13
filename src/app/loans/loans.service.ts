@@ -492,6 +492,37 @@ export class LoansService {
     return this.http.put(`/loans/${loanId}`, loanData);
   }
 
+  /**
+   * Updates loan simulation fields
+   * @param {any} loanId Loan Id
+   * @param {any} data Simulation data (isSimulation, simulatedDate)
+   * @returns {Observable<any>}
+   */
+  updateLoanSimulation(loanId: any, data: any): Observable<any> {
+    const httpParams = new HttpParams().set('command', 'updateSimulation');
+    return this.http.put(`/loans/${loanId}`, data, { params: httpParams });
+  }
+
+  /**
+   * Runs simulation COB for a loan
+   * @param loanId Loan Id
+   */
+  runSimulationCOB(loanId: any): Observable<any> {
+    const payload = {
+      loanIds: [loanId]
+    };
+    return this.http.post('/jobs/LOAN_COB/inline', payload);
+  }
+
+  /**
+   * Cleans up simulation for a loan
+   * @param loanId Loan Id
+   */
+  cleanupSimulation(loanId: any): Observable<any> {
+    const httpParams = new HttpParams().set('command', 'cleanupSimulation');
+    return this.http.post(`/loans/${loanId}`, {}, { params: httpParams });
+  }
+
   getTemplateData(templateId: any, loanId: any): Observable<any> {
     const httpParams = new HttpParams().set('loanId', loanId);
     return this.http.post(`/templates/${templateId}`, {}, { params: httpParams, responseType: 'text' });

@@ -20,6 +20,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
 import { ChangePasswordDialogComponent } from 'app/shared/change-password-dialog/change-password-dialog.component';
 import { SettingsService } from 'app/settings/settings.service';
+import { UsersService } from 'app/users/users.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
@@ -48,6 +49,10 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 export class ProfileComponent implements OnInit {
   /** Profile Data */
   profileData: any;
+  /** User Data with offices */
+  userData: any;
+  /** Available offices for the user */
+  availableOffices: any[] = [];
   /** Language, TODO: Update when df, locale settings are setup */
   language = 'English';
 
@@ -61,12 +66,14 @@ export class ProfileComponent implements OnInit {
 
   /**
    * @param {AuthenticationService} authenticationService Authentication Service
-   * @param {UserService} userService Users Service
+   * @param {UsersService} usersService Users Service
+   * @param {SettingsService} settingsService Settings Service
    * @param {Router} router Router
    * @param {MatDialog} dialog Mat Dialog
    */
   constructor(
     private authenticationService: AuthenticationService,
+    private usersService: UsersService,
     private settingsService: SettingsService,
     private router: Router,
     public dialog: MatDialog
@@ -76,6 +83,53 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource(this.profileData.roles);
+    // Fetch full user data to get offices array
+    this.usersService.getUser(this.profileData.userId.toString()).subscribe((user: any) => {
+      this.userData = user;
+      // Get available offices - use offices array if available, otherwise use single officeId
+      if (user.offices && user.offices.length > 0) {
+        this.availableOffices = user.offices.map((officeId: number) => {
+          // Find office name from allowedOffices if available
+          const office = user.allowedOffices?.find((o: any) => o.id === officeId);
+          return {
+            id: officeId,
+            name: office ? office.name : `Office ${officeId}`
+          };
+        });
+        // Set current office ID from user data
+        if (user.currentOfficeId) {
+          this.profileData.officeId = user.currentOfficeId;
+          const currentOffice = this.availableOffices.find((o: any) => o.id === user.currentOfficeId);
+          if (currentOffice) {
+            this.profileData.officeName = currentOffice.name;
+          }
+        }
+      } else if (user.officeId) {
+        this.availableOffices = [
+          {
+            id: user.officeId,
+            name: user.officeName
+          }
+        ];
+      }
+    });
+  }
+
+  /**
+   * Switch current office context
+   */
+  switchOffice(officeId: number) {
+    this.usersService.switchOffice(this.profileData.userId.toString(), officeId).subscribe(() => {
+      // Refresh user data and credentials
+      this.usersService.getUser(this.profileData.userId.toString()).subscribe((user: any) => {
+        this.userData = user;
+        // Update profileData with new office info
+        this.profileData.officeId = user.currentOfficeId || user.officeId;
+        this.profileData.officeName = user.officeName;
+        // Reload page to refresh all data with new office context
+        window.location.reload();
+      });
+    });
   }
 
   /**

@@ -84,8 +84,8 @@ export class CreateEmployeeComponent implements OnInit, AfterViewInit {
    */
   createEmployeeForm() {
     this.employeeForm = this.formBuilder.group({
-      officeId: [
-        '',
+      officeIds: [
+        [],
         Validators.required
       ],
       firstname: [
@@ -121,11 +121,27 @@ export class CreateEmployeeComponent implements OnInit, AfterViewInit {
     if (employeeFormData.joiningDate instanceof Date) {
       employeeFormData.joiningDate = this.dateUtils.formatDate(prevJoiningDate, dateFormat);
     }
-    const data = {
-      ...employeeFormData,
+
+    // Handle officeIds array - send as officeIds array
+    const officeIds = employeeFormData.officeIds;
+    const data: any = {
+      firstname: employeeFormData.firstname,
+      lastname: employeeFormData.lastname,
+      isLoanOfficer: employeeFormData.isLoanOfficer,
+      mobileNo: employeeFormData.mobileNo,
+      joiningDate: employeeFormData.joiningDate,
       dateFormat,
       locale
     };
+
+    // Send officeIds array if available, otherwise send officeId for backward compatibility
+    if (officeIds && Array.isArray(officeIds) && officeIds.length > 0) {
+      data.officeIds = officeIds;
+    } else if (officeIds && !Array.isArray(officeIds)) {
+      // Handle single officeId value (should not happen with new form, but for safety)
+      data.officeId = officeIds;
+    }
+
     this.organizationService.createEmployee(data).subscribe((response: any) => {
       if (this.configurationWizardService.showEmployeeForm === true) {
         this.configurationWizardService.showEmployeeForm = false;

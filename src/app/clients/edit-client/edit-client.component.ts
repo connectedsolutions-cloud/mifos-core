@@ -47,6 +47,8 @@ export class EditClientComponent implements OnInit {
   officeOptions: any;
   /** Staff Options */
   staffOptions: any;
+  /** Gestor Options */
+  gestorOptions: any;
   /** Legal Form Options */
   legalFormOptions: any;
   /** Client Type Options */
@@ -59,6 +61,8 @@ export class EditClientComponent implements OnInit {
   constitutionOptions: any;
   /** Gender Options */
   genderOptions: any;
+  /** Tag Options */
+  tagOptions: any;
   legalFormId = 1;
 
   /**
@@ -89,9 +93,45 @@ export class EditClientComponent implements OnInit {
     this.setOptions();
     this.buildDependencies();
     this.legalFormId = 1;
+
+    // Debug: Check tags data
+    console.log('Full clientDataAndTemplate object:', this.clientDataAndTemplate);
+    console.log('All client tags:', this.clientDataAndTemplate.tags);
+    console.log('Tags type:', typeof this.clientDataAndTemplate.tags);
+    console.log('Tags is Array?', Array.isArray(this.clientDataAndTemplate.tags));
+    console.log('Tags length/size:', this.clientDataAndTemplate.tags?.length || this.clientDataAndTemplate.tags?.size);
+
+    // Check if tags is a Set and convert to array if needed
+    let tagsArray: any[] = [];
+    if (this.clientDataAndTemplate.tags) {
+      if (Array.isArray(this.clientDataAndTemplate.tags)) {
+        tagsArray = this.clientDataAndTemplate.tags;
+      } else if (this.clientDataAndTemplate.tags instanceof Set) {
+        tagsArray = Array.from(this.clientDataAndTemplate.tags);
+      } else {
+        // Try to convert to array
+        tagsArray = Object.values(this.clientDataAndTemplate.tags);
+      }
+      console.log('Tags array after conversion:', tagsArray);
+    }
+
+    console.log('Tag options:', this.tagOptions);
+    const filteredTags = tagsArray.filter((tag: any) => {
+      console.log('Checking tag:', tag, 'tagGroup:', tag.tagGroup, 'matches?', tag.tagGroup === 'tipo_cliente');
+      return tag.tagGroup === 'tipo_cliente';
+    });
+    console.log('Filtered tags (tipo_cliente):', filteredTags);
+    const tagIds = filteredTags.map((tag: any) => {
+      const id = typeof tag.id === 'string' ? Number(tag.id) : tag.id;
+      console.log(`Tag ID: ${tag.id} (type: ${typeof tag.id}), converted to: ${id} (type: ${typeof id})`);
+      return id;
+    });
+    console.log('Final tagIds array:', tagIds);
+
     this.editClientForm.patchValue({
       officeId: this.clientDataAndTemplate.officeId,
       staffId: this.clientDataAndTemplate.staffId,
+      gestorId: this.clientDataAndTemplate.gestorId,
       legalFormId: this.clientDataAndTemplate.legalForm && this.clientDataAndTemplate.legalForm.id,
       accountNo: this.clientDataAndTemplate.accountNo,
       externalId: this.clientDataAndTemplate.externalId,
@@ -109,7 +149,8 @@ export class EditClientComponent implements OnInit {
         new Date(this.clientDataAndTemplate.timeline.submittedOnDate),
       activationDate:
         this.clientDataAndTemplate.timeline.activatedOnDate &&
-        new Date(this.clientDataAndTemplate.timeline.activatedOnDate)
+        new Date(this.clientDataAndTemplate.timeline.activatedOnDate),
+      tagIds: tagIds
     });
     if (this.clientDataAndTemplate.legalForm) {
       this.legalFormId = this.clientDataAndTemplate.legalForm.id;
@@ -123,6 +164,7 @@ export class EditClientComponent implements OnInit {
     this.editClientForm = this.formBuilder.group({
       officeId: [{ value: '', disabled: true }],
       staffId: [''],
+      gestorId: [''],
       legalFormId: [{ value: '', disabled: true }],
       isStaff: [false],
       active: [false],
@@ -141,7 +183,8 @@ export class EditClientComponent implements OnInit {
         '',
         Validators.required
       ],
-      activationDate: ['']
+      activationDate: [''],
+      tagIds: []
     });
   }
 
@@ -151,12 +194,14 @@ export class EditClientComponent implements OnInit {
   setOptions() {
     this.officeOptions = this.clientDataAndTemplate.officeOptions;
     this.staffOptions = this.clientDataAndTemplate.staffOptions;
+    this.gestorOptions = this.clientDataAndTemplate.staffOptions;
     this.legalFormOptions = this.clientDataAndTemplate.clientLegalFormOptions;
     this.clientTypeOptions = this.clientDataAndTemplate.clientTypeOptions;
     this.clientClassificationTypeOptions = this.clientDataAndTemplate.clientClassificationOptions;
     this.businessLineOptions = this.clientDataAndTemplate.clientNonPersonMainBusinessLineOptions;
     this.constitutionOptions = this.clientDataAndTemplate.clientNonPersonConstitutionOptions;
     this.genderOptions = this.clientDataAndTemplate.genderOptions;
+    this.tagOptions = this.clientDataAndTemplate.tagOptions || [];
   }
 
   /**

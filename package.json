@@ -128,9 +128,11 @@
     "npm": ">= 8.11.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --cache",
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --cache --max-warnings=0 --no-warn-ignored"
+    ],
     "*.{css,scss}": "stylelint",
-    "*": "prettier --check --ignore-unknown"
+    "*.{html,ts,tsx,js,jsx,json,scss,css,md}": "prettier --write --ignore-unknown"
   },
   "overrides": {
     "exceljs": {

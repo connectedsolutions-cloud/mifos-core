@@ -66,9 +66,9 @@
         padding: 0.5rem 0;
         color: var(--text-color, inherit);
 
+        // Default: inline display for spans (for comma-separated lists)
         span {
-          display: block;
-          padding: 0.25rem 0;
+          display: inline;
         }
       }
     }

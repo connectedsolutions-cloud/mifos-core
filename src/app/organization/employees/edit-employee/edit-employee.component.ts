@@ -69,9 +69,17 @@ export class EditEmployeeComponent implements OnInit {
    * Creates the employee form.
    */
   createEditEmployeeForm() {
+    // Handle multiple offices: use officeIds array if available, else fallback to single officeId
+    const officeIds =
+      this.employeeData.officeIds && this.employeeData.officeIds.length > 0
+        ? this.employeeData.officeIds
+        : this.employeeData.officeId
+          ? [this.employeeData.officeId]
+          : [];
+
     this.editEmployeeForm = this.formBuilder.group({
-      officeId: [
-        this.employeeData.officeId,
+      officeIds: [
+        officeIds,
         Validators.required
       ],
       firstname: [
@@ -108,11 +116,28 @@ export class EditEmployeeComponent implements OnInit {
     if (editEmployeeFormData.joiningDate instanceof Date) {
       editEmployeeFormData.joiningDate = this.dateUtils.formatDate(prevJoiningDate, dateFormat);
     }
-    const data = {
-      ...editEmployeeFormData,
+
+    // Handle officeIds array - send as officeIds array
+    const officeIds = editEmployeeFormData.officeIds;
+    const data: any = {
+      firstname: editEmployeeFormData.firstname,
+      lastname: editEmployeeFormData.lastname,
+      isLoanOfficer: editEmployeeFormData.isLoanOfficer,
+      mobileNo: editEmployeeFormData.mobileNo,
+      isActive: editEmployeeFormData.isActive,
+      joiningDate: editEmployeeFormData.joiningDate,
       dateFormat,
       locale
     };
+
+    // Send officeIds array if available
+    if (officeIds && Array.isArray(officeIds) && officeIds.length > 0) {
+      data.officeIds = officeIds;
+    } else if (officeIds && !Array.isArray(officeIds)) {
+      // Handle single officeId value (should not happen with new form, but for safety)
+      data.officeId = officeIds;
+    }
+
     this.organizationService.updateEmployee(this.employeeData.id, data).subscribe((response: any) => {
       this.router.navigate(
         [

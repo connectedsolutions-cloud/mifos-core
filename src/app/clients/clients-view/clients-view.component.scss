@@ -1,5 +1,27 @@
+.account-overview {
+  color: #505050 !important;
+  min-width: 85%;
+  margin-left: 10px;
+
+  td {
+    color: #505050 !important;
+  }
+
+  b {
+    color: #505050 !important;
+  }
+
+  span {
+    color: #505050 !important;
+  }
+}
+
 .account-card {
   .header {
+    // Override global theme: set custom background color for client view header only
+    background-color: #dbe9f2 !important;
+    padding: 1%;
+
     .profile-image-container {
       .client-image-button {
         min-width: 26px;
@@ -9,23 +31,50 @@
       }
 
       .signature {
-        color: white;
+        color: #505050;
+        background-color: #dbe9f2 !important;
         text-align: center;
         margin: 0;
         padding: 2%;
 
         &:hover {
           cursor: pointer;
+          background-color: #c8dde8 !important;
         }
       }
     }
-  }
-}
 
-.account-overview {
-  color: white;
-  min-width: 85%;
-  margin-left: 10px;
+    // Override text colors in header for better contrast with light background
+    .header-title-group {
+      // Target text elements specifically, excluding interactive elements
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      span,
+      td,
+      th,
+      div,
+      mifosx-entity-name,
+      mifosx-account-number,
+      mifosx-external-identifier {
+        color: #505050 !important;
+      }
+
+      .account-card-title {
+        color: #505050 !important;
+        width: 90%;
+      }
+
+      // Ensure mat-card-subtitle text is also #505050
+      mat-card-subtitle {
+        color: #505050 !important;
+      }
+    }
+  }
 }
 
 .make-flex {

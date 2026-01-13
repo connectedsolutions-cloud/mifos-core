@@ -72,6 +72,35 @@ export class OrganizationService {
   }
 
   /**
+   * @returns {Observable<any>} Provisioning categories data
+   * @param {boolean} forceRefresh If true, adds cache-busting parameter
+   */
+  getProvisioningCategories(forceRefresh: boolean = false): Observable<any> {
+    let httpParams = new HttpParams();
+    if (forceRefresh) {
+      // Add timestamp to bypass cache
+      httpParams = httpParams.set('_t', Date.now().toString());
+    }
+    return this.http.get('/provisioningcategory', { params: httpParams });
+  }
+
+  /**
+   * @param {any} categoryData Provisioning category to be created.
+   * @returns {Observable<any>}
+   */
+  createProvisioningCategory(categoryData: any): Observable<any> {
+    return this.http.post('/provisioningcategory', categoryData);
+  }
+
+  /**
+   * @param {string} categoryId Category ID of provisioning category to be deleted.
+   * @returns {Observable<any>}
+   */
+  deleteProvisioningCategory(categoryId: string): Observable<any> {
+    return this.http.delete(`/provisioningcategory/${categoryId}`);
+  }
+
+  /**
    * @returns {Observable<any>} Offices data
    */
   getOffices(): Observable<any> {

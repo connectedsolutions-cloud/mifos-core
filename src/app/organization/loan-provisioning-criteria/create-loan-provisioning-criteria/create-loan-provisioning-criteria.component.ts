@@ -32,6 +32,11 @@ import { MatFormField, MatLabel, MatError, MatHint } from '@angular/material/for
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FindPipe } from '../../../pipes/find.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard } from '@angular/material/card';
+import { MatList, MatListItem } from '@angular/material/list';
+import { MatDivider } from '@angular/material/divider';
 
 /**
  * Create Loan Provisioning Criteria Component.
@@ -54,7 +59,13 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatHeaderRow,
     MatRowDef,
     MatRow,
-    FindPipe
+    FindPipe,
+    MatButton,
+    MatIcon,
+    MatCard,
+    MatList,
+    MatListItem,
+    MatDivider
   ]
 })
 export class CreateLoanProvisioningCriteriaComponent implements OnInit {
@@ -66,6 +77,12 @@ export class CreateLoanProvisioningCriteriaComponent implements OnInit {
   liabilityAccounts: any;
   /** Expense Accounts */
   expenseAccounts: any;
+  /** All Available Categories */
+  categories: any[] = [];
+  /** Category Order Array */
+  categoryOrder: number[] = [];
+  /** Ordered Categories for display */
+  orderedCategories: any[] = [];
 
   /** Columns to be displayed in definitions table. */
   displayedColumns: string[] = [
@@ -115,11 +132,239 @@ export class CreateLoanProvisioningCriteriaComponent implements OnInit {
       this.expenseAccounts = this.loanProvisioningCriteriaTemplate.glAccounts.filter(
         (account: any) => account.type.value === 'EXPENSE'
       );
+      this.loadCategories();
     });
   }
 
   ngOnInit() {
     this.createProvisioningCriteriaForm();
+  }
+
+  /**
+   * Loads all provisioning categories
+   * @param {boolean} forceRefresh If true, bypasses cache by adding timestamp parameter
+   */
+  loadCategories(forceRefresh: boolean = false) {
+    this.organizationService.getProvisioningCategories(forceRefresh).subscribe((categories: any) => {
+      this.categories = categories || [];
+      // Initialize category order based on current order
+      this.categoryOrder = this.categories.map((cat: any) => cat.id);
+      // Update ordered categories
+      this.updateOrderedCategories();
+      // Ensure definitions are ordered according to category order
+      this.reorderDefinitions();
+    });
+  }
+
+  /**
+   * Updates the ordered categories array for display
+   */
+  updateOrderedCategories() {
+    const ordered: any[] = [];
+    this.categoryOrder.forEach((categoryId: number) => {
+      const category = this.categories.find((cat: any) => cat.id === categoryId);
+      if (category) {
+        ordered.push(category);
+      }
+    });
+    // Add any categories not in order array
+    this.categories.forEach((category: any) => {
+      if (!this.categoryOrder.includes(category.id)) {
+        ordered.push(category);
+      }
+    });
+    this.orderedCategories = ordered;
+  }
+
+  /**
+   * Add new category
+   */
+  addCategory() {
+    const data = {
+      title: 'Add Provisioning Category',
+      formfields: this.getCategoryFormFields(null),
+      layout: { addButtonText: 'Confirm' }
+    };
+    const addCategoryDialogRef = this.dialog.open(FormDialogComponent, { data });
+    addCategoryDialogRef.afterClosed().subscribe((response: any) => {
+      if (response.data) {
+        // Only send categoryname and categorydescription - these are the only supported parameters
+        const categoryData = {
+          categoryname: response.data.value.categoryname,
+          categorydescription: response.data.value.categorydescription || ''
+        };
+        this.organizationService.createProvisioningCategory(categoryData).subscribe(
+          (result: any) => {
+            this.loadCategories(true); // Force refresh categories after creation (clears cache)
+          },
+          (error: any) => {
+            // Handle error - show backend error message
+            const errorMessage =
+              error.error?.errors?.[0]?.defaultUserMessage ||
+              error.error?.defaultUserMessage ||
+              'Error creating category';
+            alert(errorMessage);
+          }
+        );
+      }
+    });
+  }
+
+  /**
+   * Gets formfields for category form dialog
+   * @param {any} category Category (null for new category)
+   */
+  getCategoryFormFields(category: any) {
+    const formfields: FormfieldBase[] = [];
+    formfields.push(
+      new InputBase({
+        controlName: 'categoryname',
+        label: 'Category Name',
+        value: category ? category.categoryName : '',
+        type: 'text',
+        required: true,
+        order: 1
+      })
+    );
+    formfields.push(
+      new InputBase({
+        controlName: 'categorydescription',
+        label: 'Description',
+        value: category ? category.categoryDescription : '',
+        type: 'text',
+        required: false,
+        order: 2
+      })
+    );
+    return formfields;
+  }
+
+  /**
+   * Delete category
+   * @param {any} category Category to delete
+   */
+  deleteCategory(category: any) {
+    // Check if category is used in current form definitions and is properly configured
+    const isUsedInDefinitions = this.definitions.some((def: any) => {
+      if (def.categoryId === category.id) {
+        // Only consider it "in use" if the definition has been properly configured
+        // (has all required fields: minAge, maxAge, percentage, liabilityAccount, expenseAccount)
+        const isConfigured =
+          def.minAge != null &&
+          def.maxAge != null &&
+          def.provisioningPercentage != null &&
+          def.liabilityAccount != null &&
+          def.expenseAccount != null;
+        return isConfigured;
+      }
+      return false;
+    });
+
+    if (isUsedInDefinitions) {
+      alert('Cannot delete category that is in use in this criteria');
+      return;
+    }
+
+    // Confirm deletion
+    if (confirm(`Are you sure you want to delete category "${category.categoryName}"?`)) {
+      this.organizationService.deleteProvisioningCategory(category.id.toString()).subscribe(
+        () => {
+          this.loadCategories(true); // Force refresh categories after deletion (clears cache)
+          // Remove from definitions if present (shouldn't happen due to check above)
+          this.definitions = this.definitions.filter((def: any) => def.categoryId !== category.id);
+        },
+        (error: any) => {
+          // Show backend error message
+          const errorMessage =
+            error.error?.errors?.[0]?.defaultUserMessage ||
+            error.error?.defaultUserMessage ||
+            'Error deleting category';
+          alert(errorMessage);
+        }
+      );
+    }
+  }
+
+  /**
+   * Move category up in order
+   * @param {number} index Current index in ordered list
+   */
+  moveCategoryUp(index: number) {
+    if (index > 0) {
+      const categoryId = this.orderedCategories[index].id;
+      const currentOrderIndex = this.categoryOrder.indexOf(categoryId);
+      if (currentOrderIndex > 0) {
+        const temp = this.categoryOrder[currentOrderIndex];
+        this.categoryOrder[currentOrderIndex] = this.categoryOrder[currentOrderIndex - 1];
+        this.categoryOrder[currentOrderIndex - 1] = temp;
+        this.updateOrderedCategories();
+        this.reorderDefinitions();
+      }
+    }
+  }
+
+  /**
+   * Move category down in order
+   * @param {number} index Current index in ordered list
+   */
+  moveCategoryDown(index: number) {
+    if (index < this.orderedCategories.length - 1) {
+      const categoryId = this.orderedCategories[index].id;
+      const currentOrderIndex = this.categoryOrder.indexOf(categoryId);
+      if (currentOrderIndex < this.categoryOrder.length - 1) {
+        const temp = this.categoryOrder[currentOrderIndex];
+        this.categoryOrder[currentOrderIndex] = this.categoryOrder[currentOrderIndex + 1];
+        this.categoryOrder[currentOrderIndex + 1] = temp;
+        this.updateOrderedCategories();
+        this.reorderDefinitions();
+      }
+    }
+  }
+
+  /**
+   * Reorder categories array based on categoryOrder
+   * @deprecated Use orderedCategories property instead
+   */
+  reorderCategories() {
+    const orderedCategories: any[] = [];
+    this.categoryOrder.forEach((categoryId: number) => {
+      const category = this.categories.find((cat: any) => cat.id === categoryId);
+      if (category) {
+        orderedCategories.push(category);
+      }
+    });
+    // Add any categories not in order array
+    this.categories.forEach((category: any) => {
+      if (!this.categoryOrder.includes(category.id)) {
+        orderedCategories.push(category);
+      }
+    });
+    return orderedCategories;
+  }
+
+  /**
+   * Reorder definitions based on category order
+   */
+  reorderDefinitions() {
+    // Sort definitions to match category order
+    this.definitions.sort((a: any, b: any) => {
+      const aIndex = this.orderedCategories.findIndex((cat: any) => cat.id === a.categoryId);
+      const bIndex = this.orderedCategories.findIndex((cat: any) => cat.id === b.categoryId);
+      if (aIndex === -1 && bIndex === -1) return 0;
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+    // Trigger change detection
+    this.definitions = [...this.definitions];
+  }
+
+  /**
+   * Get ordered categories for use in dropdowns
+   * @deprecated Use orderedCategories property instead
+   */
+  getOrderedCategories() {
+    return this.orderedCategories;
   }
 
   /**
@@ -205,9 +450,17 @@ export class CreateLoanProvisioningCriteriaComponent implements OnInit {
         controlName: 'liabilityAccount',
         label: 'Liability Account',
         value: definition ? definition.liabilityAccount : '',
-        options: { label: 'name', value: 'id', data: this.liabilityAccounts },
+        options: {
+          label: 'name',
+          value: 'id',
+          data: this.liabilityAccounts,
+          searchLabel: 'name',
+          searchCode: 'glCode',
+          displayFormat: '({{glCode}}) {{name}}'
+        },
         required: true,
-        order: 4
+        order: 4,
+        searchable: true
       })
     );
     formfields.push(
@@ -215,9 +468,17 @@ export class CreateLoanProvisioningCriteriaComponent implements OnInit {
         controlName: 'expenseAccount',
         label: 'Expense Account',
         value: definition ? definition.expenseAccount : '',
-        options: { label: 'name', value: 'id', data: this.expenseAccounts },
+        options: {
+          label: 'name',
+          value: 'id',
+          data: this.expenseAccounts,
+          searchLabel: 'name',
+          searchCode: 'glCode',
+          displayFormat: '({{glCode}}) {{name}}'
+        },
         required: true,
-        order: 5
+        order: 5,
+        searchable: true
       })
     );
     return formfields;

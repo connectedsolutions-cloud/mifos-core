@@ -2,6 +2,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   Input,
   EventEmitter,
   Output,
@@ -18,7 +19,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Router, RouterLink } from '@angular/router';
 
 /** rxjs Imports */
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 /** Custom Services */
@@ -68,7 +69,7 @@ import { AuthService } from 'app/zitadel/auth.service';
     MatMenuItem
   ]
 })
-export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChecked {
+export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChecked, OnDestroy {
   /* Reference of institution */
   @ViewChild('institution') institution: ElementRef<any>;
   /* Template for popover on institution */
@@ -92,6 +93,9 @@ export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChec
   /** Sidenav collapse event. */
   @Output() collapse = new EventEmitter<boolean>();
 
+  /** Subscription to user login events */
+  private userLoggedInSubscription: Subscription;
+
   /**
    * @param {BreakpointObserver} breakpointObserver Breakpoint observer to detect screen size.
    * @param {Router} router Router for navigation.
@@ -111,6 +115,9 @@ export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChec
     private authService: AuthService
   ) {}
 
+  /** Current office name */
+  currentOfficeName: string;
+
   /**
    * Subscribes to breakpoint for handset.
    */
@@ -120,10 +127,35 @@ export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChec
         this.toggleSidenavCollapse(false);
       }
     });
+    // Get current office name from authentication service
+    this.updateOfficeName();
+    // Subscribe to user login events to update office name when user logs in or switches office
+    this.userLoggedInSubscription = this.authenticationService.isAuthenticated$.subscribe(() => {
+      this.updateOfficeName();
+    });
+  }
+
+  /**
+   * Updates the current office name from authentication service credentials
+   */
+  private updateOfficeName() {
+    const credentials = this.authenticationService.getCredentials();
+    if (credentials) {
+      this.currentOfficeName = credentials.officeName;
+    }
   }
 
   ngAfterContentChecked(): void {
     this.changeDetector.detectChanges();
+  }
+
+  /**
+   * Cleanup subscriptions
+   */
+  ngOnDestroy() {
+    if (this.userLoggedInSubscription) {
+      this.userLoggedInSubscription.unsubscribe();
+    }
   }
 
   /**

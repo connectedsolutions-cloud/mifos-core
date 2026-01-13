@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
 
 /** Custom Services */
 import { UsersService } from '../users.service';
@@ -28,6 +29,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 export class ViewUserComponent {
   /** User Data. */
   userData: any;
+  /** Office Names Array */
+  officeNames: string[] = [];
 
   /**
    * Retrieves the user data from `resolve`.
@@ -35,16 +38,55 @@ export class ViewUserComponent {
    * @param {ActivatedRoute} route Activated Route.
    * @param {Router} router Router for navigation.
    * @param {MatDialog} dialog Dialog reference.
+   * @param {HttpClient} http Http Client to fetch offices.
    */
   constructor(
     private usersService: UsersService,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {
     this.route.data.subscribe((data: { user: any }) => {
       this.userData = data.user;
+      this.loadOfficeNames();
     });
+  }
+
+  /**
+   * Loads office names based on office IDs
+   */
+  loadOfficeNames() {
+    // Get office IDs from userData (could be 'offices' array or single 'officeId')
+    const officeIds =
+      this.userData.offices && this.userData.offices.length > 0
+        ? this.userData.offices
+        : this.userData.officeId
+          ? [this.userData.officeId]
+          : [];
+
+    if (officeIds.length > 0) {
+      // Fetch all offices and map IDs to names
+      this.http.get('/offices').subscribe((offices: any) => {
+        const officesMap = new Map();
+        offices.forEach((office: any) => {
+          officesMap.set(office.id, office.name);
+        });
+
+        // Map office IDs to names
+        this.officeNames = officeIds
+          .map((id: number) => officesMap.get(id))
+          .filter((name: string) => name !== undefined);
+
+        // Fallback: if no names found, use officeName if available
+        if (this.officeNames.length === 0 && this.userData.officeName) {
+          this.officeNames = [this.userData.officeName];
+        }
+      });
+    } else if (this.userData.officeName) {
+      // Fallback to single officeName if no office IDs
+      this.officeNames = [this.userData.officeName];
+    }
   }
 
   /**

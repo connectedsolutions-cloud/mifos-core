@@ -74,10 +74,64 @@ export class MakeRepaymentComponent implements OnInit {
   ngOnInit() {
     this.command = this.dataObject.type.code.split('.')[1];
     this.maxDate = this.settingsService.businessDate;
+
+    // Check if loan is in simulation mode and adjust maxDate accordingly
+    // For simulated loans, allow future dates up to the simulated date or a reasonable future date
+    // Try to access loan details from route data first (async)
+
+    // Check parent route data using subscription for async access
+    if (this.route.parent) {
+      this.route.parent.data.subscribe((data: any) => {
+        if (data['loanDetailsData']) {
+          this.updateMaxDateForSimulatedLoan(data['loanDetailsData']);
+        }
+      });
+    }
+
+    // Also check current route data
+    this.route.data.subscribe((data: any) => {
+      if (data['loanDetailsData']) {
+        this.updateMaxDateForSimulatedLoan(data['loanDetailsData']);
+      }
+    });
+
+    // Always fetch loan details to ensure we have the latest simulation status
+    // This is a fallback and ensures we have the data even if route data isn't available
+    if (this.loanId) {
+      this.loanService.getLoanAccountAssociationDetails(this.loanId).subscribe((loanData: any) => {
+        this.updateMaxDateForSimulatedLoan(loanData);
+      });
+    }
+
     this.createRepaymentLoanForm();
     this.setRepaymentLoanDetails();
     if (this.dataObject.currency) {
       this.currency = this.dataObject.currency;
+    }
+  }
+
+  /**
+   * Updates maxDate to allow future dates if loan is simulated
+   */
+  private updateMaxDateForSimulatedLoan(loanData: any): void {
+    // Check if loan is simulated (support both isSimulation and simulated properties)
+    const isSimulated = loanData?.isSimulation === true || loanData?.simulated === true;
+
+    if (isSimulated) {
+      // If loan is simulated, allow future dates
+      // Use simulatedDate if available, otherwise allow dates far into the future
+      if (loanData.simulatedDate) {
+        const simulatedDate = new Date(loanData.simulatedDate);
+        if (!isNaN(simulatedDate.getTime())) {
+          this.maxDate = simulatedDate;
+        } else {
+          // If simulatedDate is invalid, allow dates far into the future
+          this.maxDate = new Date(2100, 0, 1);
+        }
+      } else {
+        // If simulated but no simulatedDate, allow dates far into the future
+        this.maxDate = new Date(2100, 0, 1);
+      }
     }
   }
 

@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 /** Custom Dialogs */
 import { UnassignStaffDialogComponent } from './custom-dialogs/unassign-staff-dialog/unassign-staff-dialog.component';
+import { UnassignGestorDialogComponent } from './custom-dialogs/unassign-gestor-dialog/unassign-gestor-dialog.component';
 import { UploadSignatureDialogComponent } from './custom-dialogs/upload-signature-dialog/upload-signature-dialog.component';
 import { ViewSignatureDialogComponent } from './custom-dialogs/view-signature-dialog/view-signature-dialog.component';
 import { DeleteSignatureDialogComponent } from './custom-dialogs/delete-signature-dialog/delete-signature-dialog.component';
@@ -118,6 +119,7 @@ export class ClientsViewComponent implements OnInit {
   doAction(name: string) {
     switch (name) {
       case 'Assign Staff':
+      case 'Assign Gestor':
       case 'Close':
       case 'Survey':
       case 'Reject':
@@ -137,6 +139,9 @@ export class ClientsViewComponent implements OnInit {
         break;
       case 'Unassign Staff':
         this.unassignStaff();
+        break;
+      case 'Unassign Gestor':
+        this.unassignGestor();
         break;
       case 'Delete':
         this.deleteClient();
@@ -216,6 +221,22 @@ export class ClientsViewComponent implements OnInit {
       if (response.confirm) {
         this.clientsService
           .executeClientCommand(this.clientViewData.id, 'unassignStaff', { staffId: this.clientViewData.staffId })
+          .subscribe(() => {
+            this.reload();
+          });
+      }
+    });
+  }
+
+  /**
+   * Unassign's the client's gestor.
+   */
+  private unassignGestor() {
+    const unAssignGestorDialogRef = this.dialog.open(UnassignGestorDialogComponent);
+    unAssignGestorDialogRef.afterClosed().subscribe((response: { confirm: any }) => {
+      if (response.confirm) {
+        this.clientsService
+          .executeClientCommand(this.clientViewData.id, 'unassignGestor', { gestorId: this.clientViewData.gestorId })
           .subscribe(() => {
             this.reload();
           });

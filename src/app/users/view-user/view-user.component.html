@@ -38,8 +38,13 @@
         </div>
 
         <div class="content-row">
-          <div class="label">{{ 'labels.inputs.Office' | translate }}</div>
-          <div class="value">{{ userData.officeName }}</div>
+          <div class="label">{{ 'labels.inputs.Offices' | translate }}</div>
+          <div class="value">
+            <span *ngFor="let officeName of officeNames; let last = last">
+              {{ officeName }}<span *ngIf="!last">, </span>
+            </span>
+            <span *ngIf="officeNames.length === 0 && userData.officeName">{{ userData.officeName }}</span>
+          </div>
         </div>
 
         <div class="content-row">

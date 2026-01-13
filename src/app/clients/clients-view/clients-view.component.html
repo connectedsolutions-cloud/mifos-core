@@ -103,6 +103,13 @@
                     <td *ngIf="clientViewData.staffName">{{ clientViewData.staffName }}</td>
                     <td *ngIf="!clientViewData.staffName">{{ 'labels.inputs.Unassigned' | translate }}</td>
                   </tr>
+                  <tr>
+                    <td>
+                      <b>{{ 'labels.inputs.Gestor' | translate }}</b>
+                    </td>
+                    <td *ngIf="clientViewData.gestorName">{{ clientViewData.gestorName }}</td>
+                    <td *ngIf="!clientViewData.gestorName">{{ 'labels.inputs.Unassigned' | translate }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -189,6 +196,22 @@
               <fa-icon icon="user-tie" size="sm"></fa-icon>
             </mat-icon>
             <span>{{ 'labels.buttons.Unassign Staff' | translate }}</span>
+          </button>
+        </span>
+
+        <button mat-menu-item (click)="doAction('Assign Gestor')" *ngIf="!clientViewData.gestorId">
+          <mat-icon matListIcon>
+            <fa-icon icon="user-tie" size="sm"></fa-icon>
+          </mat-icon>
+          <span>{{ 'labels.buttons.Assign Gestor' | translate }}</span>
+        </button>
+
+        <span *ngIf="clientViewData.gestorId">
+          <button mat-menu-item (click)="doAction('Unassign Gestor')">
+            <mat-icon matListIcon>
+              <fa-icon icon="user-tie" size="sm"></fa-icon>
+            </mat-icon>
+            <span>{{ 'labels.buttons.Unassign Gestor' | translate }}</span>
           </button>
         </span>
 

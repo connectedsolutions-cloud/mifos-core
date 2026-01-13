@@ -17,13 +17,32 @@
         <strong>{{ 'labels.commons.Minimum Value must be' | translate }} {{ formfield.min }}</strong>
       </mat-error>
 
+      <!-- Searchable select with filtering -->
       <mat-select
-        *ngIf="formfield.controlType === 'select'"
+        *ngIf="formfield.controlType === 'select' && isSearchableSelect()"
         [formControlName]="formfield.controlName"
         [required]="formfield.required"
       >
-        <mat-option *ngFor="let option of formfield.options.data" [value]="option[formfield.options.value]">
-          {{ option[formfield.options.label] }}
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="filterFormCtrl"
+            [placeholderLabel]="'labels.text.Search' | translate"
+            [noEntriesFoundLabel]="'labels.text.No data found' | translate"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <mat-option *ngFor="let option of filteredData | async" [value]="option[getSelectOptions().value]">
+          {{ getDisplayValue(option) }}
+        </mat-option>
+      </mat-select>
+
+      <!-- Regular non-searchable select -->
+      <mat-select
+        *ngIf="formfield.controlType === 'select' && !isSearchableSelect()"
+        [formControlName]="formfield.controlName"
+        [required]="formfield.required"
+      >
+        <mat-option *ngFor="let option of getSelectOptions().data" [value]="option[getSelectOptions().value]">
+          {{ option[getSelectOptions().label] }}
         </mat-option>
       </mat-select>
 

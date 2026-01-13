@@ -26,11 +26,18 @@
         </div>
 
         <div class="flex-50 mat-body-strong">
-          {{ 'labels.inputs.Office' | translate }}
+          {{ 'labels.inputs.Offices' | translate }}
         </div>
 
         <div class="flex-50">
-          {{ employeeData.officeName }}
+          <ng-container *ngIf="employeeData.offices && employeeData.offices.length > 0; else fallbackOfficeDisplay">
+            <span *ngFor="let office of employeeData.offices; let last = last">
+              {{ office.name }}<span *ngIf="!last">, </span>
+            </span>
+          </ng-container>
+          <ng-template #fallbackOfficeDisplay>
+            {{ employeeData.officeName || (employeeData.officeId ? 'Office ID: ' + employeeData.officeId : '') }}
+          </ng-template>
         </div>
 
         <div class="flex-50 mat-body-strong">

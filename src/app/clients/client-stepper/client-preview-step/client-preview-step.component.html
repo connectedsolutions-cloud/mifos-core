@@ -27,6 +27,11 @@
     <span class="flex-60">{{ client.staffId | find: clientTemplate.staffOptions : 'id' : 'displayName' }}</span>
   </div>
 
+  <div class="flex-fill" *ngIf="client.gestorId">
+    <span class="flex-40">{{ 'labels.inputs.Gestor' | translate }}</span>
+    <span class="flex-60">{{ client.gestorId | find: clientTemplate.staffOptions : 'id' : 'displayName' }}</span>
+  </div>
+
   <div class="flex-fill" *ngIf="client.dateOfBirth">
     <span class="flex-40">{{ client.legalFormId === 1 ? 'Date of Birth' : 'Incorporation Date' }}</span>
     <span class="flex-60">{{ client.dateOfBirth | dateFormat }}</span>

@@ -14,7 +14,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
  * Notes Tab Component
  */
 @Component({
-  selector: 'mifosx-notes-tab',
+  selector: 'mifosx-client-notes-tab',
   templateUrl: './notes-tab.component.html',
   styleUrls: ['./notes-tab.component.scss'],
   imports: [

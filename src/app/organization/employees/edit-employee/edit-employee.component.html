@@ -4,14 +4,14 @@
       <mat-card-content>
         <div class="layout-column">
           <mat-form-field>
-            <mat-label>{{ 'labels.inputs.Office' | translate }}</mat-label>
-            <mat-select required formControlName="officeId">
+            <mat-label>{{ 'labels.inputs.Offices' | translate }}</mat-label>
+            <mat-select required formControlName="officeIds" multiple>
               <mat-option *ngFor="let office of officeData" [value]="office.id">
                 {{ office.name }}
               </mat-option>
             </mat-select>
-            <mat-error *ngIf="editEmployeeForm.controls.officeId.hasError('required')">
-              {{ 'labels.inputs.Office' | translate }} {{ 'labels.commons.is' | translate }}
+            <mat-error *ngIf="editEmployeeForm.controls.officeIds.hasError('required')">
+              {{ 'labels.inputs.Offices' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
           </mat-form-field>

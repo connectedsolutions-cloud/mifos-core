@@ -105,6 +105,44 @@
               </table>
             </div>
 
+            <div class="loans-overview mat-typography flex-30">
+              <h3>{{ 'labels.heading.Loan Simulation' | translate }}</h3>
+              <div class="layout-column" style="gap: 10px">
+                <mat-checkbox [(ngModel)]="loanDetailsData.isSimulation" (change)="onSimulationToggle()">
+                  {{ 'labels.inputs.Enable Simulation' | translate }}
+                </mat-checkbox>
+                <mat-form-field *ngIf="loanDetailsData.isSimulation">
+                  <mat-label>{{ 'labels.inputs.Simulated Date' | translate }}</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="simulatedDatePicker"
+                    [(ngModel)]="simulatedDate"
+                    (dateChange)="onSimulatedDateChange()"
+                    [min]="minSimulatedDate"
+                  />
+                  <mat-datepicker-toggle matSuffix [for]="simulatedDatePicker"></mat-datepicker-toggle>
+                  <mat-datepicker #simulatedDatePicker></mat-datepicker>
+                </mat-form-field>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  *ngIf="loanDetailsData.isSimulation"
+                  (click)="runSimulationCOB()"
+                  [disabled]="!simulatedDate"
+                >
+                  {{ 'labels.buttons.Run Simulation COB' | translate }}
+                </button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  *ngIf="loanDetailsData.isSimulation"
+                  (click)="cleanupSimulation()"
+                >
+                  {{ 'labels.buttons.Cleanup Simulation' | translate }}
+                </button>
+              </div>
+            </div>
+
             <div class="flex-5">
               <button
                 mat-icon-button

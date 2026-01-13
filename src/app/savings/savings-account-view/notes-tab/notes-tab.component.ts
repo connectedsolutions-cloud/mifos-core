@@ -6,7 +6,7 @@ import { EntityNotesTabComponent } from '../../../shared/tabs/entity-notes-tab/e
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
-  selector: 'mifosx-notes-tab',
+  selector: 'mifosx-saving-notes-tab',
   templateUrl: './notes-tab.component.html',
   styleUrls: ['./notes-tab.component.scss'],
   imports: [
