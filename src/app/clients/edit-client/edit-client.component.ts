@@ -94,13 +94,6 @@ export class EditClientComponent implements OnInit {
     this.buildDependencies();
     this.legalFormId = 1;
 
-    // Debug: Check tags data
-    console.log('Full clientDataAndTemplate object:', this.clientDataAndTemplate);
-    console.log('All client tags:', this.clientDataAndTemplate.tags);
-    console.log('Tags type:', typeof this.clientDataAndTemplate.tags);
-    console.log('Tags is Array?', Array.isArray(this.clientDataAndTemplate.tags));
-    console.log('Tags length/size:', this.clientDataAndTemplate.tags?.length || this.clientDataAndTemplate.tags?.size);
-
     // Check if tags is a Set and convert to array if needed
     let tagsArray: any[] = [];
     if (this.clientDataAndTemplate.tags) {
@@ -112,21 +105,15 @@ export class EditClientComponent implements OnInit {
         // Try to convert to array
         tagsArray = Object.values(this.clientDataAndTemplate.tags);
       }
-      console.log('Tags array after conversion:', tagsArray);
     }
 
-    console.log('Tag options:', this.tagOptions);
     const filteredTags = tagsArray.filter((tag: any) => {
-      console.log('Checking tag:', tag, 'tagGroup:', tag.tagGroup, 'matches?', tag.tagGroup === 'tipo_cliente');
       return tag.tagGroup === 'tipo_cliente';
     });
-    console.log('Filtered tags (tipo_cliente):', filteredTags);
     const tagIds = filteredTags.map((tag: any) => {
       const id = typeof tag.id === 'string' ? Number(tag.id) : tag.id;
-      console.log(`Tag ID: ${tag.id} (type: ${typeof tag.id}), converted to: ${id} (type: ${typeof id})`);
       return id;
     });
-    console.log('Final tagIds array:', tagIds);
 
     this.editClientForm.patchValue({
       officeId: this.clientDataAndTemplate.officeId,

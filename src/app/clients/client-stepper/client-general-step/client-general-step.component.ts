@@ -70,6 +70,8 @@ export class ClientGeneralStepComponent implements OnInit {
   genderOptions: any;
   /** Saving Product Options */
   savingProductOptions: any;
+  /** Tag Options */
+  tagOptions: any;
   /** Whether user has permission to activate clients on create */
   canActivateOnCreate = false;
 
@@ -139,7 +141,8 @@ export class ClientGeneralStepComponent implements OnInit {
       submittedOnDate: [
         this.settingsService.businessDate,
         Validators.required
-      ]
+      ],
+      tagIds: []
     });
   }
 
@@ -157,6 +160,7 @@ export class ClientGeneralStepComponent implements OnInit {
     this.constitutionOptions = this.clientTemplate.clientNonPersonConstitutionOptions;
     this.genderOptions = this.clientTemplate.genderOptions;
     this.savingProductOptions = this.clientTemplate.savingProductOptions;
+    this.tagOptions = this.clientTemplate.tagOptions || [];
   }
 
   /**
@@ -244,6 +248,10 @@ export class ClientGeneralStepComponent implements OnInit {
       if (generalDetails[key] === '' || key === 'addSavings') {
         delete generalDetails[key];
       }
+    }
+    // Remove tagIds if it's an empty array
+    if (Array.isArray(generalDetails.tagIds) && generalDetails.tagIds.length === 0) {
+      delete generalDetails.tagIds;
     }
     if (generalDetails.submittedOnDate instanceof Date) {
       generalDetails.submittedOnDate = this.dateUtils.formatDate(generalDetails.submittedOnDate, dateFormat);

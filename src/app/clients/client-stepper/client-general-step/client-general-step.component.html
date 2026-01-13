@@ -183,6 +183,15 @@
       {{ 'labels.inputs.Is staff' | translate }}?
     </mat-checkbox>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Client - Shareholder' | translate }}</mat-label>
+      <mat-select formControlName="tagIds" multiple>
+        <mat-option *ngFor="let tag of tagOptions" [value]="tag.id">
+          {{ tag.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-divider class="flex-98"></mat-divider>
 
     <mat-form-field class="flex-48">
