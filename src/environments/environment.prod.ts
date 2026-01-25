@@ -56,7 +56,48 @@ export const environment = {
   waitTimeForCOBCatchUp: loadedEnv['waitTimeForCOBCatchUp'] || 30,
   session: {
     timeout: {
-      idleTimeout: loadedEnv['sessionIdleTimeout'] || 1800000 // 30 minutes
+      idleTimeout: (() => {
+        const envValue = loadedEnv['sessionIdleTimeout'];
+        const defaultValue = 1800000; // 30 minutes
+
+        // Parse the value - handle string, number, or undefined
+        let parsedValue: number | undefined;
+        if (envValue !== undefined && envValue !== null) {
+          // Convert to number if it's a string
+          if (typeof envValue === 'string') {
+            // Check for empty string or unreplaced template placeholder
+            if (envValue === '' || envValue === '$MIFOS_SESSION_IDLE_TIMEOUT') {
+              parsedValue = undefined;
+            } else {
+              const numValue = Number(envValue);
+              parsedValue = isNaN(numValue) ? undefined : numValue;
+            }
+          } else {
+            // It's already a number (or other type), convert to number
+            parsedValue = Number(envValue);
+          }
+        }
+
+        // Use nullish coalescing to allow 0 as a valid value (0 disables timeout)
+        const finalValue = parsedValue ?? defaultValue;
+
+        // Log session timeout configuration for debugging
+        console.log('[Environment] Session timeout configuration:', {
+          fromWindowEnv: envValue,
+          parsedValue: parsedValue,
+          defaultValue: defaultValue,
+          finalValue: finalValue,
+          finalValueMinutes: finalValue / 60000,
+          finalValueSeconds: finalValue / 1000,
+          usingDefault: parsedValue === undefined,
+          windowEnvType: typeof envValue,
+          windowEnvValue: window.env?.sessionIdleTimeout,
+          isString: typeof envValue === 'string',
+          isNumber: typeof envValue === 'number'
+        });
+
+        return finalValue;
+      })()
     }
   },
   httpCacheEnabled: loadedEnv.httpCacheEnabled || false,

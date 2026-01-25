@@ -55,7 +55,10 @@
           <mat-form-field class="flex-48">
             <mat-label>{{ 'labels.inputs.Charge Calculation' | translate }}</mat-label>
             <mat-select required formControlName="chargeCalculationType">
-              <mat-option *ngFor="let chargeCalculation of chargeCalculationTypeOptions" [value]="chargeCalculation.id">
+              <mat-option
+                *ngFor="let chargeCalculation of filteredChargeCalculationType()"
+                [value]="chargeCalculation.id"
+              >
                 {{ chargeCalculation.value | translateKey: 'catalogs' }}
               </mat-option>
             </mat-select>

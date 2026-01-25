@@ -44,6 +44,8 @@ export class EditChargeComponent implements OnInit {
   chargeTimeTypeOptions: any;
   /** Charge Calculation Type options. */
   chargeCalculationTypeOptions: any;
+  /** Charge Calculation Type data (unfiltered). */
+  chargeCalculationTypeData: any;
   /** Show Penalty. */
   showPenalty = true;
   /** Add Fee Frequency. */
@@ -124,6 +126,7 @@ export class EditChargeComponent implements OnInit {
     switch (this.chargeData.chargeAppliesTo.value) {
       case 'Loan': {
         this.chargeTimeTypeOptions = this.chargeData.loanChargeTimeTypeOptions;
+        this.chargeCalculationTypeData = this.chargeData.loanChargeCalculationTypeOptions;
         this.chargeCalculationTypeOptions = this.chargeData.loanChargeCalculationTypeOptions;
         this.addFeeFrequency = true;
         this.chargePaymentMode = true;
@@ -142,12 +145,14 @@ export class EditChargeComponent implements OnInit {
       }
       case 'Savings': {
         this.chargeTimeTypeOptions = this.chargeData.savingsChargeTimeTypeOptions;
+        this.chargeCalculationTypeData = this.chargeData.savingsChargeCalculationTypeOptions;
         this.chargeCalculationTypeOptions = this.chargeData.savingsChargeCalculationTypeOptions;
         this.addFeeFrequency = false;
         break;
       }
       case 'Shares': {
         this.chargeTimeTypeOptions = this.chargeData.shareChargeTimeTypeOptions;
+        this.chargeCalculationTypeData = this.chargeData.shareChargeCalculationTypeOptions;
         this.chargeCalculationTypeOptions = this.chargeData.shareChargeCalculationTypeOptions;
         this.addFeeFrequency = false;
         this.showGLAccount = false;
@@ -155,6 +160,7 @@ export class EditChargeComponent implements OnInit {
         break;
       }
       default: {
+        this.chargeCalculationTypeData = this.chargeData.clientChargeCalculationTypeOptions;
         this.chargeCalculationTypeOptions = this.chargeData.clientChargeCalculationTypeOptions;
         this.chargeTimeTypeOptions = this.chargeData.clientChargeTimeTypeOptions;
         this.showGLAccount = true;
@@ -174,6 +180,21 @@ export class EditChargeComponent implements OnInit {
     } else {
       this.chargeForm.addControl('taxGroupId', this.formBuilder.control({ value: '' }));
     }
+
+    // Listen to chargeTimeType changes and validate/reset chargeCalculationType if needed
+    this.chargeForm.get('chargeTimeType')?.valueChanges.subscribe((chargeTimeType) => {
+      const currentChargeCalculationType = this.chargeForm.get('chargeCalculationType')?.value;
+
+      // If chargeTimeType is not 12 (TRANCHE_DISBURSEMENT) and chargeCalculationType is 5, reset it
+      if (chargeTimeType !== 12 && currentChargeCalculationType === 5) {
+        this.chargeForm.get('chargeCalculationType')?.setValue('');
+      }
+
+      // If chargeTimeType is 12 and chargeCalculationType is 3 or 4, reset it
+      if (chargeTimeType === 12 && (currentChargeCalculationType === 3 || currentChargeCalculationType === 4)) {
+        this.chargeForm.get('chargeCalculationType')?.setValue('');
+      }
+    });
   }
 
   /**
@@ -188,6 +209,47 @@ export class EditChargeComponent implements OnInit {
       this.chargeForm.removeControl('feeInterval');
       this.chargeForm.removeControl('feeFrequency');
     }
+  }
+
+  /**
+   * @returns {any} Filtered charge calculation type data.
+   */
+  filteredChargeCalculationType(): any {
+    if (!this.chargeCalculationTypeData) {
+      return [];
+    }
+    const currentChargeCalculationType = this.chargeForm.get('chargeCalculationType')?.value;
+    return this.chargeCalculationTypeData.filter((chargeCalculationType: any) => {
+      const chargeTimeType = this.chargeForm.get('chargeTimeType')?.value;
+      const chargeAppliesTo = this.chargeForm.get('chargeAppliesTo')?.value;
+
+      // Always include the currently selected value so it's visible even if it would be filtered out
+      if (chargeCalculationType.id === currentChargeCalculationType) {
+        return true;
+      }
+
+      // Filter out option 5 (% disbursed amount) unless chargeTimeType is 12 (TRANCHE_DISBURSEMENT)
+      if (chargeTimeType !== 12 && chargeCalculationType.id === 5) {
+        return false;
+      }
+
+      // Filter out options 3 and 4 when chargeTimeType is 12 (TRANCHE_DISBURSEMENT)
+      if (chargeTimeType === 12 && (chargeCalculationType.id === 3 || chargeCalculationType.id === 4)) {
+        return false;
+      }
+
+      // For Savings (chargeAppliesTo === 2), filter out option 2 (% amount) unless chargeTimeType is 5, 16, or 17
+      if (chargeAppliesTo === 2) {
+        if (
+          !(chargeTimeType === 5 || chargeTimeType === 16 || chargeTimeType === 17) &&
+          chargeCalculationType.id === 2
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   }
 
   /**

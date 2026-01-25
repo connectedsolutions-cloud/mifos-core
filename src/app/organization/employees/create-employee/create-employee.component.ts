@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 
 /** Custom Services */
 import { OrganizationService } from '../../organization.service';
+import { EmployeeListRefreshService } from '../employee-list-refresh.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { MatDialog } from '@angular/material/dialog';
@@ -58,6 +59,7 @@ export class CreateEmployeeComponent implements OnInit, AfterViewInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private organizationService: OrganizationService,
+    private employeeListRefreshService: EmployeeListRefreshService,
     private settingsService: SettingsService,
     private route: ActivatedRoute,
     private router: Router,
@@ -147,6 +149,7 @@ export class CreateEmployeeComponent implements OnInit, AfterViewInit {
         this.configurationWizardService.showEmployeeForm = false;
         this.openDialog();
       } else {
+        this.employeeListRefreshService.setShouldRefresh();
         this.router.navigate(['../'], { relativeTo: this.route });
       }
     });
@@ -209,6 +212,7 @@ export class CreateEmployeeComponent implements OnInit, AfterViewInit {
     continueSetupDialogRef.afterClosed().subscribe((response: { step: number }) => {
       if (response.step === 1) {
         this.configurationWizardService.showEmployeeForm = false;
+        this.employeeListRefreshService.setShouldRefresh();
         this.router.navigate(['../'], { relativeTo: this.route });
       } else if (response.step === 2) {
         this.configurationWizardService.showEmployeeForm = true;

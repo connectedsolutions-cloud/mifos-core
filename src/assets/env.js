@@ -36,7 +36,7 @@
   window['env']['waitTimeForCOBCatchUp'] = '30';
 
   // Time in milliseconds for Session idle timeout, default 300000 seconds
-  window['env']['sessionIdleTimeout'] = '300000';
+  window['env']['sessionIdleTimeout'] = '72000000';
 
   // OAuth Server Enabled
   window['env']['oauthServerEnabled'] = 'false';

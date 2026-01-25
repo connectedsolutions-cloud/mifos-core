@@ -48,3 +48,47 @@ mat-list-item {
     }
   }
 }
+
+.permission-search-container {
+  padding: 10px 20px;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.permission-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  .permission-name {
+    font-weight: 500;
+  }
+
+  .permission-grouping {
+    font-size: 0.85rem;
+    color: rgb(0 0 0 / 54%);
+  }
+}
+
+.permission-highlighted {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding-left: 12px;
+  margin-left: -12px;
+  transition: all 0.3s ease-in-out;
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+  0%,
+  100% {
+    background-color: #fff3cd;
+  }
+
+  50% {
+    background-color: #ffecb5;
+  }
+}

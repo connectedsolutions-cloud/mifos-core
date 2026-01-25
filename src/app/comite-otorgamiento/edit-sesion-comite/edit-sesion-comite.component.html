@@ -1,0 +1,131 @@
+<mat-card class="container" *ngIf="session">
+  <div class="layout-column m-b-20">
+    <mat-form-field
+      appearance="fill"
+      class="no-border-field"
+      style="width: 100%"
+      [class.mat-form-field-disabled]="session.status !== 'created'"
+    >
+      <input
+        matInput
+        [(ngModel)]="session.name"
+        (blur)="onSessionNameChange()"
+        [disabled]="session.status !== 'created'"
+        style="text-align: center; font-size: 1.5rem; font-weight: 500"
+      />
+    </mat-form-field>
+    <div class="button-group">
+      <div class="layout-row gap-10">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="startSession()"
+          *mifosxHasPermission="'start_loan_comittee'"
+          [disabled]="session.status !== 'created'"
+        >
+          Start Session
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="applyApprovals()"
+          *mifosxHasPermission="'start_loan_comittee'"
+          [disabled]="session.status !== 'started'"
+        >
+          Apply Approvals
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="session-info m-b-20">
+    <div class="layout-row align-between align-items-center gap-10">
+      <div class="layout-row align-center gap-10" style="margin-bottom: 8px">
+        <strong>Status:</strong>
+        <mat-chip-set>
+          <mat-chip [class]="'status-chip status-' + session.status">
+            {{ session.status }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+      <div class="layout-row align-center gap-10" style="margin-bottom: 8px">
+        <strong>Creator:</strong>
+        <p>{{ session.creatorName }}</p>
+      </div>
+    </div>
+    <mat-form-field class="participants-field">
+      <mat-label>Participants</mat-label>
+      <mat-select
+        [value]="session.integrantes || []"
+        (selectionChange)="onParticipantsChange($event.value)"
+        [disabled]="!isParticipantsEditable()"
+        panelClass="participants-dropdown-panel"
+        multiple
+      >
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Section 1: Approved Loans -->
+  <mat-card class="m-b-20">
+    <h3 class="section-heading">Selected Loans for Approval</h3>
+    <table mat-table [dataSource]="approvedLoansDataSource" class="bordered-table">
+      <ng-container *ngFor="let col of approvedLoansColumns" [matColumnDef]="col">
+        <th mat-header-cell *matHeaderCellDef>
+          <span *ngIf="col !== 'staffName'">{{ col }}</span>
+          <span *ngIf="col === 'staffName'">Staff</span>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let loan"
+          [class.clickable]="col === 'accountNo'"
+          (click)="col === 'accountNo' ? openLoanDetails(loan) : null"
+          [style.cursor]="col === 'accountNo' ? 'pointer' : 'default'"
+        >
+          <span *ngIf="col !== 'staffName'">{{ loan[col] }}</span>
+          <span *ngIf="col === 'staffName'">{{ loan.clientStaffName || '-' }}</span>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="approvedLoansColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: approvedLoansColumns"></tr>
+    </table>
+  </mat-card>
+
+  <!-- Section 2: Pending Loans -->
+  <mat-card>
+    <h3 class="section-heading">Pending Loans to Review and Approve</h3>
+    <table mat-table [dataSource]="pendingLoansDataSource" class="bordered-table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let loan">
+          <mat-checkbox [checked]="isLoanSelected(loan.id)" (change)="toggleLoanSelection(loan.id)"> </mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container *ngFor="let col of pendingLoansColumns.slice(1)" [matColumnDef]="col">
+        <th mat-header-cell *matHeaderCellDef>
+          <span *ngIf="col !== 'staffName'">{{ col }}</span>
+          <span *ngIf="col === 'staffName'">Staff</span>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let loan"
+          [class.clickable]="col === 'accountNo'"
+          (click)="col === 'accountNo' ? openLoanDetails(loan) : null"
+          [style.cursor]="col === 'accountNo' ? 'pointer' : 'default'"
+        >
+          <span *ngIf="col !== 'staffName'">{{ loan[col] }}</span>
+          <span *ngIf="col === 'staffName'">{{ loan.clientStaffName || '-' }}</span>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="pendingLoansColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: pendingLoansColumns"
+        [class.unanimously-approved]="isUnanimouslyApproved(row.id)"
+      ></tr>
+    </table>
+  </mat-card>
+</mat-card>

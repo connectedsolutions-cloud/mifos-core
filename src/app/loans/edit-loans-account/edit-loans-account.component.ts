@@ -195,6 +195,10 @@ export class EditLoansAccountComponent {
     delete loansAccountData.principalAmount;
     delete loansAccountData.multiDisburseLoan;
 
+    // Remove allowFullTermForTranche - this parameter is not supported by the PUT endpoint for editing loans
+    // It's only supported during loan creation when multiDisburseLoan is true AND loanScheduleType is PROGRESSIVE
+    delete loansAccountData.allowFullTermForTranche;
+
     // In Fineract, the POST and PUT endpoints for /v1/loans have a typo in the field
     // allowPartialPeriodInterestCalculation. Until that is fixed, we need to replace the field name in the payload.
     loansAccountData.allowPartialPeriodInterestCalcualtion = loansAccountData.allowPartialPeriodInterestCalculation;

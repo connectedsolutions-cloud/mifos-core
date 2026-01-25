@@ -8,6 +8,10 @@ const gitInfo = gitDescribeSync({
   dirtySemver: false
 });
 
+// Generate version based on date
+// Note: The git hash (gitInfo.hash) provides unique identification per build
+// The VersionCheckService checks both version and hash, so localStorage will be
+// cleared when either changes (new day or new commit)
 gitInfo.version = moment().format('YYMMDD');
 
 const file = resolve(__dirname, '.', 'src', 'environments', '.env.ts');

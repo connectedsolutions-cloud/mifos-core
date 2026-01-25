@@ -217,9 +217,13 @@ export class OrganizationService {
 
   /**
    * @returns {Observable<any>} Employees data
+   * @param skipCache If true, adds cache-busting query param for refetch-after-mutate
    */
-  getEmployees(): Observable<any> {
-    const httpParams = new HttpParams().set('status', 'all');
+  getEmployees(skipCache: boolean = false): Observable<any> {
+    let httpParams = new HttpParams().set('status', 'all');
+    if (skipCache) {
+      httpParams = httpParams.set('_', String(Date.now()));
+    }
     return this.http.get('/staff', { params: httpParams });
   }
 

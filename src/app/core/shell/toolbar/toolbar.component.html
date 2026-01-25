@@ -34,15 +34,35 @@
     </a>
 
     <span class="hide-lt-md">
-      <a #accounting class="tab-link accounting-link" [routerLink]="['/accounting']" tabindex="0">
+      <a
+        #accounting
+        class="tab-link accounting-link"
+        [routerLink]="['/accounting']"
+        tabindex="0"
+        *mifosxHasPermission="'accounting_visibility'"
+      >
         <fa-icon class="mr-05" icon="money-bill-alt" size="lg"></fa-icon>
         {{ 'labels.menus.Accounting' | translate }}
       </a>
-      <a #reports class="tab-link" [matMenuTriggerFor]="reportsMenu" #reportsMenuTrigger="matMenuTrigger" tabindex="0">
+      <a
+        #reports
+        class="tab-link"
+        [matMenuTriggerFor]="reportsMenu"
+        #reportsMenuTrigger="matMenuTrigger"
+        tabindex="0"
+        *mifosxHasPermission="'reports_visibility'"
+      >
         <fa-icon class="mr-05" icon="chart-bar" size="lg"></fa-icon>
         {{ 'labels.menus.Reports' | translate }}
       </a>
-      <a #admin class="tab-link" [matMenuTriggerFor]="adminMenu" #adminMenuTrigger="matMenuTrigger" tabindex="0">
+      <a
+        #admin
+        class="tab-link"
+        [matMenuTriggerFor]="adminMenu"
+        #adminMenuTrigger="matMenuTrigger"
+        tabindex="0"
+        *mifosxHasPermission="'admin_visibility'"
+      >
         <fa-icon class="mr-05" icon="shield-alt" size="lg"></fa-icon>
         {{ 'labels.menus.Admin' | translate }}
       </a>
@@ -93,17 +113,9 @@
 
 <mat-menu #institutionMenu="matMenu" [overlapTrigger]="false">
   <button mat-menu-item routerLink="/clients" tabindex="0">{{ 'labels.menus.Clients' | translate }}</button>
-  <button mat-menu-item routerLink="/groups" tabindex="0">{{ 'labels.menus.Groups' | translate }}</button>
-  <button mat-menu-item routerLink="/centers" tabindex="0">{{ 'labels.menus.Centers' | translate }}</button>
-  <span class="hide-lt-md">
-    <button mat-menu-item [routerLink]="['/accounting']" tabindex="0">
-      {{ 'labels.menus.Accounting' | translate }}
-    </button>
-    <button mat-menu-item [matMenuTriggerFor]="reportsMenu" tabindex="0">
-      {{ 'labels.menus.Reports' | translate }}
-    </button>
-    <button mat-menu-item [matMenuTriggerFor]="adminMenu" tabindex="0">{{ 'labels.menus.Admin' | translate }}</button>
-  </span>
+  <button mat-menu-item [routerLink]="['/comite-otorgamiento']" *mifosxHasPermission="'see_loan_comittee'" tabindex="0">
+    Comite - otorgamiento
+  </button>
 </mat-menu>
 
 <!-- Toolbar Menus -->

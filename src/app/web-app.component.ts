@@ -33,6 +33,7 @@ import { I18nService } from './core/i18n/i18n.service';
 import { ThemingService } from './shared/theme-toggle/theming.service';
 
 import { AuthService } from './zitadel/auth.service';
+import { VersionCheckService } from './core/version-check/version-check.service';
 
 /** Initialize Logger */
 const log = new Logger('MifosX');
@@ -123,7 +124,8 @@ export class WebAppComponent implements OnInit, OnDestroy {
     private dateUtils: Dates,
     private idle: IdleTimeoutService,
     private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private versionCheckService: VersionCheckService
   ) {}
 
   @HostBinding('class') public cssClass: string;
@@ -145,6 +147,19 @@ export class WebAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Check for version changes and clear localStorage if needed
+    // This must be done FIRST, before any other code reads from localStorage
+    const storageCleared = this.versionCheckService.checkAndClearStorage(false);
+    if (storageCleared) {
+      log.info('Application version changed - localStorage cleared');
+      // Optionally show a notification to the user
+      // You can uncomment this if you want to notify users about the cache clear
+      // this.alertService.alert({
+      //   type: 'info',
+      //   message: 'Application updated. Your preferences have been reset.'
+      // });
+    }
+
     this.themingService.theme.subscribe((value: string) => {
       this.cssClass = value;
     });
@@ -235,22 +250,63 @@ export class WebAppComponent implements OnInit, OnDestroy {
     this.settingsService.setTenantIdentifiers(environment.fineractPlatformTenantIds.split(','));
 
     // Subscribe to session timeout If IdleTimeout is higher than 0 (zero)
-    if (environment.session.timeout.idleTimeout > 0) {
+    const configuredTimeout = environment.session.timeout.idleTimeout;
+    console.log('[WebAppComponent] Session timeout configuration:', {
+      idleTimeout: configuredTimeout,
+      idleTimeoutMinutes: configuredTimeout / 60000,
+      idleTimeoutSeconds: configuredTimeout / 1000,
+      enabled: configuredTimeout > 0
+    });
+
+    if (configuredTimeout > 0) {
       this.authSubscription = this.authenticationService.isAuthenticated$.subscribe((loggedIn) => {
         if (loggedIn) {
+          console.log('[WebAppComponent] User authenticated - starting idle timeout monitoring');
           this.idle.start();
+
+          // Log remaining time periodically (every 5 minutes)
+          const remainingTimeInterval = setInterval(() => {
+            const remaining = this.idle.getRemainingTime();
+            if (remaining !== null) {
+              const remainingMinutes = remaining / 60000;
+              console.log(
+                `[WebAppComponent] Idle timeout status - Remaining: ${remainingMinutes.toFixed(2)} minutes (${remaining.toFixed(0)}ms)`
+              );
+            } else {
+              clearInterval(remainingTimeInterval);
+            }
+          }, 300000); // Every 5 minutes
+
+          // Clean up interval on logout
+          this.authenticationService.isAuthenticated$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
+            if (!isLoggedIn) {
+              clearInterval(remainingTimeInterval);
+            }
+          });
         } else {
+          console.log('[WebAppComponent] User logged out - stopping idle timeout monitoring');
           this.idle.stop();
         }
       });
 
       this.idle.$onSessionTimeout.subscribe(() => {
+        const remaining = this.idle.getRemainingTime();
+        const configuredTimeout = this.idle.getTimeoutDelay();
+
+        console.error('[WebAppComponent] 🚨 SESSION TIMEOUT EVENT RECEIVED', {
+          configuredTimeout: configuredTimeout,
+          configuredTimeoutMinutes: configuredTimeout / 60000,
+          remainingTimeAtTimeout: remaining,
+          timestamp: new Date().toISOString()
+        });
+
         this.alertService.alert({
           type: 'Session timeout',
           message: this.translateService.instant('labels.text.Session timed out')
         });
         this.dialog.open(SessionTimeoutDialogComponent);
         setTimeout(() => {
+          console.log('[WebAppComponent] Executing logout after timeout');
           if (!environment.OIDC.oidcServerEnabled) {
             this.logout();
           } else {
@@ -258,6 +314,8 @@ export class WebAppComponent implements OnInit, OnDestroy {
           }
         }, 1000);
       });
+    } else {
+      console.warn('[WebAppComponent] Session timeout is disabled (idleTimeout = 0)');
     }
   }
 

@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit, TemplateRef, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
@@ -17,10 +17,9 @@ import {
 } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-/** rxjs Imports */
-import { of } from 'rxjs';
-
 /** Custom Services */
+import { OrganizationService } from '../organization.service';
+import { EmployeeListRefreshService } from './employee-list-refresh.service';
 import { PopoverService } from '../../configuration-wizard/popover/popover.service';
 import { ConfigurationWizardService } from '../../configuration-wizard/configuration-wizard.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -84,14 +83,20 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
    * Retrieves the employees data from `resolve`.
    * @param {ActivatedRoute} route Activated Route.
    * @param {Router} router Router.
+   * @param {OrganizationService} organizationService Organization Service.
+   * @param {EmployeeListRefreshService} employeeListRefreshService Signals refresh when returning from create.
    * @param {ConfigurationWizardService} configurationWizardService ConfigurationWizard Service.
    * @param {PopoverService} popoverService PopoverService.
+   * @param {ChangeDetectorRef} cdr Change detector.
    */
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private organizationService: OrganizationService,
+    private employeeListRefreshService: EmployeeListRefreshService,
     private configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.data.subscribe((data: { employees: any }) => {
       this.employeesData = data.employees;
@@ -108,9 +113,13 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
 
   /**
    * Sets the employees table.
+   * Auto-refreshes with cache-bust when returning from create (see autorefresh_frontend.md).
    */
   ngOnInit() {
     this.setEmployees();
+    if (this.employeeListRefreshService.consumeShouldRefresh()) {
+      this.refreshEmployees();
+    }
   }
 
   /**
@@ -120,6 +129,21 @@ export class EmployeesComponent implements OnInit, AfterViewInit {
     this.dataSource = new MatTableDataSource(this.employeesData);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  /**
+   * Refetches employees with cache-bust and updates the table (auto-refresh after create).
+   */
+  refreshEmployees() {
+    this.organizationService.getEmployees(true).subscribe({
+      next: (data) => {
+        this.employeesData = data;
+        this.dataSource = new MatTableDataSource(this.employeesData);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   /**

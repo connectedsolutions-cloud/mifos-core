@@ -17,6 +17,7 @@ import { DateFormatPipe } from '@pipes/date-format.pipe';
 import { TranslatePipe as NgxTranslatePipe } from '@ngx-translate/core';
 import { TranslatePipe } from '@pipes/translate.pipe';
 import { HasPermissionDirective } from './directives/has-permission/has-permission.directive';
+import { IsEnabledDirective } from './directives/is-enabled/is-enabled.directive';
 
 export const STANDALONE_SHARED_IMPORTS = [
   CommonModule,
@@ -44,9 +45,11 @@ export const STANDALONE_SHARED_IMPORTS = [
   MatCheckbox,
   DateFormatPipe,
   HasPermissionDirective,
+  IsEnabledDirective,
 
   // Pipes and Directives
   NgxTranslatePipe,
   TranslatePipe
 ];
 export { HasPermissionDirective } from './directives/has-permission/has-permission.directive';
+export { IsEnabledDirective } from './directives/is-enabled/is-enabled.directive';

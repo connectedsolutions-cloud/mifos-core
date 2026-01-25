@@ -1,6 +1,13 @@
 /** Angular Imports  */
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+  FormArray,
+  ReactiveFormsModule,
+  UntypedFormControl
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
@@ -12,15 +19,31 @@ import { DeleteDialogComponent } from '../../../shared/delete-dialog/delete-dial
 import { DisableDialogComponent } from '../../../shared/disable-dialog/disable-dialog.component';
 import { EnableDialogComponent } from '../../../shared/enable-dialog/enable-dialog.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
 import { MatList, MatListItem } from '@angular/material/list';
 import { MatDivider } from '@angular/material/divider';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { MatIcon } from '@angular/material/icon';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+
+/** RxJS Imports */
+import { Observable } from 'rxjs';
+import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 /** Custom Service Zitadel */
 import { environment } from '../../../../environments/environment';
 import { AuthService } from 'app/zitadel/auth.service';
+
+/**
+ * Permission option interface for search
+ */
+interface PermissionOption {
+  code: string;
+  displayName: string;
+  grouping: string;
+  id: number;
+}
 
 /**
  * View Role and Permissions Component
@@ -36,7 +59,12 @@ import { AuthService } from 'app/zitadel/auth.service';
     MatListItem,
     NgClass,
     MatDivider,
-    MatCheckbox
+    MatCheckbox,
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatOption,
+    MatIcon,
+    AsyncPipe
   ]
 })
 export class ViewRoleComponent implements OnInit {
@@ -74,6 +102,17 @@ export class ViewRoleComponent implements OnInit {
   } = { permissions: [] };
   /** Add role zitadel */
 
+  /** Permission search form control */
+  permissionSearchControl: UntypedFormControl = new UntypedFormControl();
+  /** Filtered permissions for autocomplete */
+  filteredPermissions: Observable<PermissionOption[]>;
+  /** Flat list of all permissions */
+  allPermissions: PermissionOption[] = [];
+  /** Currently highlighted permission code */
+  highlightedPermissionCode: string | null = null;
+  /** ViewChildren reference for permission elements */
+  @ViewChildren('permissionElement') permissionElements: QueryList<ElementRef>;
+
   /**
    * Retrieves the roledetails data from `resolve`.
    * @param {ActivatedRoute} route Activated Route.
@@ -90,7 +129,8 @@ export class ViewRoleComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private translateService: TranslateService,
     public dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.data.subscribe((data: { roledetails: any }) => {
       this.rolePermissionService = data.roledetails;
@@ -106,6 +146,8 @@ export class ViewRoleComponent implements OnInit {
     };
     this.createForm();
     this.groupRules();
+    this.initializePermissionSearch();
+    this.filterPermissions();
     this.selectedItem = 'special';
     this.showPermissions('special');
     this.route.params.subscribe((routeParams: any) => {
@@ -201,6 +243,138 @@ export class ViewRoleComponent implements OnInit {
       name = name.replace(/READ/g, 'View');
     }
     return name;
+  }
+
+  /**
+   * Formats the permission name with a specific grouping
+   * @param name Permission code
+   * @param grouping Grouping name
+   * @returns Formatted permission name
+   */
+  private formatPermissionName(name: any, grouping: string): string {
+    name = name || '';
+    // replace '_' with ' '
+    name = name.replace(/_/g, ' ');
+    // for reports replace read with view
+    if (grouping === 'report') {
+      name = name.replace(/READ/g, 'View');
+    }
+    return name;
+  }
+
+  /**
+   * Initializes the permission search by building flat list from tempPermissionUIData
+   */
+  private initializePermissionSearch(): void {
+    this.allPermissions = [];
+    Object.keys(this.tempPermissionUIData).forEach((grouping) => {
+      this.tempPermissionUIData[grouping].permissions.forEach((permission) => {
+        this.allPermissions.push({
+          code: permission.code,
+          displayName: this.formatPermissionName(permission.code, grouping),
+          grouping: grouping,
+          id: permission.id
+        });
+      });
+    });
+  }
+
+  /**
+   * Fuzzy match algorithm - matches characters in order but not necessarily consecutively
+   * @param searchTerm Search term
+   * @param text Text to search in
+   * @returns boolean indicating if there's a match
+   */
+  private fuzzyMatch(searchTerm: string, text: string): boolean {
+    const search = searchTerm.toLowerCase().replace(/\s+/g, '');
+    const target = text.toLowerCase().replace(/\s+/g, '');
+
+    // Simple fuzzy match: all characters in search must appear in order in target
+    let searchIndex = 0;
+    for (let i = 0; i < target.length && searchIndex < search.length; i++) {
+      if (target[i] === search[searchIndex]) {
+        searchIndex++;
+      }
+    }
+    return searchIndex === search.length;
+  }
+
+  /**
+   * Filters permissions based on search input with fuzzy matching
+   */
+  private filterPermissions(): void {
+    this.filteredPermissions = this.permissionSearchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((value) => {
+        const searchValue = (value || '').toString().toLowerCase();
+        if (!searchValue) {
+          return this.allPermissions.slice(0, 20); // Limit to 20 results
+        }
+        return this.allPermissions
+          .filter(
+            (permission) =>
+              this.fuzzyMatch(searchValue, permission.displayName) ||
+              this.fuzzyMatch(searchValue, permission.code) ||
+              this.fuzzyMatch(searchValue, this.formatName(permission.grouping))
+          )
+          .slice(0, 20); // Limit results
+      })
+    );
+  }
+
+  /**
+   * Displays permission name in autocomplete
+   * @param permission Permission option
+   * @returns Display string
+   */
+  displayPermission(permission: PermissionOption): string {
+    return permission ? permission.displayName : '';
+  }
+
+  /**
+   * Handles permission selection from autocomplete
+   * @param permission Selected permission option
+   */
+  onPermissionSelected(permission: PermissionOption): void {
+    if (!permission) {
+      return;
+    }
+    // Select the category
+    this.showPermissions(permission.grouping);
+    this.highlightedPermissionCode = permission.code;
+
+    // Clear search
+    this.permissionSearchControl.setValue('');
+
+    // Wait for DOM update, then scroll and highlight
+    setTimeout(() => {
+      this.scrollToPermission(permission.code);
+    }, 100);
+  }
+
+  /**
+   * Scrolls to the selected permission and highlights it
+   * @param code Permission code
+   */
+  private scrollToPermission(code: string): void {
+    if (!this.permissionElements) {
+      return;
+    }
+
+    const element = this.permissionElements.find((el) => el.nativeElement.querySelector(`[id="${code}"]`));
+
+    if (element) {
+      element.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      // Remove highlight after 3 seconds
+      setTimeout(() => {
+        this.highlightedPermissionCode = null;
+      }, 3000);
+    }
   }
 
   /**

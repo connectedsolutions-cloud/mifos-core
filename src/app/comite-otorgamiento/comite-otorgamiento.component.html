@@ -1,0 +1,47 @@
+<mat-card class="container">
+  <div class="layout-column align-center justify-content:center" style="margin-left: 12px; margin-right: 12px">
+    <h2 style="text-align: center">Comite - Otorgamiento</h2>
+    <div
+      class="action-button gap-25px"
+      style="display: flex; justify-content: flex-end"
+      *mifosxIsEnabled="'create_loan_comittee'"
+    >
+      <button mat-raised-button color="primary" (click)="createSession()" *mifosxHasPermission="'see_loan_comittee'">
+        <fa-icon icon="plus" class="m-r-10"></fa-icon>
+        Create Session
+      </button>
+    </div>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="bordered-table">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let session">{{ session.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let session">{{ session.status }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="creatorName">
+      <th mat-header-cell *matHeaderCellDef>Creator</th>
+      <td mat-cell *matCellDef="let session">{{ session.creatorName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+      <td mat-cell *matCellDef="let session">{{ session.createdAt | date }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="participantCount">
+      <th mat-header-cell *matHeaderCellDef>Participants</th>
+      <td mat-cell *matCellDef="let session">{{ session.participantCount }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="viewSession(row)" style="cursor: pointer"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+</mat-card>

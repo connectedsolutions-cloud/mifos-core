@@ -40,6 +40,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { ProfileModule } from './profile/profile.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigurationWizardModule } from './configuration-wizard/configuration-wizard.module';
+import { ComiteOtorgamientoModule } from './comite-otorgamiento/comite-otorgamiento.module';
 import { PortalModule } from '@angular/cdk/portal';
 
 /** Main Routing Module */
@@ -118,6 +119,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CollectionsModule,
     TasksModule,
     ConfigurationWizardModule,
+    ComiteOtorgamientoModule,
     AppRoutingModule,
     NotFoundComponent,
     CallbackComponent

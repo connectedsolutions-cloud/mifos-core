@@ -1,0 +1,124 @@
+.container {
+  margin: 20px auto;
+  max-width: 1200px;
+  padding: 16px;
+}
+
+.bordered-table {
+  width: 100%;
+}
+
+.section-heading {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+// Participants mat-select: collapsed trigger (visible field) — white background
+.participants-field {
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: rgb(236 236 236) !important;
+  }
+}
+
+// Participants mat-select dropdown panel (rendered in overlay)
+::ng-deep .participants-dropdown-panel {
+  background-color: white !important;
+}
+
+.session-info {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  .layout-row.align-center {
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  strong {
+    vertical-align: middle;
+    line-height: 14px;
+  }
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.button-group .layout-row {
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.status-chip {
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &.status-created {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.status-started {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+
+  &.status-closed {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.status-applied {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+}
+
+.no-border-field {
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-outline {
+        display: none;
+      }
+
+      .mat-mdc-form-field-outline-thick {
+        display: none;
+      }
+
+      .mat-mdc-form-field-outline-start,
+      .mat-mdc-form-field-outline-gap,
+      .mat-mdc-form-field-outline-end {
+        display: none;
+      }
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      display: none;
+    }
+  }
+}
+
+.clickable {
+  color: #1976d2;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #1565c0;
+    text-decoration: underline;
+    background-color: rgb(25 118 210 / 8%);
+  }
+
+  &:active {
+    color: #0d47a1;
+  }
+}
+
+.unanimously-approved {
+  background-color: rgb(56 142 60 / 12%);
+}
