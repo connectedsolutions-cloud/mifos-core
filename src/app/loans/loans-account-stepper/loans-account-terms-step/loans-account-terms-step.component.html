@@ -10,6 +10,15 @@
     >
     </mifosx-input-amount>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Disbursal Method' | translate }}</mat-label>
+      <mat-select formControlName="disbursalMethodPaymentTypeId">
+        <mat-option *ngFor="let paymentType of paymentTypes" [value]="paymentType.id">
+          {{ paymentType.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <h4 class="mat-h4 flex-98">
       {{ 'labels.heading.Term Options' | translate }}
       <i class="fas fa-question" matTooltip="{{ 'tooltips.The loan term parameter in loan accounts' | translate }}"></i>

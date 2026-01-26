@@ -85,21 +85,6 @@ export const environment = {
         // Use nullish coalescing to allow 0 as a valid value (0 disables timeout)
         const finalValue = parsedValue ?? defaultValue;
 
-        // Log session timeout configuration for debugging
-        console.log('[Environment] Session timeout configuration:', {
-          fromWindowEnv: envValue,
-          parsedValue: parsedValue,
-          defaultValue: defaultValue,
-          finalValue: finalValue,
-          finalValueMinutes: finalValue / 60000,
-          finalValueSeconds: finalValue / 1000,
-          usingDefault: parsedValue === undefined,
-          windowEnvType: typeof envValue,
-          windowEnvValue: window.env?.sessionIdleTimeout,
-          isString: typeof envValue === 'string',
-          isNumber: typeof envValue === 'number'
-        });
-
         return finalValue;
       })()
     }

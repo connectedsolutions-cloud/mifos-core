@@ -7,6 +7,7 @@ import { LoansAccountAddCollateralDialogComponent } from 'app/loans/custom-dialo
 import { LoanProducts } from 'app/products/loan-products/loan-products';
 import { LoanProduct } from 'app/products/loan-products/models/loan-product.model';
 import { SettingsService } from 'app/settings/settings.service';
+import { OrganizationService } from 'app/organization/organization.service';
 import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.component';
 import { FormDialogComponent } from 'app/shared/form-dialog/form-dialog.component';
 import { DatepickerBase } from 'app/shared/form-dialog/formfield/model/datepicker-base';
@@ -156,6 +157,8 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
   enableIncomeCapitalization = false;
   enableBuyDownFee = false;
   isProgressive = false;
+  /** Payment Types Data */
+  paymentTypes: any[] = [];
 
   /**
    * Create Loans Account Terms Form
@@ -166,7 +169,8 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
     private formBuilder: UntypedFormBuilder,
     private settingsService: SettingsService,
     private route: ActivatedRoute,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private organizationService: OrganizationService
   ) {
     this.loanId = this.route.snapshot.params['loanId'];
     this.createloansAccountTermsForm();
@@ -219,7 +223,9 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
         multiDisburseLoan: this.loansAccountTermsData.multiDisburseLoan,
         interestRateFrequencyType: this.loansAccountTermsData.interestRateFrequencyType.id,
         balloonRepaymentAmount: this.loansAccountTermsData.balloonRepaymentAmount,
-        interestRecognitionOnDisbursementDate: this.loansAccountTermsData.interestRecognitionOnDisbursementDate || false
+        interestRecognitionOnDisbursementDate:
+          this.loansAccountTermsData.interestRecognitionOnDisbursementDate || false,
+        disbursalMethodPaymentTypeId: this.loansAccountTermsData.disbursalMethodPaymentTypeId || ''
       });
 
       this.setAdvancedPaymentStrategyControls();
@@ -311,6 +317,11 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.maxDate = this.settingsService.maxFutureDate;
     this.loansAccountTermsData = this.loansAccountProductTemplate;
+
+    // Load payment types
+    this.organizationService.getPaymentTypes().subscribe((paymentTypes: any) => {
+      this.paymentTypes = paymentTypes;
+    });
     if (this.loanId != null && this.loansAccountTemplate.accountNo) {
       this.loansAccountTermsData = this.loansAccountTemplate;
     }
@@ -351,7 +362,9 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
         multiDisburseLoan: this.loansAccountTermsData.multiDisburseLoan,
         interestRateFrequencyType: this.loansAccountTermsData.interestRateFrequencyType.id,
         balloonRepaymentAmount: this.loansAccountTermsData.balloonRepaymentAmount,
-        interestRecognitionOnDisbursementDate: this.loansAccountTermsData.interestRecognitionOnDisbursementDate || false
+        interestRecognitionOnDisbursementDate:
+          this.loansAccountTermsData.interestRecognitionOnDisbursementDate || false,
+        disbursalMethodPaymentTypeId: this.loansAccountTermsData.disbursalMethodPaymentTypeId || ''
       });
     }
     this.createloansAccountTermsForm();
@@ -524,7 +537,8 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
       interestRateFrequencyType: [''],
       balloonRepaymentAmount: [''],
       interestRecognitionOnDisbursementDate: [false],
-      allowFullTermForTranche: [false]
+      allowFullTermForTranche: [false],
+      disbursalMethodPaymentTypeId: ['']
     });
   }
 
