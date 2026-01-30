@@ -293,7 +293,8 @@
         "fundSource": "Fund Source",
         "liabilityTransfer": "Liability Transfer",
         "openingBalancesTransferContra": "Opening Balances Transfer Contra",
-        "payableDividends": "Payable Dividends"
+        "payableDividends": "Payable Dividends",
+        "disbursementsPayable": "Disbursements Payable"
       }
     },
     "breadcrumbs": {
@@ -601,6 +602,7 @@
       "Overdue Fees": "Overdue Fees",
       "Overdraft Fee": "Overdraft Fee",
       "Tranche Disbursement": "Tranche Disbursement",
+      "Available at Cashier": "Available at Cashier",
       "Savings Activation": "Savings Activation",
       "Saving No Activity Fee": "Saving No Activity Fee",
       "SHAREACCOUNT": "SHAREACCOUNT",
@@ -643,6 +645,7 @@
       "Annually": "Annually",
       "Daily Balance": "Daily Balance",
       "% Disbursement Amount": "% Disbursement Amount",
+      "%amount *reduce disbursal": "%amount *reduce disbursal",
       "Average Daily Balance": "Average Daily Balance",
       "BiAnnual": "BiAnnual",
       "360 Days": "360 Days",
@@ -2586,6 +2589,7 @@
       "App Configuration": "App Configuration",
       "Application Menu": "Application Menu",
       "Approve": "Approve",
+      "Awaiting Approval": "Awaiting Approval",
       "Assign Loan Officer": "Assign Loan Officer",
       "Assign Staff": "Assign Staff",
       "Block Account": "Block Account",
@@ -2634,6 +2638,7 @@
       "Loans": "Loans",
       "Main Items": "Main Items",
       "Make Repayment": "Make Repayment",
+      "Mark Ready for Comité": "Mark Ready for Comité",
       "Merchant Issued Refund": "Merchant Issued Refund",
       "Modify Application": "Modify Application",
       "More": "More",
@@ -2974,6 +2979,7 @@
       "Edit Holidays": "Edit Holidays",
       "Edit Hook": "Edit Hook",
       "Edit Loan Product": "Edit Loan Product",
+      "Edit session": "Edit session",
       "Edit Notification Configuration": "Edit Notification Configuration",
       "Edit Office": "Edit Office",
       "Edit Payment Type": "Edit Payment Type",

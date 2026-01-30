@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ import { UploadImageDialogComponent } from './custom-dialogs/upload-image-dialog
 import { CaptureImageDialogComponent } from './custom-dialogs/capture-image-dialog/capture-image-dialog.component';
 
 /** Custom Services */
+import { ClientViewRefreshService } from '../client-view-refresh.service';
 import { ClientsService } from '../clients.service';
 import {
   MatCard,
@@ -80,6 +81,8 @@ export class ClientsViewComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private clientsService: ClientsService,
+    private clientViewRefreshService: ClientViewRefreshService,
+    private cdr: ChangeDetectorRef,
     private _sanitizer: DomSanitizer,
     public dialog: MatDialog
   ) {
@@ -106,6 +109,14 @@ export class ClientsViewComponent implements OnInit {
         this.clientImage = null;
       }
     });
+    if (this.clientViewRefreshService.consumeShouldRefresh()) {
+      this.clientsService.getClientData(this.clientViewData.id, { skipCache: true }).subscribe({
+        next: (data) => {
+          this.clientViewData = data;
+          this.cdr.detectChanges();
+        }
+      });
+    }
   }
 
   isActive(): boolean {

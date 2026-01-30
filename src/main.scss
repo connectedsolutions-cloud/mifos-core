@@ -664,10 +664,11 @@ fa-icon {
   color: rgb(0 0 0 / 87%) !important;
 }
 
-// Ensure Material icons are visible
+// Ensure Material icons are visible and sized consistently
 mat-icon,
 .material-icons {
   color: rgb(0 0 0 / 87%) !important;
+  font-size: 20px;
 }
 
 // Ensure buttons have visible text

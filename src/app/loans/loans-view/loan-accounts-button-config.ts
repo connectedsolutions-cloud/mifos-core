@@ -64,6 +64,11 @@ export class LoansAccountButtonConfiguration {
       case 'Submitted and pending approval':
         this.buttonsArray = [
           {
+            name: 'Awaiting Approval',
+            icon: 'star',
+            taskPermissionName: 'READ_LOAN'
+          },
+          {
             name: 'Add Loan Charge',
             icon: 'plus',
             taskPermissionName: 'CREATE_LOANCHARGE'

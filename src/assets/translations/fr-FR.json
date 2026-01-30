@@ -292,7 +292,8 @@
         "fundSource": "Source du fonds",
         "liabilityTransfer": "Transfert de responsabilité",
         "openingBalancesTransferContra": "Soldes d'ouverture Transfert Contrat",
-        "payableDividends": "Dividendes payables"
+        "payableDividends": "Dividendes payables",
+        "disbursementsPayable": "Décaissements à payer"
       }
     },
     "breadcrumbs": {

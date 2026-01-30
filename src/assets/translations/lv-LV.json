@@ -292,7 +292,8 @@
         "fundSource": "fonds Avots",
         "liabilityTransfer": "atbildības nodošana",
         "openingBalancesTransferContra": "atverot Atlikumu pārskaitījumu Contra",
-        "payableDividends": "izmaksājamās dividendes"
+        "payableDividends": "izmaksājamās dividendes",
+        "disbursementsPayable": "Izņēmumi, kas jāmaksā"
       }
     },
     "breadcrumbs": {

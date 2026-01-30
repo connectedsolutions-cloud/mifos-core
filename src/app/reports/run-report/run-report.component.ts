@@ -293,6 +293,7 @@ export class RunReportComponent implements OnInit {
 
   /**
    * Fetches Select Dropdown options for param type "Select".
+   * When the parameter supports "All" (selectAll === 'Y'), that option is added and set as the default.
    * @param {ReportParameter} param Parameter for which dropdown options are required.
    * @param {string} inputstring url substring for API call.
    */
@@ -300,7 +301,9 @@ export class RunReportComponent implements OnInit {
     this.reportsService.getSelectOptions(inputstring).subscribe((options: SelectOption[]) => {
       param.selectOptions = options;
       if (param.selectAll === 'Y') {
-        param.selectOptions.push({ id: '-1', name: 'All' });
+        const allOption = { id: '-1', name: 'All' };
+        param.selectOptions.push(allOption);
+        this.reportForm.get(param.name)?.patchValue(allOption);
       }
     });
   }
@@ -326,14 +329,21 @@ export class RunReportComponent implements OnInit {
       }
 
       const param: ReportParameter = this.paramData.find((_entry: any) => _entry.name === key);
+      if (!param) {
+        continue;
+      }
       newKey = this.isPentahoReport() ? param.pentahoName : param.inputName;
       switch (param.displayType) {
         case 'text':
           formattedResponse[newKey] = value;
           break;
-        case 'select':
-          formattedResponse[newKey] = (value as { id: string | number })['id'];
+        case 'select': {
+          const option = value as { id?: string | number } | null | undefined;
+          const id = option != null && option.id != null ? String(option.id) : null;
+          // Avoid sending undefined to backend (causes SQL/DataIntegrityViolation). Use -1 for "All" when param supports it and value is empty.
+          formattedResponse[newKey] = id ?? (param.selectAll === 'Y' ? '-1' : '');
           break;
+        }
         case 'date':
           if (this.isTableReport()) {
             formattedResponse[newKey] = this.dateUtils.formatDate(value, Dates.DEFAULT_DATEFORMAT);

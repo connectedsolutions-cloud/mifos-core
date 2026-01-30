@@ -292,7 +292,8 @@
         "fundSource": "कोष स्रोत",
         "liabilityTransfer": "दायित्व स्थानान्तरण",
         "openingBalancesTransferContra": "ब्यालेन्स ट्रान्सफर कन्ट्रा खोल्दै",
-        "payableDividends": "भुक्तानी योग्य लाभांश"
+        "payableDividends": "भुक्तानी योग्य लाभांश",
+        "disbursementsPayable": "भुक्तानी योग्य वितरण"
       }
     },
     "breadcrumbs": {

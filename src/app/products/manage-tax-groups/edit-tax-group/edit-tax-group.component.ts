@@ -79,6 +79,7 @@ export class EditTaxGroupComponent implements OnInit {
   displayedColumns: string[] = [
     'name',
     'startDate',
+    'endDate',
     'actions'
   ];
 
@@ -190,6 +191,7 @@ export class EditTaxGroupComponent implements OnInit {
       formfields.push(
         new DatepickerBase({
           controlName: 'endDate',
+          value: taxComponent.endDate ? new Date(taxComponent.endDate) : null,
           label: 'End Date',
           minDate: this.minDate,
           maxDate: this.maxDate,
@@ -257,10 +259,15 @@ export class EditTaxGroupComponent implements OnInit {
       locale
     };
     for (const taxComponent of taxGroup.taxComponents) {
-      taxComponent.startDate = this.dateUtils.formatDate(taxComponent.startDate, dateFormat) || '';
+      // Format startDate if it exists (for new mappings or when explicitly updating)
+      if (taxComponent.startDate) {
+        taxComponent.startDate = this.dateUtils.formatDate(taxComponent.startDate, dateFormat) || '';
+      }
+      // Format endDate if it exists (for updating existing mappings)
       if (taxComponent.endDate) {
-        delete taxComponent.startDate;
         taxComponent.endDate = this.dateUtils.formatDate(taxComponent.endDate, dateFormat) || '';
+        // Don't delete startDate - it may be needed for new mappings or validation
+        // The backend will handle which fields to use based on whether it's an update (has id) or new mapping
       }
       delete taxComponent.isNew;
     }

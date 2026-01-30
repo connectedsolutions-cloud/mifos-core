@@ -292,7 +292,8 @@
         "fundSource": "fondas Šaltinis",
         "liabilityTransfer": "atsakomybės perdavimas",
         "openingBalancesTransferContra": "atidarymo likučių pervedimo kontraktas",
-        "payableDividends": "mokėtini Dividendai"
+        "payableDividends": "mokėtini Dividendai",
+        "disbursementsPayable": "Mokėtini išmokėjimai"
       }
     },
     "breadcrumbs": {

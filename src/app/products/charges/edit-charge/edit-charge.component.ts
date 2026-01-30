@@ -58,6 +58,17 @@ export class EditChargeComponent implements OnInit {
   showFeeOptions = false;
 
   /**
+   * GL account list for debit/credit dropdowns (chart of accounts).
+   */
+  get glAccountListForDebitCredit(): any[] {
+    const options = this.chargeData?.incomeOrLiabilityAccountOptions?.incomeAccountOptions;
+    if (options && options.length) {
+      return options;
+    }
+    return this.chargeData?.assetAccountOptions || [];
+  }
+
+  /**
    * Retrieves the charge data from `resolve`.
    * @param {ProductsService} productsService Products Service.
    * @param {FormBuilder} formBuilder Form Builder.
@@ -181,6 +192,10 @@ export class EditChargeComponent implements OnInit {
       this.chargeForm.addControl('taxGroupId', this.formBuilder.control({ value: '' }));
     }
 
+    // Debit and credit account (optional, available for all charge types)
+    this.chargeForm.addControl('debitAccountId', this.formBuilder.control(this.chargeData.debitAccount?.id ?? null));
+    this.chargeForm.addControl('creditAccountId', this.formBuilder.control(this.chargeData.creditAccount?.id ?? null));
+
     // Listen to chargeTimeType changes and validate/reset chargeCalculationType if needed
     this.chargeForm.get('chargeTimeType')?.valueChanges.subscribe((chargeTimeType) => {
       const currentChargeCalculationType = this.chargeForm.get('chargeCalculationType')?.value;
@@ -266,6 +281,19 @@ export class EditChargeComponent implements OnInit {
     }
     if (!charges.maxCap) {
       delete charges.maxCap;
+    }
+    // Ensure debit/credit account IDs are sent as numbers when present (backend persists them on m_charge)
+    const debitId = charges.debitAccountId;
+    const creditId = charges.creditAccountId;
+    if (debitId != null && debitId !== '') {
+      charges.debitAccountId = typeof debitId === 'number' ? debitId : Number(debitId);
+    } else {
+      delete charges.debitAccountId;
+    }
+    if (creditId != null && creditId !== '') {
+      charges.creditAccountId = typeof creditId === 'number' ? creditId : Number(creditId);
+    } else {
+      delete charges.creditAccountId;
     }
     this.productsService.updateCharge(this.chargeData.id.toString(), charges).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });

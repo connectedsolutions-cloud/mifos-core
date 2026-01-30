@@ -292,7 +292,8 @@
         "fundSource": "Fuente del Fondo",
         "liabilityTransfer": "Transferencia de Pasivo",
         "openingBalancesTransferContra": "Saldos de Apertura Transferencia Contra",
-        "payableDividends": "Dividendos a pagar"
+        "payableDividends": "Dividendos a pagar",
+        "disbursementsPayable": "Desembolsos por pagar"
       }
     },
     "breadcrumbs": {
@@ -355,6 +356,7 @@
       "Collapse All": "Desplegar todo",
       "Collection Sheet": "Hoja de recuperación",
       "Committee": "Comité",
+      "Awaiting Approval": "En espera de aprobación",
       "Confirm": "Confirmar",
       "Create": "Crear",
       "Create AdHoc Query": "Crear consulta ad hoc",
@@ -2578,6 +2580,7 @@
       "App Configuration": "Configuración de la aplicación",
       "Application Menu": "Menú de aplicaciones",
       "Approve": "Aprobar",
+      "Awaiting Approval": "En espera de aprobación",
       "Assign Loan Officer": "Asignar oficial de Créditos",
       "Assign Staff": "Asignar Asesor",
       "Block Account": "Bloquear Cuenta",
@@ -2964,6 +2967,7 @@
       "Edit Holidays": "Editar días festivos",
       "Edit Hook": "Editar gancho",
       "Edit Loan Product": "Editar producto de Crédito",
+      "Edit session": "Editar sesión",
       "Edit Notification Configuration": "Editar configuración de notificación",
       "Edit Office": "Editar agencia",
       "Edit Payment Type": "Editar tipo de pago",

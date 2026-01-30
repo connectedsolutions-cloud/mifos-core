@@ -292,7 +292,8 @@
         "fundSource": "Fonte del fondo",
         "liabilityTransfer": "Trasferimento di responsabilità",
         "openingBalancesTransferContra": "Saldi iniziali Trasferimento Contra",
-        "payableDividends": "dividendi pagabili"
+        "payableDividends": "dividendi pagabili",
+        "disbursementsPayable": "Acconti da pagare"
       }
     },
     "breadcrumbs": {

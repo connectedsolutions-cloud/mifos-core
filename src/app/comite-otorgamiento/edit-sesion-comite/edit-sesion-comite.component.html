@@ -69,8 +69,8 @@
     </mat-form-field>
   </div>
 
-  <!-- Section 1: Approved Loans -->
-  <mat-card class="m-b-20">
+  <!-- Section 1: Approved Loans (for non-finished sessions) -->
+  <mat-card class="m-b-20" *ngIf="session.status !== 'finished'">
     <h3 class="section-heading">Selected Loans for Approval</h3>
     <table mat-table [dataSource]="approvedLoansDataSource" class="bordered-table">
       <ng-container *ngFor="let col of approvedLoansColumns" [matColumnDef]="col">
@@ -94,8 +94,45 @@
     </table>
   </mat-card>
 
-  <!-- Section 2: Pending Loans -->
-  <mat-card>
+  <!-- Section 1: All Selected Loans (for finished sessions) -->
+  <mat-card class="m-b-20" *ngIf="session.status === 'finished'">
+    <h3 class="section-heading">Session Selections Summary</h3>
+    <table mat-table [dataSource]="finishedLoansDataSource" class="bordered-table">
+      <ng-container matColumnDef="accountNo">
+        <th mat-header-cell *matHeaderCellDef>Account No</th>
+        <td
+          mat-cell
+          *matCellDef="let loan"
+          [class.clickable]="loan.clientId && loan.id"
+          (click)="loan.clientId && loan.id ? openLoanDetails(loan) : null"
+          [style.cursor]="loan.clientId && loan.id ? 'pointer' : 'default'"
+        >
+          {{ loan.accountNo }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="clientName">
+        <th mat-header-cell *matHeaderCellDef>Client Name</th>
+        <td mat-cell *matCellDef="let loan">{{ loan.clientName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="principal">
+        <th mat-header-cell *matHeaderCellDef>Principal</th>
+        <td mat-cell *matCellDef="let loan">{{ loan.principal }}</td>
+      </ng-container>
+      <ng-container matColumnDef="staffName">
+        <th mat-header-cell *matHeaderCellDef>Staff</th>
+        <td mat-cell *matCellDef="let loan">{{ loan.clientStaffName || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="selectedBy">
+        <th mat-header-cell *matHeaderCellDef>Selected By</th>
+        <td mat-cell *matCellDef="let loan">{{ loan.selectedBy }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="finishedLoansColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: finishedLoansColumns"></tr>
+    </table>
+  </mat-card>
+
+  <!-- Section 2: Pending Loans (hidden when session is finished) -->
+  <mat-card *ngIf="session.status !== 'finished'">
     <h3 class="section-heading">Pending Loans to Review and Approve</h3>
     <table mat-table [dataSource]="pendingLoansDataSource" class="bordered-table">
       <ng-container matColumnDef="select">

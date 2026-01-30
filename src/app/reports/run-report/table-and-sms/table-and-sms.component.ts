@@ -29,6 +29,7 @@ import { ProgressBarService } from 'app/core/progress-bar/progress-bar.service';
 import * as ExcelJS from 'exceljs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { REPORT_ROW_LINK_CONFIGS, buildEntityUrl, getLinkOnlyColumnNames } from './report-row-link.config';
 
 /**
  * Table and SMS Component
@@ -57,8 +58,10 @@ export class TableAndSmsComponent implements OnChanges {
   /** Run Report Data */
   @Input() dataObject: any;
 
-  /** Columns to be displayed in mat-table */
+  /** Full column list from API (used for URL building and row indexing) */
   displayedColumns: string[] = [];
+  /** Columns visible in table (excluding link-only columns when row-link config exists) */
+  visibleColumns: string[] = [];
   /** Data source for run-report table. */
   dataSource = new MatTableDataSource();
   /** Maps column name to type */
@@ -91,6 +94,7 @@ export class TableAndSmsComponent implements OnChanges {
     this.hideOutput = true;
     this.columnTypes = [];
     this.displayedColumns = [];
+    this.visibleColumns = [];
     this.getRunReportData();
   }
 
@@ -108,6 +112,7 @@ export class TableAndSmsComponent implements OnChanges {
             this.columnTypes.push(header.columnDisplayType);
             this.displayedColumns.push(header.columnName);
           });
+          this.updateVisibleColumns();
         }
         this.hideOutput = false;
         this.progressBarService.decrease();
@@ -123,6 +128,55 @@ export class TableAndSmsComponent implements OnChanges {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
     });
+  }
+
+  /**
+   * Updates visible columns by excluding link-only columns when a row-link config exists.
+   */
+  private updateVisibleColumns(): void {
+    const config = this.getRowLinkConfig();
+    if (config) {
+      const linkOnly = getLinkOnlyColumnNames(config);
+      this.visibleColumns = this.displayedColumns.filter((c) => !linkOnly.includes(c));
+    } else {
+      this.visibleColumns = [...this.displayedColumns];
+    }
+  }
+
+  /** Whether the current report has a row-link config (row click opens entity in new tab). */
+  hasRowLinkConfig(): boolean {
+    return this.getRowLinkConfig() != null;
+  }
+
+  private getRowLinkConfig() {
+    const id = this.dataObject?.report?.id;
+    return id != null ? REPORT_ROW_LINK_CONFIGS[id] : undefined;
+  }
+
+  /**
+   * Index of a column in the full API row (displayedColumns). Used for cell value lookup.
+   */
+  getDisplayedColumnIndex(columnName: string): number {
+    return this.displayedColumns.indexOf(columnName);
+  }
+
+  /**
+   * Handles row click: opens entity URL in new tab when a row-link config exists.
+   */
+  onRowClick(row: { row: any[] }): void {
+    const config = this.getRowLinkConfig();
+    if (!config || !this.dataObject) {
+      return;
+    }
+    const rowValuesByColumnName: Record<string, unknown> = {};
+    this.displayedColumns.forEach((col, i) => {
+      rowValuesByColumnName[col] = row.row[i];
+    });
+    const url = buildEntityUrl(config, rowValuesByColumnName);
+    if (url) {
+      const base = window.location.origin + (window.location.pathname || '');
+      window.open(base + url, '_blank');
+    }
   }
 
   /**
@@ -171,23 +225,25 @@ export class TableAndSmsComponent implements OnChanges {
 
   exportToXLS(): void {
     const fileName = `${this.dataObject.report.name}.xlsx`;
+    const cols = this.visibleColumns;
     const data = this.csvData.map((object: any) => {
       const row: { [key: string]: any } = {};
-      for (let i = 0; i < this.displayedColumns.length; i++) {
-        row[this.displayedColumns[i]] = object.row[i];
-      }
+      cols.forEach((col) => {
+        const idx = this.displayedColumns.indexOf(col);
+        row[col] = idx >= 0 ? object.row[idx] : undefined;
+      });
       return row;
     });
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Report');
 
-    // Add header row
-    worksheet.addRow(this.displayedColumns);
+    // Add header row (visible columns only)
+    worksheet.addRow(cols);
 
     // Add data rows
     data.forEach((rowObj: any) => {
-      worksheet.addRow(this.displayedColumns.map((col) => rowObj[col]));
+      worksheet.addRow(cols.map((col) => rowObj[col]));
     });
 
     workbook.xlsx.writeBuffer().then((buffer: any) => {
@@ -202,11 +258,12 @@ export class TableAndSmsComponent implements OnChanges {
   }
 
   /**
-   * Generates the CSV file dynamically for run report data.
+   * Generates the CSV file dynamically for run report data (visible columns only).
    */
   downloadCSV(fileName: string, delimiter: string) {
-    const headers = this.displayedColumns;
-    let csv = this.csvData.map((object: any) => object.row.join(delimiter));
+    const headers = this.visibleColumns;
+    const idxList = headers.map((h) => this.displayedColumns.indexOf(h));
+    let csv = this.csvData.map((object: any) => idxList.map((i) => (i >= 0 ? object.row[i] : '')).join(delimiter));
     csv.unshift(`data:text/csv;charset=utf-8,${headers.join(delimiter)}`);
     csv = csv.join('\r\n');
     const link = document.createElement('a');

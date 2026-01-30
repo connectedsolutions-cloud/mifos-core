@@ -292,7 +292,8 @@
         "fundSource": "fond Zdroj",
         "liabilityTransfer": "Převod odpovědnosti",
         "openingBalancesTransferContra": "otevření zůstatků Převod proti",
-        "payableDividends": "splatné dividendy"
+        "payableDividends": "splatné dividendy",
+        "disbursementsPayable": "Splatné výplaty"
       }
     },
     "breadcrumbs": {

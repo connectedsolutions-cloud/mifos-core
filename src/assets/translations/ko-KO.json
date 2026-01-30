@@ -292,7 +292,8 @@
         "fundSource": "자금 출처",
         "liabilityTransfer": "책임 이전",
         "openingBalancesTransferContra": "기초 잔액 이체 대조",
-        "payableDividends": "지급 배당금"
+        "payableDividends": "지급 배당금",
+        "disbursementsPayable": "미지급 지급금"
       }
     },
     "breadcrumbs": {

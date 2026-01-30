@@ -228,6 +228,7 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
         disbursalMethodPaymentTypeId: this.loansAccountTermsData.disbursalMethodPaymentTypeId || ''
       });
 
+      this.setDefaultDisbursalMethodIfEmpty();
       this.setAdvancedPaymentStrategyControls();
 
       if (this.loansAccountTermsData.loanScheduleType.code == LoanProducts.LOAN_SCHEDULE_TYPE_CUMULATIVE) {
@@ -318,9 +319,10 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
     this.maxDate = this.settingsService.maxFutureDate;
     this.loansAccountTermsData = this.loansAccountProductTemplate;
 
-    // Load payment types
+    // Load payment types and default disbursal method to cash payment
     this.organizationService.getPaymentTypes().subscribe((paymentTypes: any) => {
       this.paymentTypes = paymentTypes;
+      this.setDefaultDisbursalMethodIfEmpty();
     });
     if (this.loanId != null && this.loansAccountTemplate.accountNo) {
       this.loansAccountTermsData = this.loansAccountTemplate;
@@ -671,6 +673,23 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
         }
       }
     });
+  }
+
+  /**
+   * Sets disbursal method to "Cash Payment" when no value is set.
+   */
+  setDefaultDisbursalMethodIfEmpty(): void {
+    if (!this.paymentTypes?.length || !this.loansAccountTermsForm) {
+      return;
+    }
+    const current = this.loansAccountTermsForm.get('disbursalMethodPaymentTypeId')?.value;
+    if (current !== null && current !== undefined && current !== '') {
+      return;
+    }
+    const cashPayment = this.paymentTypes.find((pt: any) => pt.isCashPayment === true);
+    if (cashPayment?.id != null) {
+      this.loansAccountTermsForm.patchValue({ disbursalMethodPaymentTypeId: cashPayment.id });
+    }
   }
 
   /**

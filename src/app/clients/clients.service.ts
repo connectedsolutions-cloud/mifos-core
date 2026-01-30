@@ -53,8 +53,17 @@ export class ClientsService {
     return this.http.get(`/clients/template?officeId=${officeId}&staffInSelectedOfficeOnly=true`);
   }
 
-  getClientData(clientId: string) {
-    return this.http.get(`/clients/${clientId}`);
+  /**
+   * @param clientId Client id
+   * @param options.skipCache If true, adds cache-busting query param for refetch-after-mutate
+   */
+  getClientData(clientId: string, options?: { skipCache?: boolean }): Observable<any> {
+    let params = new HttpParams();
+    if (options?.skipCache) {
+      params = params.set('_', String(Date.now()));
+    }
+    const opts = params.keys().length ? { params } : {};
+    return this.http.get(`/clients/${clientId}`, opts);
   }
 
   createClient(client: any) {

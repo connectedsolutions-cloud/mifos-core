@@ -323,6 +323,12 @@ export class LoansViewComponent implements OnInit {
 
   loanAction(actionName: string) {
     switch (actionName) {
+      case 'Mark Ready for Comité':
+      case 'Awaiting Approval':
+        this.loansService.loanActionButtons(this.loanId, 'markReadyForComite', {}).subscribe(() => {
+          this.reload();
+        });
+        break;
       case 'Recover From Guarantor':
         this.recoverFromGuarantor();
         break;

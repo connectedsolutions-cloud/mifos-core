@@ -135,8 +135,21 @@ export class CreateChargeComponent implements OnInit {
       maxCap: [
         null,
         [minNumberValueValidator('minCap')]
-      ]
+      ],
+      debitAccountId: [null],
+      creditAccountId: [null]
     });
+  }
+
+  /**
+   * GL account list for debit/credit dropdowns (chart of accounts).
+   */
+  get glAccountListForDebitCredit(): any[] {
+    const options = this.chargesTemplateData?.incomeOrLiabilityAccountOptions?.incomeAccountOptions;
+    if (options && options.length) {
+      return options;
+    }
+    return this.chargesTemplateData?.assetAccountOptions || [];
   }
 
   /**
@@ -329,6 +342,19 @@ export class CreateChargeComponent implements OnInit {
     }
     if (!data.maxCap) {
       delete data.maxCap;
+    }
+    // Ensure debit/credit account IDs are sent as numbers when present (backend persists them on m_charge)
+    const debitId = data.debitAccountId;
+    const creditId = data.creditAccountId;
+    if (debitId != null && debitId !== '') {
+      data.debitAccountId = typeof debitId === 'number' ? debitId : Number(debitId);
+    } else {
+      delete data.debitAccountId;
+    }
+    if (creditId != null && creditId !== '') {
+      data.creditAccountId = typeof creditId === 'number' ? creditId : Number(creditId);
+    } else {
+      delete data.creditAccountId;
     }
     this.productsService.createCharge(data).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });

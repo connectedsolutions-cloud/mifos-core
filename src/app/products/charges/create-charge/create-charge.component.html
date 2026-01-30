@@ -225,6 +225,26 @@
             >
             </mifosx-gl-account-selector>
 
+            <mifosx-gl-account-selector
+              class="flex-48"
+              *ngIf="chargeForm.controls.chargeAppliesTo.value"
+              [inputFormControl]="chargeForm.controls.debitAccountId"
+              [glAccountList]="glAccountListForDebitCredit"
+              [required]="false"
+              [inputLabel]="'Debit Account'"
+            >
+            </mifosx-gl-account-selector>
+
+            <mifosx-gl-account-selector
+              class="flex-48"
+              *ngIf="chargeForm.controls.chargeAppliesTo.value"
+              [inputFormControl]="chargeForm.controls.creditAccountId"
+              [glAccountList]="glAccountListForDebitCredit"
+              [required]="false"
+              [inputLabel]="'Credit Account'"
+            >
+            </mifosx-gl-account-selector>
+
             <mat-form-field class="flex-48">
               <mat-label>{{ 'labels.inputs.Tax Group' | translate }}</mat-label>
               <mat-select formControlName="taxGroupId">

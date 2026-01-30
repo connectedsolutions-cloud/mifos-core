@@ -14,9 +14,10 @@ import { MatChipSet, MatChip } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../users/users.service';
-import { firstValueFrom, forkJoin } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { firstValueFrom, forkJoin, of } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { AuthenticationService } from '../../core/authentication/authentication.service';
+import { LoansService } from '../../loans/loans.service';
 
 /** Mifos native/demo emails to exclude from participants list */
 const EXCLUDED_USER_EMAILS = [
@@ -55,6 +56,14 @@ export class EditSesionComiteComponent implements OnInit {
     'principal',
     'staffName'
   ];
+  finishedLoansColumns = [
+    'accountNo',
+    'clientName',
+    'principal',
+    'staffName',
+    'selectedBy'
+  ];
+  finishedLoansDataSource = new MatTableDataSource<any>([]);
   pendingLoansColumns = [
     'select',
     'accountNo',
@@ -73,6 +82,7 @@ export class EditSesionComiteComponent implements OnInit {
     private router: Router,
     private service: ComiteOtorgamientoService,
     private usersService: UsersService,
+    private loansService: LoansService,
     private authenticationService: AuthenticationService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -86,7 +96,11 @@ export class EditSesionComiteComponent implements OnInit {
     }).subscribe({
       next: ({ session, pending }) => {
         this.session = session;
-        this.pendingLoansDataSource.data = pending || [];
+        const raw = pending || [];
+        const readyForComite = raw.filter(
+          (loan: any) => loan.readyForComite === true || loan.ready_for_comite === true
+        );
+        this.pendingLoansDataSource.data = readyForComite;
         this.syncSelectedLoansFromSession();
         this.updateApprovedLoans();
         this.cdr.detectChanges();
@@ -111,7 +125,9 @@ export class EditSesionComiteComponent implements OnInit {
 
   loadPendingLoans(): void {
     this.service.getPendingLoans().subscribe((response: any) => {
-      this.pendingLoansDataSource.data = response || [];
+      const raw = response || [];
+      const readyForComite = raw.filter((loan: any) => loan.readyForComite === true || loan.ready_for_comite === true);
+      this.pendingLoansDataSource.data = readyForComite;
     });
   }
 
@@ -137,6 +153,124 @@ export class EditSesionComiteComponent implements OnInit {
     const approved = pending.filter((loan: any) => this.unanimouslyApprovedLoanIds.has(Number(loan.id)));
     // Replace data source with new instance so MatTable picks up changes
     this.approvedLoansDataSource = new MatTableDataSource<any>([...approved]);
+
+    // Update finished loans data source if session is finished
+    if (this.session?.status === 'finished') {
+      this.updateFinishedLoansFromSelection();
+    }
+  }
+
+  updateFinishedLoansFromSelection(): void {
+    if (!this.session?.selection || !Array.isArray(this.session.selection)) {
+      this.finishedLoansDataSource = new MatTableDataSource<any>([]);
+      return;
+    }
+
+    // Group selections by loan ID and collect who selected each loan
+    const loanSelectionsMap = new Map<number, { loanId: number; selectedByUserIds: number[] }>();
+    for (const s of this.session.selection) {
+      const loanId = Number(s.selectedId ?? s.selected_id);
+      if (loanId == null || isNaN(loanId)) continue;
+
+      if (!loanSelectionsMap.has(loanId)) {
+        loanSelectionsMap.set(loanId, { loanId, selectedByUserIds: [] });
+      }
+      const userId = s.appuserId ?? s.appuser_id;
+      if (userId != null) {
+        loanSelectionsMap.get(loanId)!.selectedByUserIds.push(Number(userId));
+      }
+    }
+
+    // Build the display data with loan details and who selected them.
+    // Use explicit keys (accountNo, clientName, principal, clientStaffName) to support
+    // both camelCase and snake_case from backend (LoanAccountData vs JSON).
+    const pending = this.pendingLoansDataSource.data || [];
+    const have: any[] = [];
+    const needFetch: { loanId: number; selectedByNames: string }[] = [];
+
+    for (const [
+      loanId,
+      selectionInfo
+    ] of loanSelectionsMap) {
+      const selectedByNames = selectionInfo.selectedByUserIds
+        .map((uid) => {
+          const user = this.users.find((u) => u.id === uid);
+          return user?.displayName || `User ${uid}`;
+        })
+        .join(', ');
+
+      const loan = pending.find((l: any) => Number(l.id) === loanId);
+      if (loan) {
+        have.push({
+          id: loan.id ?? loanId,
+          clientId: loan.clientId ?? loan.client_id,
+          accountNo: loan.accountNo ?? loan.account_no ?? '-',
+          clientName: loan.clientName ?? loan.client_name ?? '-',
+          principal: loan.principal ?? '-',
+          clientStaffName: loan.clientStaffName ?? loan.client_staff_name ?? '-',
+          selectedBy: selectedByNames || '-'
+        });
+      } else {
+        needFetch.push({ loanId, selectedByNames });
+      }
+    }
+
+    if (needFetch.length === 0) {
+      this.finishedLoansDataSource = new MatTableDataSource<any>([...have]);
+      return;
+    }
+
+    // Fetch loan details for selection entries not in pending (e.g. session finished)
+    forkJoin(
+      needFetch.map(({ loanId, selectedByNames }) =>
+        this.loansService.getLoanAccountDetails(String(loanId)).pipe(
+          map((d: any) => ({
+            id: d.id ?? loanId,
+            clientId: d.clientId ?? d.client_id ?? null,
+            accountNo: d.accountNo ?? d.account_no ?? '-',
+            clientName: d.clientName ?? d.client_name ?? '-',
+            principal: d.principal ?? '-',
+            clientStaffName: d.clientStaffName ?? d.client_staff_name ?? '-',
+            selectedBy: selectedByNames || '-'
+          })),
+          catchError(() =>
+            of({
+              id: loanId,
+              clientId: null,
+              accountNo: `Loan #${loanId}`,
+              clientName: '-',
+              principal: '-',
+              clientStaffName: '-',
+              selectedBy: selectedByNames || '-'
+            })
+          )
+        )
+      )
+    ).subscribe({
+      next: (fetched) => {
+        this.finishedLoansDataSource = new MatTableDataSource<any>([
+          ...have,
+          ...fetched
+        ]);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        const fallbacks = needFetch.map(({ loanId, selectedByNames }) => ({
+          id: loanId,
+          clientId: null as number | null,
+          accountNo: `Loan #${loanId}`,
+          clientName: '-',
+          principal: '-',
+          clientStaffName: '-',
+          selectedBy: selectedByNames || '-'
+        }));
+        this.finishedLoansDataSource = new MatTableDataSource<any>([
+          ...have,
+          ...fallbacks
+        ]);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   isUnanimouslyApproved(loanId: number): boolean {
@@ -257,8 +391,15 @@ export class EditSesionComiteComponent implements OnInit {
   }
 
   applyApprovals(): void {
-    this.service.applySession(this.sessionId).subscribe(() => {
-      this.loadSession();
+    console.debug('[COMTE-DEBUG] Apply Approvals clicked', { sessionId: this.sessionId });
+    this.service.applySession(this.sessionId).subscribe({
+      next: () => {
+        console.debug('[COMTE-DEBUG] Apply session completed successfully', { sessionId: this.sessionId });
+        this.loadSession();
+      },
+      error: (err) => {
+        console.error('[COMTE-DEBUG] Apply session failed', { sessionId: this.sessionId, error: err });
+      }
     });
   }
 
@@ -307,7 +448,7 @@ export class EditSesionComiteComponent implements OnInit {
     }
     const status = this.session.status;
     // Only editable when status is "created"
-    // Locked when status is "started", "closed", or "applied"
+    // Locked when status is "started", "closed", "applied", or "finished"
     return status === 'created';
   }
 

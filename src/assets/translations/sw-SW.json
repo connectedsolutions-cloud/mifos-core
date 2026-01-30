@@ -292,7 +292,8 @@
         "fundSource": "Chanzo cha mfuko",
         "liabilityTransfer": "Uhamisho wa dhima",
         "openingBalancesTransferContra": "kufungua Mizani Uhamisho Contra",
-        "payableDividends": "Gawio linalolipwa"
+        "payableDividends": "Gawio linalolipwa",
+        "disbursementsPayable": "Desembolsos por pagar"
       }
     },
     "breadcrumbs": {

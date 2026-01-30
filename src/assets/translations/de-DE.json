@@ -292,7 +292,8 @@
         "fundSource": "Fondsquelle",
         "liabilityTransfer": "Haftungsübertragung",
         "openingBalancesTransferContra": "Eröffnungssalden Transferkontra",
-        "payableDividends": "zahlbare Dividenden"
+        "payableDividends": "zahlbare Dividenden",
+        "disbursementsPayable": "Ausstehende Auszahlungen"
       }
     },
     "breadcrumbs": {

@@ -66,6 +66,7 @@ export class ComiteOtorgamientoService {
   }
 
   applySession(sessionId: number): Observable<any> {
+    console.debug('[COMTE-DEBUG] POST apply session', { url: `${this.resourceUrl}/${sessionId}?command=apply` });
     return this.http.post(`${this.resourceUrl}/${sessionId}?command=apply`, {});
   }
 

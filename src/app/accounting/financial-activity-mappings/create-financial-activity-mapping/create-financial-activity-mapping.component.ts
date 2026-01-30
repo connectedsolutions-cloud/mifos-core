@@ -88,6 +88,7 @@ export class CreateFinancialActivityMappingComponent implements OnInit {
           break;
         case 200:
         case 201:
+        case 202:
           this.glAccountData = this.glAccountOptions.liabilityAccountOptions;
           break;
         case 300:
