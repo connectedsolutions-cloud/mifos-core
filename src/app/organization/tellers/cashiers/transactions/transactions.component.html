@@ -123,6 +123,19 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'labels.teller.Opening / Closing' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let transaction">
+            {{
+              transaction.txnType.value === 'Open Cashier' || transaction.txnType.value === 'Close Cashier'
+                ? (transaction.txnAmount | formatNumber)
+                : '-'
+            }}
+          </td>
+        </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>

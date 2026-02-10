@@ -1,6 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ComiteOtorgamientoService } from '../comite-otorgamiento.service';
+import { CrearPendienteTransferirFondosDialogComponent } from '../crear-pendiente-transferir-fondos-dialog/crear-pendiente-transferir-fondos-dialog.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
 import { MatTableModule } from '@angular/material/table';
@@ -11,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipSet, MatChip } from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../users/users.service';
@@ -42,6 +45,7 @@ const EXCLUDED_USER_EMAILS = [
     MatInputModule,
     MatChipSet,
     MatChip,
+    MatDialogModule,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })
@@ -80,6 +84,7 @@ export class EditSesionComiteComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private dialog: MatDialog,
     private service: ComiteOtorgamientoService,
     private usersService: UsersService,
     private loansService: LoansService,
@@ -399,6 +404,18 @@ export class EditSesionComiteComponent implements OnInit {
       },
       error: (err) => {
         console.error('[COMTE-DEBUG] Apply session failed', { sessionId: this.sessionId, error: err });
+      }
+    });
+  }
+
+  openCrearPendienteTransferirFondosDialog(): void {
+    const dialogRef = this.dialog.open(CrearPendienteTransferirFondosDialogComponent, {
+      width: '500px',
+      data: { sessionId: this.sessionId }
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadSession();
       }
     });
   }

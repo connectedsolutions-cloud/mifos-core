@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Crear pendiente y transferir fondos</h2>
+<mat-dialog-content>
+  <p *ngIf="blueprintError" class="blueprint-error">{{ blueprintError }}</p>
+  <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Responsable</mat-label>
+      <mat-select formControlName="responsableUserId" required>
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.displayName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('responsableUserId')?.hasError('required')"> Responsable es requerido </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Fecha de vencimiento</mat-label>
+      <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate" />
+      <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #dueDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nota</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions class="layout-row layout-xs-column layout-align-center gap-2percent" align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="!canSubmit">Crear pendiente</button>
+</mat-dialog-actions>

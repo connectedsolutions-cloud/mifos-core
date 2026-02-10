@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="header-section">
+    <h2 class="page-title">{{ 'labels.text.Pending Items' | translate }}</h2>
+    <p class="page-subtitle">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="content-section">
+    <div class="summary-bar">
+      <span class="summary-count">{{ mySteps.length }} {{ 'labels.text.pending items' | translate }}</span>
+      <button mat-raised-button color="primary" (click)="goToCreateFlow()" class="create-btn">
+        <fa-icon icon="plus" class="btn-icon"></fa-icon>
+        {{ 'labels.text.Create New Flow' | translate }}
+      </button>
+    </div>
+
+    <div class="pending-list" *ngIf="mySteps.length">
+      <mat-card
+        *ngFor="let step of mySteps; trackBy: trackByStepId"
+        class="pending-item-card"
+        (click)="goToFlow(step.pendingFlowId)"
+      >
+        <mat-card-content>
+          <div class="item-row">
+            <span class="priority-badge priority-{{ getPriority(step) | lowercase }}">
+              <fa-icon
+                [icon]="getPriority(step) === 'HIGH' ? 'circle-exclamation' : 'clock'"
+                class="priority-icon"
+              ></fa-icon>
+              {{ getPriority(step) }}
+            </span>
+            <div class="item-main">
+              <h3 class="item-title">{{ step.name }}</h3>
+              <p class="item-description" *ngIf="step.description">{{ step.description }}</p>
+            </div>
+            <div class="item-meta">
+              <span class="meta-item">
+                {{ 'labels.inputs.Category' | translate }}: {{ 'labels.text.Pending Task' | translate }}
+              </span>
+              <span class="meta-item" *ngIf="step.dueDate">
+                {{ 'labels.inputs.Due' | translate }}: {{ step.dueDate | date: 'shortDate' }}
+              </span>
+              <span class="meta-item" *ngIf="step.responsableUserName">
+                {{ 'labels.text.Assigned to' | translate }}: {{ step.responsableUserName }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="empty-state" *ngIf="!mySteps.length">
+      <p>{{ 'labels.text.No steps assigned' | translate }}</p>
+    </div>
+  </div>
+</div>

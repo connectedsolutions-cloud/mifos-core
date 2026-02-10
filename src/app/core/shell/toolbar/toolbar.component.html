@@ -44,6 +44,12 @@
         <fa-icon class="mr-05" icon="money-bill-alt" size="lg"></fa-icon>
         {{ 'labels.menus.Accounting' | translate }}
       </a>
+      <ng-container *mifosxHasPermission="'VIEW_CASHIER_SESSIONS'">
+        <a class="tab-link teller-link" href="#" (click)="onCashierButtonClick($event)" tabindex="0">
+          <fa-icon class="mr-05" icon="cash-register" size="lg"></fa-icon>
+          {{ 'labels.menus.Teller' | translate }}
+        </a>
+      </ng-container>
       <a
         #reports
         class="tab-link"

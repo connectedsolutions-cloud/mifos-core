@@ -1,0 +1,146 @@
+.tab-container {
+  padding: 0;
+}
+
+.operaciones-cards {
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  .operaciones-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+  }
+
+  .card-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .card-header-row {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+
+  .card-value-green {
+    color: #2e7d32;
+  }
+
+  .card-value-number {
+    font-size: 2rem;
+    color: #424242;
+  }
+
+  .card-meta {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  mat-card-actions {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 16px;
+    margin-bottom: 0;
+  }
+
+  .operaciones-card-cash mat-card-actions {
+    button.mdc-button {
+      width: 100%;
+    }
+
+    .mat-mdc-button-touch-target {
+      width: 100%;
+    }
+  }
+
+  .operaciones-card-actions .actions-buttons {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.operaciones-toolbar {
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .operaciones-search {
+    flex: 1;
+    min-width: 240px;
+    max-width: 400px;
+  }
+}
+
+.operaciones-table-card {
+  margin-bottom: 1rem;
+
+  mat-card-content {
+    padding: 0;
+    overflow-x: auto;
+  }
+}
+
+.operaciones-table {
+  width: 100%;
+
+  th.mat-header-cell {
+    font-weight: 600;
+    text-align: center;
+  }
+
+  td.mat-cell {
+    text-align: center;
+  }
+
+  .tipo-badge,
+  .estado-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .tipo-ingreso {
+    background-color: #2e7d32;
+    color: #fff;
+  }
+
+  .tipo-egreso {
+    background-color: #c62828;
+    color: #fff;
+  }
+
+  .estado-completado {
+    background-color: #1565c0;
+    color: #fff;
+  }
+
+  .estado-pendiente {
+    background-color: #f9a825;
+    color: #fff;
+  }
+
+  .monto-positivo {
+    color: #2e7d32;
+    font-weight: 500;
+  }
+
+  .monto-negativo {
+    color: #c62828;
+    font-weight: 500;
+  }
+
+  .no-data-row td {
+    text-align: center;
+    padding: 1.5rem;
+    color: #666;
+  }
+}

@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "přeplánovat půjčku",
       "the Transaction Type": "typ transakce"
     },
+    "teller": {
+      "Operaciones": "Operace",
+      "Desembolsos": "Výplaty",
+      "Pagos": "Platby",
+      "Content coming soon": "Obsah již brzy"
+    },
     "text": {
       "A": "A",
       "Ability to manage holidays for individual offices": "Schopnost spravovat svátky pro jednotlivé kanceláře je velmi užitečným nástrojem pro organizaci zahrnující více míst. Tuto možnost použijte k přizpůsobení svátků pro každou kancelář vaší organizace.",

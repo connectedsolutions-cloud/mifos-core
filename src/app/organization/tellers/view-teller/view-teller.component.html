@@ -60,6 +60,14 @@
         <div class="flex-50">
           {{ tellerData.status | titlecase }}
         </div>
+
+        <div class="flex-50 mat-body-strong" *ngIf="tellerData.maxTellerCashAmount != null">
+          {{ 'labels.inputs.Max Teller Cash Amount' | translate }}
+        </div>
+
+        <div class="flex-50" *ngIf="tellerData.maxTellerCashAmount != null">
+          {{ tellerData.maxTellerCashAmount | number }}
+        </div>
       </div>
     </mat-card-content>
   </mat-card>

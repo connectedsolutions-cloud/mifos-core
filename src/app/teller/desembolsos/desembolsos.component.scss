@@ -1,0 +1,129 @@
+.tab-container {
+  padding: 0;
+}
+
+.desembolsos-date-bar {
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-display {
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.date-icon {
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: rgb(0 0 0 / 60%);
+}
+
+.date-text {
+  text-transform: capitalize;
+  font-size: 0.95rem;
+}
+
+.cambiar-btn {
+  margin-left: 0.25rem;
+}
+
+.desembolsos-toolbar {
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.desembolsos-search {
+  flex: 1;
+  max-width: 400px;
+}
+
+.desembolsos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.desembolso-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  border-radius: 12px;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+  }
+}
+
+.desembolso-card mat-card-content {
+  padding: 1rem 1.25rem !important;
+  gap: 1rem;
+}
+
+.desembolso-status-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: white;
+  }
+
+  &.status-completado {
+    background-color: #4caf50;
+  }
+
+  &.status-enviado {
+    background-color: #03a9f4;
+  }
+
+  &.status-pendiente {
+    background-color: #ff9800;
+  }
+}
+
+.desembolso-details {
+  min-width: 0;
+}
+
+.desembolso-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.desembolso-beneficiario {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.desembolso-id {
+  font-size: 0.85rem;
+  color: rgb(0 0 0 / 60%);
+}
+
+.desembolso-concepto {
+  font-size: 0.9rem;
+  color: rgb(0 0 0 / 70%);
+  margin-top: 0.15rem;
+}
+
+.desembolso-monto {
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.desembolsos-empty {
+  padding: 2rem;
+  text-align: center;
+  color: rgb(0 0 0 / 50%);
+}

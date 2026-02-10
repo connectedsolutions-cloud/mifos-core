@@ -1,0 +1,45 @@
+<div class="container">
+  @if (!(hasCashierSession$ | async)) {
+    <mifosx-caja-default-view />
+  } @else {
+    <mat-card class="teller-card">
+      <mat-card-content>
+        <div class="teller-nav-center">
+          <nav mat-tab-nav-bar class="navigation-tabs" [tabPanel]="tabPanel">
+            <a
+              mat-tab-link
+              [routerLink]="['./operaciones']"
+              routerLinkActive
+              #operaciones="routerLinkActive"
+              [active]="operaciones.isActive"
+            >
+              {{ 'labels.teller.Operaciones' | translate }}
+            </a>
+            <a
+              mat-tab-link
+              [routerLink]="['./desembolsos']"
+              routerLinkActive
+              #desembolsos="routerLinkActive"
+              [active]="desembolsos.isActive"
+            >
+              {{ 'labels.teller.Desembolsos' | translate }}
+            </a>
+            <a
+              mat-tab-link
+              [routerLink]="['./pagos']"
+              routerLinkActive
+              #pagos="routerLinkActive"
+              [active]="pagos.isActive"
+            >
+              {{ 'labels.teller.Pagos' | translate }}
+            </a>
+          </nav>
+        </div>
+
+        <mat-tab-nav-panel #tabPanel>
+          <router-outlet></router-outlet>
+        </mat-tab-nav-panel>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

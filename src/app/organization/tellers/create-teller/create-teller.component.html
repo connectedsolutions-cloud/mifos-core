@@ -77,6 +77,11 @@
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
           </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.Max Teller Cash Amount' | translate }}</mat-label>
+            <input matInput type="number" min="0" step="0.01" formControlName="maxTellerCashAmount" />
+          </mat-form-field>
         </div>
       </mat-card-content>
 

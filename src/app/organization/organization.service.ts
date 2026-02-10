@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 
 /** Custom Imports. */
 import { SettingsService } from 'app/settings/settings.service';
+import { AuthenticationService } from 'app/core/authentication/authentication.service';
 
 /**
  * Organization service.
@@ -17,10 +18,13 @@ import { SettingsService } from 'app/settings/settings.service';
 export class OrganizationService {
   /**
    * @param {HttpClient} http Http Client to send requests.
+   * @param {SettingsService} settingsService Settings service.
+   * @param {AuthenticationService} authenticationService Authentication service (for current user office).
    */
   constructor(
     private http: HttpClient,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private authenticationService: AuthenticationService
   ) {}
 
   /**
@@ -388,9 +392,14 @@ export class OrganizationService {
   }
 
   /**
+   * Returns tellers data, scoped to the current user's office when logged in.
    * @returns {Observable<any>} Tellers data
    */
   getTellers(): Observable<any> {
+    const officeId = this.authenticationService.getCredentials()?.officeId;
+    if (officeId != null) {
+      return this.http.get('/tellers', { params: { officeId: String(officeId) } });
+    }
     return this.http.get('/tellers');
   }
 

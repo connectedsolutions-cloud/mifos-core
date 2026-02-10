@@ -28,6 +28,7 @@ import { ClientsModule } from './clients/clients.module';
 import { GroupsModule } from './groups/groups.module';
 import { CentersModule } from './centers/centers.module';
 import { AccountingModule } from './accounting/accounting.module';
+import { TellerModule } from './teller/teller.module';
 import { SystemModule } from './system/system.module';
 import { ProductsModule } from './products/products.module';
 import { OrganizationModule } from './organization/organization.module';
@@ -41,6 +42,7 @@ import { ProfileModule } from './profile/profile.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigurationWizardModule } from './configuration-wizard/configuration-wizard.module';
 import { ComiteOtorgamientoModule } from './comite-otorgamiento/comite-otorgamiento.module';
+import { PendientesModule } from './pendientes/pendientes.module';
 import { PortalModule } from '@angular/cdk/portal';
 
 /** Main Routing Module */
@@ -109,6 +111,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     GroupsModule,
     CentersModule,
     AccountingModule,
+    TellerModule,
     SystemModule,
     ProductsModule,
     OrganizationModule,
@@ -120,6 +123,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasksModule,
     ConfigurationWizardModule,
     ComiteOtorgamientoModule,
+    PendientesModule,
     AppRoutingModule,
     NotFoundComponent,
     CallbackComponent

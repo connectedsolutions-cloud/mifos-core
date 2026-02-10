@@ -1,0 +1,12 @@
+<div class="container">
+  <button mat-button (click)="back()">{{ 'labels.buttons.Back' | translate }}</button>
+  <h2>{{ 'labels.buttons.Blueprints' | translate }}</h2>
+  <div *ngIf="loading"><mat-spinner diameter="40"></mat-spinner></div>
+  <mat-nav-list *ngIf="!loading && blueprints?.length">
+    <mat-list-item *ngFor="let b of blueprints">
+      <span matLine>{{ b.name }}</span>
+      <span matLine class="text-muted">{{ b.status }} - v{{ b.version }}</span>
+    </mat-list-item>
+  </mat-nav-list>
+  <p *ngIf="!loading && !blueprints?.length">{{ 'labels.text.No blueprints' | translate }}</p>
+</div>

@@ -70,7 +70,8 @@ export class TransactionsComponent implements OnInit {
     'allocation',
     'cashIn',
     'cashOut',
-    'settlement'
+    'settlement',
+    'balance'
   ];
   /** Data source for transactions table. */
   dataSource: MatTableDataSource<any>;

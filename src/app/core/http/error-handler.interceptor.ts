@@ -51,8 +51,9 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     }
 
     const isClientImage404 = status === 404 && request.url.includes('/clients/') && request.url.includes('/images');
+    const isCashierSession404 = status === 404 && request.url.includes('/cashiers/session');
 
-    if (!environment.production && !isClientImage404) {
+    if (!environment.production && !isClientImage404 && !isCashierSession404) {
       log.error(`Request Error: ${errorMessage}`);
     }
 
@@ -76,12 +77,16 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
         // Don't show alerts for missing client images
         // This is an expected condition, not an error
         return EMPTY;
-      } else {
-        this.alertService.alert({
-          type: this.translate.instant('error.resource.not.found'),
-          message: errorMessage || 'Resource does not exist!'
-        });
       }
+      // No active cashier session is expected when user has not opened a till; do not show alert
+      if (isCashierSession404) {
+        // Caller (CashierSessionService) handles this and returns null
+        throw response;
+      }
+      this.alertService.alert({
+        type: this.translate.instant('error.resource.not.found'),
+        message: errorMessage || 'Resource does not exist!'
+      });
     } else if (status === 500) {
       this.alertService.alert({
         type: 'Internal Server Error',

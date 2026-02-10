@@ -1,0 +1,19 @@
+<div class="container">
+  <mat-card class="caja-default-card">
+    <mat-card-content>
+      <div class="caja-default-content">
+        <p class="caja-default-message">
+          {{ 'labels.teller.Seleccione Aperturar caja para iniciar su sesión de caja' | translate }}
+        </p>
+        @if (errorMessage) {
+          <p class="caja-default-error">{{ errorMessage | translate }}</p>
+        }
+        <ng-container *mifosxIsEnabled="'CREATE_CASHIER_SESSIONS'">
+          <button mat-raised-button color="primary" [disabled]="loading" (click)="aperturarCaja()">
+            {{ loading ? ('labels.buttons.Loading' | translate) : ('labels.teller.Aperturar caja' | translate) }}
+          </button>
+        </ng-container>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

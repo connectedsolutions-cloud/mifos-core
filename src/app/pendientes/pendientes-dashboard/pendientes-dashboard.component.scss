@@ -1,0 +1,162 @@
+.container {
+  padding: 24px;
+  max-width: 90rem;
+}
+
+.header-section {
+  margin-bottom: 24px;
+
+  .page-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: rgb(0 0 0 / 87%);
+  }
+
+  .page-subtitle {
+    margin: 8px 0 0;
+    font-size: 0.95rem;
+    color: rgb(0 0 0 / 60%);
+  }
+}
+
+.loading-container {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.error-message {
+  color: var(--warn-color, #f44336);
+  margin-top: 16px;
+}
+
+.content-section {
+  margin-top: 24px;
+}
+
+.summary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  margin-bottom: 20px;
+
+  .summary-count {
+    font-weight: 600;
+    font-size: 1rem;
+    color: rgb(0 0 0 / 87%);
+  }
+
+  .create-btn {
+    .btn-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pending-item-card {
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  border: 1px solid rgb(0 0 0 / 8%);
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+    border-color: rgb(0 0 0 / 12%);
+  }
+
+  mat-card-content {
+    padding: 20px;
+  }
+}
+
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  .priority-icon {
+    font-size: 0.7rem;
+  }
+
+  &.priority-high {
+    background: #e57373;
+    color: white;
+  }
+
+  &.priority-medium {
+    background: #ffb74d;
+    color: white;
+  }
+}
+
+.item-main {
+  flex: 1;
+  min-width: 200px;
+
+  .item-title {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(0 0 0 / 87%);
+  }
+
+  .item-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgb(0 0 0 / 60%);
+    line-height: 1.4;
+  }
+}
+
+.item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  font-size: 0.8rem;
+  color: rgb(0 0 0 / 60%);
+
+  .meta-item {
+    white-space: nowrap;
+  }
+}
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: rgb(0 0 0 / 60%);
+  }
+}

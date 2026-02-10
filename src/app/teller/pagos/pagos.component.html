@@ -1,0 +1,98 @@
+<div class="tab-container mat-typography">
+  <!-- Date selector bar -->
+  <div class="pagos-date-bar layout-row align-items-center">
+    <button mat-icon-button (click)="onPrevDay()" type="button" aria-label="Día anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <div class="pagos-date-display layout-row align-items-center">
+      <mat-icon class="pagos-date-icon">calendar_today</mat-icon>
+      <span class="pagos-date-text">{{ selectedDate | dateFormat: 'dddd, D [de] MMMM [de] YYYY' }}</span>
+      <a class="pagos-date-cambiar" (click)="datePicker.open()">{{ 'labels.teller.Cambiar' | translate }}</a>
+    </div>
+    <button mat-icon-button (click)="onNextDay()" type="button" aria-label="Día siguiente">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <mat-form-field class="pagos-date-picker-hidden" appearance="outline">
+      <input matInput [matDatepicker]="datePicker" [(ngModel)]="selectedDate" />
+      <mat-datepicker #datePicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+  <!-- Search and action bar -->
+  <div class="pagos-toolbar layout-row align-between align-items-center">
+    <mat-form-field appearance="outline" class="pagos-search">
+      <mat-label>{{ 'labels.teller.Buscar por cliente, concepto, factura o ID' | translate }}</mat-label>
+      <input matInput [(ngModel)]="searchFilter" (keyup)="applyFilter()" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="onRegistrarPago()">
+      <mat-icon>add</mat-icon>
+      {{ 'labels.teller.Registrar Pago' | translate }}
+    </button>
+  </div>
+
+  <!-- Payments table -->
+  <mat-card class="pagos-table-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="paymentsDataSource" class="pagos-table">
+        <ng-container matColumnDef="idFactura">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.ID / FACTURA' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="pagos-id">{{ row.id }}</span
+            >, {{ row.factura }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="cliente">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.CLIENTE' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.cliente }}</td>
+        </ng-container>
+        <ng-container matColumnDef="concepto">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.CONCEPTO' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.concepto }}</td>
+        </ng-container>
+        <ng-container matColumnDef="monto">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.MONTO' | translate }}</th>
+          <td mat-cell *matCellDef="let row">${{ row.monto | number: '1.2-2' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.ESTADO' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              class="estado-badge"
+              [class.estado-completado]="row.estado === 'Completado'"
+              [class.estado-verificando]="row.estado === 'Verificando'"
+              [class.estado-pendiente]="row.estado === 'Pendiente'"
+            >
+              {{ 'labels.teller.' + row.estado | translate }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.ACCIONES' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="row.estado === 'Verificando'">
+              <button mat-raised-button color="primary" (click)="onConfirmar(row)">
+                {{ 'labels.teller.Confirmar' | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="row.estado === 'Pendiente'">
+              <button mat-raised-button color="accent" (click)="onVerificar(row)">
+                {{ 'labels.teller.Verificar' | translate }}
+              </button>
+            </ng-container>
+            <span *ngIf="row.estado === 'Completado'" class="pagos-accion-dash">–</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            {{ 'labels.text.No data found' | translate }}
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

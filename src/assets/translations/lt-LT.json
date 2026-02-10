@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "skolos tvarkaraštį iš naujo",
       "the Transaction Type": "operacijos tipas"
     },
+    "teller": {
+      "Operaciones": "Operacijos",
+      "Desembolsos": "Išmokos",
+      "Pagos": "Mokėjimai",
+      "Content coming soon": "Turinys netrukus"
+    },
     "text": {
       "A": "A",
       "Ability to manage holidays for individual offices": "Galimybė tvarkyti atskirų biurų atostogas yra labai naudingas įrankis organizacijai, kuri veikia keliose vietose. Naudokite šią parinktį, kad tinkintumėte atostogas kiekvienam savo organizacijos biurui.",

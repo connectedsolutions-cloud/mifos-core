@@ -286,4 +286,14 @@ export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChec
   navigateMenu(routePath: string): void {
     this.router.navigate([routePath]);
   }
+
+  /**
+   * Handler for cashier/teller button click.
+   * Navigates to teller; TellerComponent will fetch active session via CashierSessionService.
+   */
+  onCashierButtonClick(event: Event): void {
+    event.preventDefault();
+    console.log('cashier button clicked');
+    this.router.navigate(['/teller']);
+  }
 }

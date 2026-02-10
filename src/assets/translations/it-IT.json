@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "la Riorganizzazione del Prestito",
       "the Transaction Type": "il tipo di transazione"
     },
+    "teller": {
+      "Operaciones": "Operazioni",
+      "Desembolsos": "Sborsi",
+      "Pagos": "Pagamenti",
+      "Content coming soon": "Contenuto in arrivo"
+    },
     "text": {
       "A": "UN",
       "Ability to manage holidays for individual offices": "La possibilità di gestire le ferie per i singoli uffici è uno strumento molto utile per un'organizzazione che si estende su più sedi. Utilizza questa opzione per personalizzare le ferie per ciascun ufficio della tua organizzazione.",

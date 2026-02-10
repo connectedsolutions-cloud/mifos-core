@@ -1,0 +1,24 @@
+<div class="container">
+  <button mat-button (click)="back()">{{ 'labels.buttons.Back' | translate }}</button>
+  <h2>{{ 'labels.buttons.New Flow' | translate }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'labels.text.Blueprint' | translate }}</mat-label>
+      <mat-select formControlName="blueprintId" required>
+        <mat-option *ngFor="let b of blueprints" [value]="b.id">{{ b.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'labels.text.Name' | translate }}</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'labels.text.Description' | translate }}</mat-label>
+      <input matInput formControlName="description" />
+    </mat-form-field>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+    <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+      {{ 'labels.buttons.Create' | translate }}
+    </button>
+  </form>
+</div>

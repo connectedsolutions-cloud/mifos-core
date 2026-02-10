@@ -92,7 +92,8 @@ export class CreateTellerComponent implements OnInit {
       status: [
         '',
         Validators.required
-      ]
+      ],
+      maxTellerCashAmount: ['']
     });
   }
 
@@ -117,6 +118,11 @@ export class CreateTellerComponent implements OnInit {
       dateFormat,
       locale
     };
+    if (data.maxTellerCashAmount === '' || data.maxTellerCashAmount == null) {
+      delete data.maxTellerCashAmount;
+    } else {
+      data.maxTellerCashAmount = Number(data.maxTellerCashAmount);
+    }
     this.organizationService.createTeller(data).subscribe((response: any) => {
       this.router.navigate(
         [

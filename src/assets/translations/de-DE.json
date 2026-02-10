@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "das Darlehen umplanen",
       "the Transaction Type": "der Transaktionstyp"
     },
+    "teller": {
+      "Operaciones": "Operationen",
+      "Desembolsos": "Auszahlungen",
+      "Pagos": "Zahlungen",
+      "Content coming soon": "Inhalt demnächst"
+    },
     "text": {
       "A": "A",
       "Ability to manage holidays for individual offices": "Die Möglichkeit, Feiertage für einzelne Büros zu verwalten, ist ein sehr nützliches Werkzeug für eine Organisation mit mehreren Standorten. Verwenden Sie diese Option, um Feiertage für jedes Büro Ihrer Organisation anzupassen.",

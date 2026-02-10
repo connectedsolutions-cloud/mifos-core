@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{ 'labels.teller.Saldo inicial' | translate }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.teller.Monto de apertura' | translate }}</mat-label>
+      <span matPrefix>$&nbsp;</span>
+      <input matInput type="text" formControlName="openingAmount" placeholder="0.00" (blur)="formatOpeningAmount()" />
+      <mat-error *ngIf="form.get('openingAmount')?.hasError('required')">
+        {{ 'labels.teller.El monto de apertura es requerido' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.get('openingAmount')?.hasError('min')">
+        {{ 'labels.teller.El monto debe ser mayor o igual a cero' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="confirm()" [disabled]="!form.valid">
+    {{ 'labels.teller.Aperturar con' | translate }}: ${{ openingAmount ?? 0 | number: '1.2-2' }}
+  </button>
+</mat-dialog-actions>

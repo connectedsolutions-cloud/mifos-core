@@ -34,6 +34,16 @@
         >
           Apply Approvals
         </button>
+        <ng-container *ngIf="session.status === 'finished'">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="openCrearPendienteTransferirFondosDialog()"
+            *mifosxHasPermission="'start_pending_flow'"
+          >
+            Crear pendiente y transferir fondos
+          </button>
+        </ng-container>
       </div>
     </div>
   </div>

@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "aizdevuma pārkārtošanu",
       "the Transaction Type": "Darījuma veids"
     },
+    "teller": {
+      "Operaciones": "Operācijas",
+      "Desembolsos": "Izmaksas",
+      "Pagos": "Maksājumi",
+      "Content coming soon": "Saturs drīz"
+    },
     "text": {
       "A": "A",
       "Ability to manage holidays for individual offices": "Iespēja pārvaldīt brīvdienas atsevišķiem birojiem ir ļoti noderīgs rīks organizācijai, kas aptver vairākas atrašanās vietas. Izmantojiet šo opciju, lai pielāgotu brīvdienas katram savas organizācijas birojam.",

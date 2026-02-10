@@ -59,6 +59,17 @@
 
       <mat-nav-list>
         <mat-list-item
+          [routerLink]="['/pendientes']"
+          [matTooltipPosition]="tooltipPosition"
+          matTooltip="{{ 'tooltips.Pendientes' | translate }}"
+          routerLinkActive="active-menu"
+          [routerLinkActiveOptions]="{ exact: false }"
+          *mifosxHasPermission="'view_pendientes'"
+        >
+          <mat-icon matListIcon fontSet="material-icons-outlined">task</mat-icon>
+          <a matLine>{{ 'labels.menus.Pendientes' | translate }}</a>
+        </mat-list-item>
+        <mat-list-item
           [routerLink]="['/dashboard']"
           [matTooltipPosition]="tooltipPosition"
           matTooltip="{{ 'tooltips.Dashboard' | translate }}"
@@ -95,30 +106,6 @@
           <a matLine>{{ 'labels.menus.Checker Inbox and Tasks' | translate }}</a>
         </mat-list-item>
         <mat-list-item
-          [routerLink]="['/collections/collection-sheet']"
-          [matTooltipPosition]="tooltipPosition"
-          matTooltip="{{ 'tooltips.Collection Sheet' | translate }}"
-          routerLinkActive="active-menu"
-          [routerLinkActiveOptions]="{ exact: false }"
-        >
-          <mat-icon matListIcon>
-            <i class="fa fa-tasks"></i>
-          </mat-icon>
-          <a matLine>{{ 'labels.menus.Collection Sheet' | translate }}</a>
-        </mat-list-item>
-        <mat-list-item
-          [routerLink]="['/collections/individual-collection-sheet']"
-          [matTooltipPosition]="tooltipPosition"
-          matTooltip="{{ 'tooltips.Individual Collection Sheet' | translate }}"
-          routerLinkActive="active-menu"
-          [routerLinkActiveOptions]="{ exact: false }"
-        >
-          <mat-icon matListIcon>
-            <i class="fa fa-tasks"></i>
-          </mat-icon>
-          <a matLine>{{ 'labels.menus.Individual Collection Sheet' | translate }}</a>
-        </mat-list-item>
-        <mat-list-item
           [routerLink]="['/notifications']"
           [matTooltipPosition]="tooltipPosition"
           matTooltip="{{ 'tooltips.Notifications' | translate }}"
@@ -136,6 +123,7 @@
           matTooltip="{{ 'tooltips.Frequent Postings' | translate }}"
           routerLinkActive="active-menu"
           [routerLinkActiveOptions]="{ exact: false }"
+          *mifosxHasPermission="'accounting_visibility'"
         >
           <mat-icon matListIcon>
             <fa-icon icon="sync" size="sm"></fa-icon>
@@ -148,6 +136,7 @@
           matTooltip="{{ 'tooltips.Create Journal Entry' | translate }}"
           routerLinkActive="active-menu"
           [routerLinkActiveOptions]="{ exact: false }"
+          *mifosxHasPermission="'accounting_visibility'"
         >
           <mat-icon matListIcon>
             <fa-icon icon="plus" size="sm"></fa-icon>
@@ -160,6 +149,7 @@
           matTooltip="{{ 'tooltips.Chart Of Accounts' | translate }}"
           routerLinkActive="active-menu"
           [routerLinkActiveOptions]="{ exact: false }"
+          *mifosxHasPermission="'accounting_visibility'"
         >
           <mat-icon matListIcon>
             <fa-icon icon="sitemap" size="sm"></fa-icon>

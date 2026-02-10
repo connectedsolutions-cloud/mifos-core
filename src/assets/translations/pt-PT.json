@@ -2713,6 +2713,12 @@
       "the Reschedule Loan": "o Empréstimo Reagendado",
       "the Transaction Type": "o tipo de transação"
     },
+    "teller": {
+      "Operaciones": "Operações",
+      "Desembolsos": "Desembolsos",
+      "Pagos": "Pagamentos",
+      "Content coming soon": "Conteúdo em breve"
+    },
     "text": {
       "A": "A",
       "Ability to manage holidays for individual offices": "A capacidade de gerenciar feriados para escritórios individuais é uma ferramenta muito útil para uma organização que abrange vários locais. Use esta opção para personalizar feriados para cada escritório da sua organização.",
