@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>{{ 'labels.text.Complete step' | translate }}</h2>
+<p class="mat-dialog-description" *ngIf="data?.nextStepName">
+  {{ 'labels.text.Set next step details' | translate }}: {{ data.nextStepName }}
+</p>
+<p class="mat-dialog-description mat-dialog-description--muted" *ngIf="data?.nextStepDescription">
+  {{ data.nextStepDescription }}
+</p>
+<mat-dialog-content>
+  <p *ngIf="loadError" class="load-error">{{ loadError }}</p>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.text.Responsable' | translate }}</mat-label>
+      <mat-select formControlName="responsableUserId" required>
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.displayName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('responsableUserId')?.hasError('required')">
+        {{ 'labels.text.Responsable is required' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.text.Due Date' | translate }}</mat-label>
+      <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate" />
+      <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #dueDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.text.Note' | translate }}</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions class="layout-row layout-xs-column layout-align-center gap-2percent" align="end">
+  <button mat-button (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="!canSubmit">
+    {{ 'labels.buttons.Complete' | translate }}
+  </button>
+</mat-dialog-actions>

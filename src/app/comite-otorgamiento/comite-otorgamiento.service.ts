@@ -32,6 +32,22 @@ export class ComiteOtorgamientoService {
     return this.http.get(`${this.resourceUrl}/${sessionId}`, options);
   }
 
+  getApprovedLoansDisbursementSum(
+    sessionId: number,
+    officeId?: number
+  ): Observable<{ totalDisbursementAmount: number; currencyCode?: string; currencyDigits?: number }> {
+    let params = new HttpParams();
+    if (officeId != null && officeId !== 0) {
+      params = params.set('officeId', String(officeId));
+    }
+    const options = params.keys().length ? { params } : {};
+    return this.http.get(`${this.resourceUrl}/${sessionId}/approved-loans-disbursement-sum`, options) as Observable<{
+      totalDisbursementAmount: number;
+      currencyCode?: string;
+      currencyDigits?: number;
+    }>;
+  }
+
   getPendingLoans(): Observable<any> {
     // Get the current logged-in user's office ID
     const credentials = this.authenticationService.getCredentials();

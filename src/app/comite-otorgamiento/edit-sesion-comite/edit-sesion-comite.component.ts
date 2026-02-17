@@ -159,8 +159,8 @@ export class EditSesionComiteComponent implements OnInit {
     // Replace data source with new instance so MatTable picks up changes
     this.approvedLoansDataSource = new MatTableDataSource<any>([...approved]);
 
-    // Update finished loans data source if session is finished
-    if (this.session?.status === 'finished') {
+    // Update finished loans data source if session is applied
+    if (this.session?.status === 'applied') {
       this.updateFinishedLoansFromSelection();
     }
   }
@@ -465,7 +465,7 @@ export class EditSesionComiteComponent implements OnInit {
     }
     const status = this.session.status;
     // Only editable when status is "created"
-    // Locked when status is "started", "closed", "applied", or "finished"
+    // Locked when status is "started", "closed", or "applied"
     return status === 'created';
   }
 

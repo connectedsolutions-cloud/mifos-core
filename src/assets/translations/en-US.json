@@ -345,6 +345,7 @@
       "Blueprints": "Blueprints",
       "Cancel": "Cancel",
       "Cancel Sell Loan": "Cancel Sell Loan",
+      "CancelarPendiente": "Cancel Pending",
       "Complete": "Complete",
       "Capture": "Capture",
       "Centers Saving Application": "Centers Saving Application",
@@ -2750,7 +2751,8 @@
       "Are you sure you want to": "Are you sure you want to ",
       "the productmix component with id": "the productmix component with id",
       "the Reschedule Loan": " the Reschedule Loan",
-      "the Transaction Type": "the Transaction Type"
+      "the Transaction Type": "the Transaction Type",
+      "Confirm cancel pending step": "Are you sure you want to cancel this pending step"
     },
     "teller": {
       "Operaciones": "Operations",
@@ -2787,6 +2789,13 @@
       "Close Cashier": "Close Cashier",
       "Límite de caja": "Cash limit",
       "Sin límite": "No limit"
+    },
+    "pendientes": {
+      "additionalInfo": "Additional information",
+      "stepNote": "Step note",
+      "totalDisbursementComiteSession": "Total to disburse (comité session)",
+      "comiteDisbursementSumDescription": "Total amount of loans approved in committee",
+      "noSessionLinked": "No session linked"
     },
     "text": {
       "A": "A",
@@ -2829,6 +2838,7 @@
       "Are you sure you want to": "Are you sure you want to",
       "Are you sure you want to approve share with id": "Are you sure you want to approve share with id",
       "Are you sure you want to calculate interest": "Are you sure you want to calculate interest",
+      "Confirm cancel pending step": "Are you sure you want to cancel this pending step",
       "Are you sure you want to cancel": "Are you sure you want to cancel",
       "Are you sure you want to disable": "Are you sure you want to disable",
       "Are you sure you want to delete": "Are you sure you want to delete",
@@ -2991,6 +3001,7 @@
       "Delinquency Ranges": "Delinquency Ranges",
       "deselect": "deselect",
       "Documents": "Documents",
+      "Due Date": "Due Date",
       "Dropdown self service user administrative portal": "Dropdown provides access to self service user administrative portal, app configuration and task management.",
       "Dropdown system reports": "Dropdown provides access to all types of system reports including the default reports provided by Mifos and system reports that will be developed by the organization.",
       "Easy way to reassign all the loan": "Easy way to reassign all the loan from one LO to another LO",
@@ -3033,8 +3044,14 @@
       "Steps": "Steps",
       "Error loading steps": "Error loading steps",
       "Error loading flow": "Error loading flow",
+      "Step not found": "Step not found",
+      "Error loading data": "Error loading data",
       "Error creating flow": "Error creating flow",
+      "Error canceling step": "Error canceling step",
       "Error completing step": "Error completing step",
+      "Complete step": "Complete step",
+      "Set next step details": "Set next step details",
+      "Responsable is required": "Responsable is required",
       "Select a blueprint": "Select a blueprint",
       "Name": "Name",
       "Description": "Description",
@@ -3294,6 +3311,7 @@
       "No repayments and disbursal": "No repayments and disbursal are available for selected client and meeting date",
       "No report data was generated": "No report data was generated",
       "No transaction was found": "No transaction was found.",
+      "Note": "Note",
       "Notes": "Notes",
       "Notification Service Configuration": "Notification Service Configuration",
       "Notification": "Notification",

@@ -65,8 +65,33 @@ export class PendientesService {
     return this.http.put(`${this.stepsUrl}/${id}`, body);
   }
 
-  completeStep(id: number, note?: string): Observable<any> {
-    const body = note != null ? { note } : {};
-    return this.http.post(`${this.stepsUrl}/${id}?command=complete`, body);
+  completeStep(
+    id: number,
+    body?: {
+      note?: string;
+      nextStep?: {
+        responsableUserId?: number;
+        dueDate?: string | Date;
+        officeId?: number;
+        description?: string;
+      };
+    }
+  ): Observable<any> {
+    let payload: any = body ?? {};
+    if (payload.nextStep?.dueDate instanceof Date) {
+      const d = payload.nextStep.dueDate as Date;
+      payload = {
+        ...payload,
+        nextStep: {
+          ...payload.nextStep,
+          dueDate: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0).toISOString()
+        }
+      };
+    }
+    return this.http.post(`${this.stepsUrl}/${id}?command=complete`, payload);
+  }
+
+  cancelStep(id: number): Observable<any> {
+    return this.http.post(`${this.stepsUrl}/${id}?command=cancel`, {});
   }
 }

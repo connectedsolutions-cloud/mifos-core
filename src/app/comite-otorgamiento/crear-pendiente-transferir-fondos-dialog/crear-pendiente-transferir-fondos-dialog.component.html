@@ -1,4 +1,5 @@
 <h2 mat-dialog-title>Crear pendiente y transferir fondos</h2>
+<p class="mat-dialog-description">Crear pendiente para hacer cheque, cambiarlo y depositarlo en caja.</p>
 <mat-dialog-content>
   <p *ngIf="blueprintError" class="blueprint-error">{{ blueprintError }}</p>
   <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
@@ -14,7 +15,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Fecha de vencimiento</mat-label>
+      <mat-label>Fecha Límite</mat-label>
       <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate" />
       <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
       <mat-datepicker #dueDatePicker></mat-datepicker>

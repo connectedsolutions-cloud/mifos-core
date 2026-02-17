@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { PendientesService } from '../../pendientes/pendientes.service';
 import { UsersService } from '../../users/users.service';
+import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -57,7 +58,8 @@ export class CrearPendienteTransferirFondosDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<CrearPendienteTransferirFondosDialogComponent>,
     private fb: FormBuilder,
     private pendientesService: PendientesService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private authenticationService: AuthenticationService
   ) {
     this.form = this.fb.group({
       responsableUserId: [
@@ -116,11 +118,17 @@ export class CrearPendienteTransferirFondosDialogComponent implements OnInit {
 
     const value = this.form.getRawValue();
     const dueDate = value.dueDate as Date | null;
+    const credentials = this.authenticationService.getCredentials();
+    const currentOfficeId = credentials?.officeId;
+
     const payload: any = {
       responsableUserId: value.responsableUserId,
       description: value.description || undefined,
       sesionComiteId: this.data.sessionId
     };
+    if (currentOfficeId != null && currentOfficeId !== 0) {
+      payload.officeId = currentOfficeId;
+    }
     if (dueDate) {
       payload.dueDate = new Date(
         dueDate.getFullYear(),

@@ -34,7 +34,7 @@
         >
           Apply Approvals
         </button>
-        <ng-container *ngIf="session.status === 'finished'">
+        <ng-container *ngIf="session.status === 'applied'">
           <button
             mat-raised-button
             color="primary"
@@ -80,7 +80,7 @@
   </div>
 
   <!-- Section 1: Approved Loans (for non-finished sessions) -->
-  <mat-card class="m-b-20" *ngIf="session.status !== 'finished'">
+  <mat-card class="m-b-20" *ngIf="session.status !== 'finished' && session.status !== 'applied'">
     <h3 class="section-heading">Selected Loans for Approval</h3>
     <table mat-table [dataSource]="approvedLoansDataSource" class="bordered-table">
       <ng-container *ngFor="let col of approvedLoansColumns" [matColumnDef]="col">
@@ -105,7 +105,7 @@
   </mat-card>
 
   <!-- Section 1: All Selected Loans (for finished sessions) -->
-  <mat-card class="m-b-20" *ngIf="session.status === 'finished'">
+  <mat-card class="m-b-20" *ngIf="session.status === 'finished' || session.status === 'applied'">
     <h3 class="section-heading">Session Selections Summary</h3>
     <table mat-table [dataSource]="finishedLoansDataSource" class="bordered-table">
       <ng-container matColumnDef="accountNo">
@@ -142,7 +142,7 @@
   </mat-card>
 
   <!-- Section 2: Pending Loans (hidden when session is finished) -->
-  <mat-card *ngIf="session.status !== 'finished'">
+  <mat-card *ngIf="session.status !== 'finished' && session.status !== 'applied'">
     <h3 class="section-heading">Pending Loans to Review and Approve</h3>
     <table mat-table [dataSource]="pendingLoansDataSource" class="bordered-table">
       <ng-container matColumnDef="select">

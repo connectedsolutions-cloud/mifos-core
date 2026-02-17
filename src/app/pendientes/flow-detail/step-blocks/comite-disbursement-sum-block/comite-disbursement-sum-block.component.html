@@ -1,0 +1,13 @@
+<span *ngIf="blockData?.loading" class="step-detail-block-loading">
+  <mat-spinner diameter="20"></mat-spinner>
+</span>
+<span *ngIf="!blockData?.loading">
+  <span *ngIf="blockData?.error" class="step-detail-block-error">{{ blockData.error }}</span>
+  <span *ngIf="blockData?.value != null && !blockData?.error" class="step-detail-block-value">
+    <span class="step-detail-block-description">{{
+      'labels.pendientes.comiteDisbursementSumDescription' | translate
+    }}</span>
+    {{ amount | number: '1.2-2' }}
+    <ng-container *ngIf="currency">{{ currency }}</ng-container>
+  </span>
+</span>

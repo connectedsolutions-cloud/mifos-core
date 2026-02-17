@@ -337,11 +337,13 @@
       "Attendance": "Asistencia",
       "Back": "Atrás",
       "Bar Chart": "Gráfico de barras",
+      "Complete": "Completar",
       "Browse": "Buscar",
       "Bulk JLG Loan Application": "Solicitud de Crédito JLG a granel",
       "Buy Back Loan": "Crédito de recompra",
       "Cancel": "Cancelar",
       "Cancel Sell Loan": "Cancelar venta de Crédito",
+      "CancelarPendiente": "Cancelar Pendiente",
       "Capture": "Captura",
       "Centers Saving Application": "Solicitud de Ahorro de Centros",
       "Change Password": "Cambiar la contraseña",
@@ -2734,7 +2736,8 @@
       "Are you sure you want to": "¿Estás seguro de que deseas",
       "the productmix component with id": "el componente productmix con id",
       "the Reschedule Loan": "la Recandelarización del Crédito",
-      "the Transaction Type": "el tipo de transacción"
+      "the Transaction Type": "el tipo de transacción",
+      "Confirm cancel pending step": "¿Está seguro de que desea cancelar este paso pendiente"
     },
     "teller": {
       "Operaciones": "Operaciones",
@@ -2790,6 +2793,13 @@
       "Open Cashier": "Apertura de caja",
       "Close Cashier": "Cierre de caja"
     },
+    "pendientes": {
+      "additionalInfo": "Información adicional",
+      "stepNote": "Notas",
+      "totalDisbursementComiteSession": "Total a desembolsar (sesión comité)",
+      "comiteDisbursementSumDescription": "Monto total de préstamos aprobados en comité",
+      "noSessionLinked": "No hay sesión vinculada"
+    },
     "text": {
       "A": "Una",
       "Ability to manage holidays for individual offices": "La capacidad de gestionar días festivos para agencias individuales es una herramienta muy útil para una organización que abarca varias ubicaciones. Utilice esta opción para personalizar los días festivos para cada agencia de su organización.",
@@ -2831,6 +2841,7 @@
       "Are you sure you want to": "Estás seguro que quieres",
       "Are you sure you want to approve share with id": "¿Estás seguro de que deseas aprobar acciones con id?",
       "Are you sure you want to calculate interest": "¿Estás seguro de que quieres calcular el interés?",
+      "Confirm cancel pending step": "¿Está seguro de que desea cancelar este paso pendiente?",
       "Are you sure you want to cancel": "Estas seguro que quieres cancelar",
       "Are you sure you want to disable": "¿Estás seguro de que deseas desactivar?",
       "Are you sure you want to delete": "estas seguro que quieres borrarlo",
@@ -2993,6 +3004,7 @@
       "Delinquency Ranges": "Rangos de morosidad",
       "deselect": "deseleccionar",
       "Documents": "Documentos",
+      "Due Date": "Fecha de vencimiento",
       "Dropdown self service user administrative portal": "El menú desplegable proporciona acceso al portal administrativo de usuario de autoservicio, configuración de aplicaciones y gestión de tareas.",
       "Dropdown system reports": "Menu brinda acceso a todo tipo de reportes del sistema, incluidos los reportes predeterminados proporcionados por Mifos y los reportes del sistema que desarrollará la organización.",
       "Easy way to reassign all the loan": "Manera fácil de reasignar todo el Crédito de un LO a otro LO",
@@ -3190,6 +3202,7 @@
       "No repayments and disbursal": "No hay reembolsos ni desembolsos disponibles para el cliente seleccionado y la fecha de reunión",
       "No report data was generated": "No se generaron datos del reporte",
       "No transaction was found": "No se encontró ninguna transacción.",
+      "Note": "Nota",
       "Notes": "Notas",
       "Notification Service Configuration": "Configuración del servicio de notificación",
       "Notification": "Notificación",
@@ -3238,6 +3251,10 @@
       "Repeats' and 'Repeats every": "Nota: 'Repeticiones' y 'Repeticiones cada' no se pueden modificar si hay cuentas activas (Créditos JLG, depósitos recurrentes, etc.) que dependen de esta reunión.",
       "Report Parameters": "Parámetros del reporte",
       "Reports": "Reportes",
+      "Responsable": "Responsable",
+      "Responsable is required": "El responsable es obligatorio",
+      "Complete step": "Completar paso",
+      "Set next step details": "Detalles del siguiente paso",
       "Reschedule Loan": "Reprogramar Crédito",
       "Revert this transaction?": "¿Está seguro de que desea revertir esta transacción?",
       "row": "fila",

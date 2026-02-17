@@ -1,0 +1,23 @@
+// Shared styles for step detail block components (loaded inside .step-detail-block)
+:host {
+  .step-detail-block-description {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 2px;
+  }
+
+  .step-detail-block-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .step-detail-block-error {
+    color: #f44336;
+    font-size: 0.9rem;
+  }
+
+  .step-detail-block-loading mat-spinner {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

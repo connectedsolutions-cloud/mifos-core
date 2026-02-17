@@ -62,16 +62,13 @@ export class PendientesDashboardComponent implements OnInit {
     return step?.id ?? _index;
   }
 
-  getPriority(step: any): 'HIGH' | 'MEDIUM' {
-    if (step.status === 'open') return 'HIGH';
-    return 'MEDIUM';
-  }
-
-  goToFlow(id: number): void {
-    this.router.navigate([
+  goToFlow(flowId: number, stepId?: number): void {
+    const nav = [
       '/pendientes/flows',
-      id
-    ]);
+      flowId
+    ];
+    const options = stepId != null ? { queryParams: { stepId } } : {};
+    this.router.navigate(nav, options);
   }
 
   goToBlueprints(): void {

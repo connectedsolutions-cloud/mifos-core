@@ -1,19 +1,19 @@
 <div class="container">
-  <button mat-button (click)="back()">{{ 'labels.buttons.Back' | translate }}</button>
+  <button mat-button class="back-button" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'labels.buttons.Back' | translate }}
+  </button>
   <div *ngIf="loading">
     <mat-spinner diameter="40"></mat-spinner>
   </div>
   <div *ngIf="error" class="error-message">{{ error }}</div>
-  <div *ngIf="!loading && flow">
-    <h2>{{ flow.name }}</h2>
-    <p>{{ flow.description }}</p>
-    <p>
-      <strong>{{ 'labels.text.Status' | translate }}:</strong> {{ flow.status }}
-    </p>
-    <h3>{{ 'labels.text.Steps' | translate }}</h3>
-    <mat-card *ngFor="let step of flow.steps" class="step-card">
+  <div *ngIf="!loading && flow && displaySteps.length === 0 && hasStepIdQuery" class="error-message">
+    {{ 'labels.text.Step not found' | translate }}
+  </div>
+  <div *ngIf="!loading && flow && displaySteps.length > 0">
+    <mat-card *ngFor="let step of displaySteps" class="step-card">
       <mat-card-header>
-        <mat-card-title>{{ step.name }}</mat-card-title>
+        <mat-card-title class="step-title">{{ step.name }}</mat-card-title>
         <mat-card-subtitle
           >{{ step.status }} - {{ 'labels.text.Responsable' | translate }}:
           {{ step.responsableUserName }}</mat-card-subtitle
@@ -22,8 +22,39 @@
       <mat-card-content *ngIf="step.description">
         <p>{{ step.description }}</p>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" *ngIf="canComplete(step)" (click)="completeStep(step)">
+      <ng-container *ngIf="getStepBlocks(step).length > 0">
+        <mat-card-content class="step-detail-blocks">
+          <h4 class="step-detail-blocks-title">{{ 'labels.pendientes.additionalInfo' | translate }}</h4>
+          <ng-container *ngFor="let block of getStepBlocks(step)">
+            <ng-container
+              [ngComponentOutlet]="getBlockComponent(block.key)"
+              [ngComponentOutletInputs]="{ block, blockData: getBlockData(step.id, block.key) }"
+            >
+            </ng-container>
+          </ng-container>
+        </mat-card-content>
+      </ng-container>
+      <mat-card-content *ngIf="step.note" class="step-note-block">
+        <h4 class="step-note-title">{{ 'labels.pendientes.stepNote' | translate }}</h4>
+        <p class="step-note-content">{{ step.note }}</p>
+      </mat-card-content>
+      <mat-card-actions class="step-actions">
+        <button
+          mat-raised-button
+          color="warn"
+          *ngIf="canCancel(step)"
+          [disabled]="isStepFinished(step)"
+          (click)="cancelStep(step)"
+        >
+          {{ 'labels.buttons.CancelarPendiente' | translate }}
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          *ngIf="canComplete(step)"
+          [disabled]="isStepFinished(step)"
+          (click)="completeStep(step)"
+        >
           {{ 'labels.buttons.Complete' | translate }}
         </button>
       </mat-card-actions>

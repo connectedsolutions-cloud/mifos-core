@@ -22,17 +22,10 @@
       <mat-card
         *ngFor="let step of mySteps; trackBy: trackByStepId"
         class="pending-item-card"
-        (click)="goToFlow(step.pendingFlowId)"
+        (click)="goToFlow(step.pendingFlowId, step.id)"
       >
         <mat-card-content>
           <div class="item-row">
-            <span class="priority-badge priority-{{ getPriority(step) | lowercase }}">
-              <fa-icon
-                [icon]="getPriority(step) === 'HIGH' ? 'circle-exclamation' : 'clock'"
-                class="priority-icon"
-              ></fa-icon>
-              {{ getPriority(step) }}
-            </span>
             <div class="item-main">
               <h3 class="item-title">{{ step.name }}</h3>
               <p class="item-description" *ngIf="step.description">{{ step.description }}</p>
