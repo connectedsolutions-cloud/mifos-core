@@ -57,6 +57,12 @@ export class PendientesService {
     return this.http.get(this.stepsUrl, { params });
   }
 
+  getMyCompletedSteps(officeId?: number): Observable<any> {
+    let params = new HttpParams().set('mySteps', 'true').set('closed', 'true');
+    if (officeId != null) params = params.set('officeId', String(officeId));
+    return this.http.get(this.stepsUrl, { params });
+  }
+
   getStep(id: number): Observable<any> {
     return this.http.get(`${this.stepsUrl}/${id}`);
   }

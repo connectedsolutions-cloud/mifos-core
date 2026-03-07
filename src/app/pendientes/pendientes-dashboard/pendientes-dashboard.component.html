@@ -1,7 +1,17 @@
 <div class="container">
   <div class="header-section">
-    <h2 class="page-title">{{ 'labels.text.Pending Items' | translate }}</h2>
-    <p class="page-subtitle">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
+    <div class="header-row">
+      <div class="header-titles">
+        <h2 class="page-title">{{ 'labels.text.Pending Items' | translate }}</h2>
+        <p class="page-subtitle">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
+      </div>
+      <button *ngIf="viewMode === 'open'" mat-stroked-button (click)="showClosedView()" class="view-toggle-btn">
+        {{ 'labels.text.View completed pending items' | translate }}
+      </button>
+      <button *ngIf="viewMode === 'closed'" mat-stroked-button (click)="showOpenView()" class="view-toggle-btn">
+        {{ 'labels.text.View open pending items' | translate }}
+      </button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-container">
@@ -10,44 +20,107 @@
   <div *ngIf="error" class="error-message">{{ error }}</div>
 
   <div *ngIf="!loading && !error" class="content-section">
-    <div class="summary-bar">
+    <div class="summary-bar" *ngIf="viewMode === 'open'">
       <span class="summary-count">{{ mySteps.length }} {{ 'labels.text.pending items' | translate }}</span>
       <button mat-raised-button color="primary" (click)="goToCreateFlow()" class="create-btn">
         <fa-icon icon="plus" class="btn-icon"></fa-icon>
         {{ 'labels.text.Create New Flow' | translate }}
       </button>
     </div>
-
-    <div class="pending-list" *ngIf="mySteps.length">
-      <mat-card
-        *ngFor="let step of mySteps; trackBy: trackByStepId"
-        class="pending-item-card"
-        (click)="goToFlow(step.pendingFlowId, step.id)"
+    <div class="summary-bar" *ngIf="viewMode === 'closed'">
+      <span class="summary-count"
+        >{{ completedSteps.length }} {{ 'labels.text.completed pending items' | translate }}</span
       >
-        <mat-card-content>
-          <div class="item-row">
-            <div class="item-main">
-              <h3 class="item-title">{{ step.name }}</h3>
-              <p class="item-description" *ngIf="step.description">{{ step.description }}</p>
-            </div>
-            <div class="item-meta">
-              <span class="meta-item">
-                {{ 'labels.inputs.Category' | translate }}: {{ 'labels.text.Pending Task' | translate }}
-              </span>
-              <span class="meta-item" *ngIf="step.dueDate">
-                {{ 'labels.inputs.Due' | translate }}: {{ step.dueDate | date: 'shortDate' }}
-              </span>
-              <span class="meta-item" *ngIf="step.responsableUserName">
-                {{ 'labels.text.Assigned to' | translate }}: {{ step.responsableUserName }}
-              </span>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
     </div>
 
-    <div class="empty-state" *ngIf="!mySteps.length">
-      <p>{{ 'labels.text.No steps assigned' | translate }}</p>
-    </div>
+    <!-- Open view -->
+    <ng-container *ngIf="viewMode === 'open'">
+      <div class="pending-list" *ngIf="mySteps.length">
+        <mat-card
+          *ngFor="let step of mySteps; trackBy: trackByStepId"
+          class="pending-item-card"
+          (click)="goToFlow(step.pendingFlowId, step.id)"
+        >
+          <mat-card-content>
+            <div class="item-row">
+              <div class="item-main">
+                <h3 class="item-title">{{ step.name }}</h3>
+                <p class="item-description" *ngIf="step.description">{{ step.description }}</p>
+              </div>
+              <div class="item-meta">
+                <span class="meta-item">
+                  {{ 'labels.inputs.Category' | translate }}: {{ 'labels.text.Pending Task' | translate }}
+                </span>
+                <span class="meta-item" *ngIf="step.dueDate">
+                  {{ 'labels.inputs.Due' | translate }}: {{ step.dueDate | date: 'shortDate' }}
+                </span>
+                <span class="meta-item" *ngIf="step.responsableUserName">
+                  {{ 'labels.text.Assigned to' | translate }}: {{ step.responsableUserName }}
+                </span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="empty-state" *ngIf="!mySteps.length">
+        <p>{{ 'labels.text.No steps assigned' | translate }}</p>
+      </div>
+    </ng-container>
+
+    <!-- Closed view -->
+    <ng-container *ngIf="viewMode === 'closed'">
+      <div *ngIf="loadingCompleted" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+      <div *ngIf="!loadingCompleted && completedGroups.length" class="completed-list">
+        <div *ngFor="let group of completedGroups" class="date-group">
+          <h3 class="date-group-header">
+            {{ group.dateDisplay ? (group.dateDisplay | date: 'longDate') : ('labels.text.Unknown date' | translate) }}
+          </h3>
+          <div class="pending-list">
+            <mat-card
+              *ngFor="let step of group.steps; trackBy: trackByStepId"
+              class="pending-item-card completed-card"
+              (click)="goToFlow(step.pendingFlowId, step.id)"
+            >
+              <mat-card-content>
+                <div class="item-row">
+                  <div class="item-main">
+                    <h3 class="item-title">{{ step.name }}</h3>
+                    <p class="item-description" *ngIf="step.description">{{ step.description }}</p>
+                    <span
+                      class="status-badge"
+                      [class.status-completed]="step.status === 'completed'"
+                      [class.status-cancelado]="step.status === 'cancelado'"
+                    >
+                      {{
+                        step.status === 'completed'
+                          ? ('labels.text.Completed' | translate)
+                          : ('labels.text.Cancelled' | translate)
+                      }}
+                    </span>
+                  </div>
+                  <div class="item-meta">
+                    <span class="meta-item">
+                      {{ 'labels.inputs.Category' | translate }}: {{ 'labels.text.Pending Task' | translate }}
+                    </span>
+                    <span class="meta-item" *ngIf="step.dueDate">
+                      {{ 'labels.inputs.Due' | translate }}: {{ step.dueDate | date: 'shortDate' }}
+                    </span>
+                    <span class="meta-item" *ngIf="step.responsableUserName">
+                      {{ 'labels.text.Assigned to' | translate }}: {{ step.responsableUserName }}
+                    </span>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="!loadingCompleted && !completedSteps.length">
+        <p>{{ 'labels.text.No completed steps' | translate }}</p>
+      </div>
+    </ng-container>
   </div>
 </div>

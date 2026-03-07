@@ -6,6 +6,19 @@
 .header-section {
   margin-bottom: 24px;
 
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-titles {
+    flex: 1;
+    min-width: 0;
+  }
+
   .page-title {
     margin: 0;
     font-weight: 600;
@@ -17,6 +30,10 @@
     margin: 8px 0 0;
     font-size: 0.95rem;
     color: rgb(0 0 0 / 60%);
+  }
+
+  .view-toggle-btn {
+    flex-shrink: 0;
   }
 }
 
@@ -64,6 +81,48 @@
   gap: 16px;
 }
 
+.date-group-header {
+  margin: 20px 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgb(0 0 0 / 70%);
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
+}
+
+.completed-list {
+  .date-group {
+    margin-bottom: 28px;
+
+    &:first-child .date-group-header {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.status-completed {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-cancelado {
+    background: #fff3e0;
+    color: #e65100;
+  }
+}
+
 .pending-item-card {
   cursor: pointer;
   border-radius: 8px;
@@ -80,6 +139,10 @@
 
   mat-card-content {
     padding: 20px;
+  }
+
+  &.completed-card {
+    opacity: 0.96;
   }
 }
 

@@ -26,7 +26,10 @@ import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
 })
 export class PendientesDashboardComponent implements OnInit {
   mySteps: any[] = [];
+  completedSteps: any[] = [];
+  viewMode: 'open' | 'closed' = 'open';
   loading = true;
+  loadingCompleted = false;
   error: string | null = null;
 
   constructor(
@@ -56,6 +59,52 @@ export class PendientesDashboardComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  loadCompleted(): void {
+    this.loadingCompleted = true;
+    this.pendientesService.getMyCompletedSteps().subscribe({
+      next: (data: any) => {
+        this.completedSteps = Array.isArray(data) ? data : (data?.pageItems ?? data ?? []);
+        this.loadingCompleted = false;
+      },
+      error: () => {
+        this.completedSteps = [];
+        this.loadingCompleted = false;
+      }
+    });
+  }
+
+  showClosedView(): void {
+    this.viewMode = 'closed';
+    this.loadCompleted();
+  }
+
+  showOpenView(): void {
+    this.viewMode = 'open';
+  }
+
+  get completedGroups(): { date: string; dateDisplay: string; steps: any[] }[] {
+    const map = new Map<string, any[]>();
+    for (const step of this.completedSteps) {
+      const raw = step.completionDate ?? step.creationDate;
+      const dateStr = raw ? String(raw).substring(0, 10) : '';
+      const key = dateStr || 'unknown';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(step);
+    }
+    return Array.from(map.entries())
+      .map(
+        ([
+          date,
+          steps
+        ]) => ({
+          date,
+          dateDisplay: date === 'unknown' ? '' : date + 'T12:00:00.000Z',
+          steps
+        })
+      )
+      .sort((a, b) => (a.date === 'unknown' ? 1 : b.date === 'unknown' ? -1 : b.date.localeCompare(a.date)));
   }
 
   trackByStepId(_index: number, step: any): number {
