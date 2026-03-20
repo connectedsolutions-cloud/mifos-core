@@ -1,0 +1,94 @@
+<h2 mat-dialog-title>{{ 'labels.buttons.Vault disbursement to tellers' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="layout-row-wrap gap-2px responsive-column">
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Office' | translate }}</mat-label>
+        <input matInput [value]="officeName" readonly disabled />
+      </mat-form-field>
+
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Teller Name' | translate }}</mat-label>
+        <mat-select formControlName="tellerId">
+          <mat-option *ngFor="let t of tellers" [value]="t.id">{{ t.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('tellerId')?.hasError('required')">
+          {{ 'labels.inputs.Teller Name' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Cashier' | translate }}</mat-label>
+        <mat-select formControlName="cashierId">
+          <mat-option *ngFor="let c of cashiers" [value]="c.id">
+            {{ c.staffName }}
+            <span *ngIf="c.startDate || c.endDate">
+              ({{ c.startDate | dateFormat }} - {{ c.endDate | dateFormat }})</span
+            >
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('cashierId')?.hasError('required')">
+          {{ 'labels.inputs.Cashier' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48" (click)="cashDatePicker.open()">
+        <mat-label>{{ 'labels.inputs.Date' | translate }}</mat-label>
+        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="cashDatePicker" formControlName="txnDate" />
+        <mat-datepicker-toggle matSuffix [for]="cashDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #cashDatePicker></mat-datepicker>
+        <mat-error *ngIf="form.get('txnDate')?.hasError('required')">
+          {{ 'labels.inputs.Date' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Currency' | translate }}</mat-label>
+        <mat-select formControlName="currencyCode">
+          <mat-option *ngFor="let cur of currencyOptions" [value]="cur.code">{{ cur.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('currencyCode')?.hasError('required')">
+          {{ 'labels.inputs.Currency' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Amount' | translate }}</mat-label>
+        <input matInput formControlName="txnAmount" />
+        <mat-error *ngIf="form.get('txnAmount')?.hasError('required')">
+          {{ 'labels.inputs.Amount' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Notes/Comments' | translate }}</mat-label>
+        <input matInput formControlName="txnNote" />
+        <mat-error *ngIf="form.get('txnNote')?.hasError('required')">
+          {{ 'labels.inputs.Notes/Comments' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!form.valid || submitting"
+    (click)="submit()"
+    *mifosxHasPermission="'ALLOCATECASHIER_TELLER'"
+  >
+    {{ 'labels.buttons.Submit' | translate }}
+  </button>
+</mat-dialog-actions>

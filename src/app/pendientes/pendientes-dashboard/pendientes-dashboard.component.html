@@ -5,12 +5,30 @@
         <h2 class="page-title">{{ 'labels.text.Pending Items' | translate }}</h2>
         <p class="page-subtitle">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
       </div>
-      <button *ngIf="viewMode === 'open'" mat-stroked-button (click)="showClosedView()" class="view-toggle-btn">
-        {{ 'labels.text.View completed pending items' | translate }}
-      </button>
-      <button *ngIf="viewMode === 'closed'" mat-stroked-button (click)="showOpenView()" class="view-toggle-btn">
-        {{ 'labels.text.View open pending items' | translate }}
-      </button>
+      <div class="header-controls">
+        <button
+          *ngIf="listScope === 'assignedToMe'"
+          mat-stroked-button
+          class="view-toggle-btn"
+          (click)="setListScope('myFlowsOthers')"
+        >
+          {{ 'labels.text.created by me' | translate }}
+        </button>
+        <button
+          *ngIf="listScope === 'myFlowsOthers'"
+          mat-stroked-button
+          class="view-toggle-btn"
+          (click)="setListScope('assignedToMe')"
+        >
+          {{ 'labels.text.assigned to me' | translate }}
+        </button>
+        <button *ngIf="viewMode === 'open'" mat-stroked-button (click)="showClosedView()" class="view-toggle-btn">
+          {{ 'labels.text.View completed pending items' | translate }}
+        </button>
+        <button *ngIf="viewMode === 'closed'" mat-stroked-button (click)="showOpenView()" class="view-toggle-btn">
+          {{ 'labels.text.View open pending items' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -64,7 +82,10 @@
       </div>
 
       <div class="empty-state" *ngIf="!mySteps.length">
-        <p>{{ 'labels.text.No steps assigned' | translate }}</p>
+        <p *ngIf="listScope === 'assignedToMe'">{{ 'labels.text.No steps assigned' | translate }}</p>
+        <p *ngIf="listScope === 'myFlowsOthers'">
+          {{ 'labels.text.No pending items on my flows assigned to others' | translate }}
+        </p>
       </div>
     </ng-container>
 
@@ -119,7 +140,10 @@
         </div>
       </div>
       <div class="empty-state" *ngIf="!loadingCompleted && !completedSteps.length">
-        <p>{{ 'labels.text.No completed steps' | translate }}</p>
+        <p *ngIf="listScope === 'assignedToMe'">{{ 'labels.text.No completed steps' | translate }}</p>
+        <p *ngIf="listScope === 'myFlowsOthers'">
+          {{ 'labels.text.No completed items on my flows assigned to others' | translate }}
+        </p>
       </div>
     </ng-container>
   </div>

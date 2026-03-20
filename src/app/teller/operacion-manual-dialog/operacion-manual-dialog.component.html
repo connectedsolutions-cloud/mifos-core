@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ 'labels.teller.OperacionManualTitle' | translate }}</h2>
+<p class="mat-dialog-description">{{ 'labels.teller.OperacionManualDesc' | translate }}</p>
+<mat-dialog-content>
+  <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
+  <form [formGroup]="form">
+    <label class="operation-label">{{ 'labels.teller.OperacionManualType' | translate }}</label>
+    <mat-radio-group formControlName="operation" class="operation-radio-group">
+      <mat-radio-button value="deposit">{{ 'labels.teller.OperacionManualDeposit' | translate }}</mat-radio-button>
+      <mat-radio-button value="withdrawal">{{
+        'labels.teller.OperacionManualWithdrawal' | translate
+      }}</mat-radio-button>
+    </mat-radio-group>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.inputs.Amount' | translate }}</mat-label>
+      <input matInput type="number" formControlName="amount" min="0.01" step="0.01" />
+      <span matSuffix>{{ data.currencyCode }}</span>
+      <mat-error *ngIf="form.get('amount')?.hasError('required')">
+        {{ 'labels.teller.AmountRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.get('amount')?.hasError('min')">
+        {{ 'labels.teller.AmountMin' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.get('amount')?.hasError('exceedsCash')">
+        {{ 'labels.teller.OperacionManualExceedsCash' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.inputs.Notes/Comments' | translate }}</mat-label>
+      <textarea matInput formControlName="txnNote" rows="3" maxlength="200"></textarea>
+      <mat-hint align="end">{{ form.get('txnNote')?.value?.length || 0 }}/200</mat-hint>
+      <mat-error *ngIf="form.get('txnNote')?.hasError('required')">
+        {{ 'labels.teller.OperacionManualNoteRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.get('txnNote')?.hasError('maxlength')">
+        {{ 'labels.teller.OperacionManualNoteMax' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="!canSubmit">
+    {{ 'labels.buttons.Submit' | translate }}
+  </button>
+</mat-dialog-actions>

@@ -43,6 +43,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { ConfigurationWizardModule } from './configuration-wizard/configuration-wizard.module';
 import { ComiteOtorgamientoModule } from './comite-otorgamiento/comite-otorgamiento.module';
 import { PendientesModule } from './pendientes/pendientes.module';
+import { VaultModule } from './vault/vault.module';
 import { PortalModule } from '@angular/cdk/portal';
 
 /** Main Routing Module */
@@ -124,6 +125,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ConfigurationWizardModule,
     ComiteOtorgamientoModule,
     PendientesModule,
+    VaultModule,
     AppRoutingModule,
     NotFoundComponent,
     CallbackComponent

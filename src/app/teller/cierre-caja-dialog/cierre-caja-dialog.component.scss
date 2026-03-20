@@ -1,0 +1,26 @@
+.full-width {
+  width: 100%;
+}
+
+:host ::ng-deep div.mat-mdc-form-field-flex {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+mat-dialog-content {
+  min-width: 280px;
+  overflow: visible;
+  padding-bottom: 1rem;
+}
+
+mat-dialog-actions {
+  flex-wrap: wrap;
+  min-height: auto;
+  padding-top: 0.5rem;
+
+  [mat-raised-button] {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+  }
+}

@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>{{ 'labels.teller.Cierre de Caja' | translate }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.teller.Monto de cierre' | translate }}</mat-label>
+      <span matPrefix>$&nbsp;</span>
+      <input
+        matInput
+        type="text"
+        formControlName="closingAmount"
+        [placeholder]="'labels.teller.Monto de cierre' | translate"
+        (blur)="formatClosingAmount()"
+      />
+      <span matSuffix *ngIf="data?.currencyCode">{{ data.currencyCode }}</span>
+      <mat-hint *ngIf="data?.suggestedAmount != null">
+        {{ 'labels.teller.Efectivo en Caja' | translate }}: {{ data.suggestedAmount | number: '1.2-2' }}
+        {{ data.currencyCode }}
+      </mat-hint>
+      <mat-error *ngIf="form.get('closingAmount')?.hasError('required')">
+        {{ 'labels.teller.El monto de cierre es requerido' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.get('closingAmount')?.hasError('min')">
+        {{ 'labels.teller.El monto debe ser mayor o igual a cero' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.teller.Note' | translate }}</mat-label>
+      <textarea matInput formControlName="note" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="confirm()" [disabled]="!form.valid">
+    {{ 'labels.teller.Cerrar caja' | translate }}
+  </button>
+</mat-dialog-actions>

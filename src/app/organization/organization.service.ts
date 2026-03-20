@@ -392,13 +392,14 @@ export class OrganizationService {
   }
 
   /**
-   * Returns tellers data, scoped to the current user's office when logged in.
+   * Returns tellers data, scoped to the current user's office when logged in, or to the given officeId if provided.
+   * @param officeId Optional office id to scope tellers. If not provided, uses current user's office from credentials.
    * @returns {Observable<any>} Tellers data
    */
-  getTellers(): Observable<any> {
-    const officeId = this.authenticationService.getCredentials()?.officeId;
-    if (officeId != null) {
-      return this.http.get('/tellers', { params: { officeId: String(officeId) } });
+  getTellers(officeId?: string | number): Observable<any> {
+    const id = officeId != null ? String(officeId) : this.authenticationService.getCredentials()?.officeId;
+    if (id != null) {
+      return this.http.get('/tellers', { params: { officeId: String(id) } });
     }
     return this.http.get('/tellers');
   }

@@ -1,0 +1,21 @@
+.mat-dialog-description {
+  margin: 0 24px 16px;
+  font-size: 14px;
+  color: rgb(0 0 0 / 60%);
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.blueprint-error,
+.submit-error {
+  color: var(--mat-form-field-error-text-color, #b71c1c);
+  margin-bottom: 15px;
+}
+
+mat-dialog-actions {
+  margin: 24px;
+}

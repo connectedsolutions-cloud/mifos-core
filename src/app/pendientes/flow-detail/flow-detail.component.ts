@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,9 +20,18 @@ import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
 import { getBlockComponent } from './step-blocks/block-registry';
 
 /** Step name -> list of detail blocks (key + i18n label key) to show in the step card. */
-const STEP_DETAIL_BLOCKS: Record<string, Array<{ key: string; labelKey: string }>> = {
+const STEP_DETAIL_BLOCKS: Record<string, Array<{ key: string; labelKey: string; amountLabelKey?: string }>> = {
   transferencia_cheque_boveda: [
-    { key: 'comite_disbursement_sum', labelKey: 'labels.pendientes.totalDisbursementComiteSession' }]
+    { key: 'comite_disbursement_sum', labelKey: 'labels.pendientes.totalDisbursementComiteSession' }],
+  approve_cash_transfer: [
+    { key: 'vault_transfer_info', labelKey: 'labels.pendientes.vaultTransferInfo' }],
+  'requerir-fondos': [
+    {
+      key: 'vault_transfer_info',
+      labelKey: 'labels.pendientes.vaultToCashierRequest',
+      amountLabelKey: 'labels.pendientes.amountRequested'
+    }
+  ]
 };
 
 @Component({
@@ -60,7 +69,8 @@ export class FlowDetailComponent implements OnInit {
     private translate: TranslateService,
     private dialog: MatDialog,
     private authenticationService: AuthenticationService,
-    private comiteOtorgamientoService: ComiteOtorgamientoService
+    private comiteOtorgamientoService: ComiteOtorgamientoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -207,7 +217,8 @@ export class FlowDetailComponent implements OnInit {
   private refreshFlow(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
-    this.pendientesService.getFlow(+id, true).subscribe({
+    this.loading = true;
+    this.pendientesService.getFlow(+id, true, true).subscribe({
       next: (data) => {
         this.flow = data;
         this.stepBlockData = {};
@@ -215,12 +226,16 @@ export class FlowDetailComponent implements OnInit {
         steps.forEach((step: any) => this.loadStepBlockData(step));
         this.applyStepIdFilter();
         this.error = null;
+        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error =
           err?.error?.errors?.[0]?.defaultUserMessage ||
           err.message ||
           this.translate.instant('labels.text.Error loading flow');
+        this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -316,7 +331,7 @@ export class FlowDetailComponent implements OnInit {
   /** Resolves block component for NgComponentOutlet (from block-registry). */
   getBlockComponent = getBlockComponent;
 
-  getStepBlocks(step: any): Array<{ key: string; labelKey: string }> {
+  getStepBlocks(step: any): Array<{ key: string; labelKey: string; amountLabelKey?: string }> {
     const name = (step?.name ?? step?.stepName ?? '')?.trim?.() ?? '';
     if (!name) return [];
     return STEP_DETAIL_BLOCKS[name] ?? [];
@@ -333,11 +348,15 @@ export class FlowDetailComponent implements OnInit {
     const initial: Record<string, { value?: unknown; loading?: boolean; error?: string }> = {};
     blocks.forEach((block) => {
       initial[block.key] = { loading: true };
-      if (block.key === 'comite_disbursement_sum') {
-        this.loadComiteDisbursementSumBlock(step, stepId, block.key);
-      }
     });
     this.stepBlockData = { ...this.stepBlockData, [stepId]: initial };
+    blocks.forEach((block) => {
+      if (block.key === 'comite_disbursement_sum') {
+        this.loadComiteDisbursementSumBlock(step, stepId, block.key);
+      } else if (block.key === 'vault_transfer_info') {
+        this.loadVaultTransferInfoBlock(step, stepId, block.key);
+      }
+    });
   }
 
   private loadComiteDisbursementSumBlock(step: any, stepId: number, blockKey: string): void {
@@ -363,6 +382,53 @@ export class FlowDetailComponent implements OnInit {
             this.translate.instant('labels.text.Error loading data')
         });
       }
+    });
+  }
+
+  private loadVaultTransferInfoBlock(step: any, stepId: number, blockKey: string): void {
+    const references = step?.references;
+    if (references == null || typeof references !== 'string' || references.trim() === '') {
+      this.setBlockData(stepId, blockKey, {
+        loading: false,
+        error: this.translate.instant('labels.pendientes.noTransferData')
+      });
+      return;
+    }
+    let root: Record<string, unknown>;
+    try {
+      root = JSON.parse(references) as Record<string, unknown>;
+    } catch {
+      this.setBlockData(stepId, blockKey, {
+        loading: false,
+        error: this.translate.instant('labels.pendientes.noTransferData')
+      });
+      return;
+    }
+    const amountRaw = root?.amount;
+    let amount: number | null = null;
+    if (typeof amountRaw === 'number' && !Number.isNaN(amountRaw)) {
+      amount = amountRaw;
+    } else if (typeof amountRaw === 'string') {
+      const parsed = parseFloat(amountRaw);
+      if (!Number.isNaN(parsed)) amount = parsed;
+    }
+    const currencyCode = root?.currencyCode != null ? String(root.currencyCode).trim() : '';
+    if (amount == null || amount <= 0 || currencyCode === '') {
+      this.setBlockData(stepId, blockKey, {
+        loading: false,
+        error: this.translate.instant('labels.pendientes.noTransferData')
+      });
+      return;
+    }
+    const notes =
+      (step?.note != null && String(step.note).trim() !== '' ? String(step.note).trim() : null) ??
+      (this.flow?.description != null && String(this.flow.description).trim() !== ''
+        ? String(this.flow.description).trim()
+        : null) ??
+      '';
+    this.setBlockData(stepId, blockKey, {
+      loading: false,
+      value: { amount, currencyCode, notes: notes || undefined }
     });
   }
 

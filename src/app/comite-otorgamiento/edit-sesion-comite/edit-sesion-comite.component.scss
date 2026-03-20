@@ -4,6 +4,11 @@
   padding: 16px;
 }
 
+// Material text field wrapper spacing (persisted from browser preview)
+::ng-deep .mat-mdc-text-field-wrapper {
+  margin-top: 12px;
+}
+
 .bordered-table {
   width: 100%;
 }

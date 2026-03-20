@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 /** rxjs Imports */
 import { merge, Subscription, Subject } from 'rxjs';
-import { filter, map, mergeMap, takeUntil, take } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 
 /** Translation Imports */
 import { TranslateService } from '@ngx-translate/core';
@@ -194,17 +194,28 @@ export class WebAppComponent implements OnInit, OnDestroy {
           return route;
         }),
         filter((route) => route.outlet === 'primary'),
-        mergeMap((route) => route.data),
+        map((route) => {
+          // Walk up the route tree to find the first route with a title (leaf may have no data)
+          let current: ActivatedRoute | null = route;
+          let data: Record<string, unknown> = {};
+          while (current) {
+            data = { ...data, ...current.snapshot.data };
+            if (data['title']) {
+              break;
+            }
+            current = current.parent;
+          }
+          return data;
+        }),
         takeUntil(this.destroy$)
       )
       .subscribe((event) => {
-        const title = event['title'] ? `labels.text.${event['title']}` : 'APP_NAME';
-        this.i18nService
-          .translate(title)
-          .pipe(take(1))
-          .subscribe((titleTranslated: any) => {
-            this.titleService.setTitle(titleTranslated);
-          });
+        const titleKey = event['title'] ? `labels.text.${event['title']}` : 'APP_NAME';
+        const rawTitle = event['title'] || '';
+        const titleTranslated = this.translateService.instant(titleKey);
+        // If translation returned the key (missing), use raw title so tab shows e.g. "Pendientes" not "labels.text.Pendientes"
+        const finalTitle = titleTranslated === titleKey && rawTitle ? rawTitle : titleTranslated;
+        this.titleService.setTitle(finalTitle);
       });
 
     // Stores top 100 user activites as local storage object.

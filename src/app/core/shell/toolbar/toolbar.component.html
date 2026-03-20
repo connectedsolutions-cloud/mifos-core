@@ -93,8 +93,8 @@
     <mifosx-language-selector class="ml-1 language hide-lt-md" tabindex="0"></mifosx-language-selector>
   </div>
 
-  <button mat-icon-button [matMenuTriggerFor]="languageMenu" tabindex="0">
-    <mat-icon class="lg-icon">language</mat-icon>
+  <button mat-icon-button class="language-menu-button" [matMenuTriggerFor]="languageMenu" tabindex="0">
+    <mat-icon>language</mat-icon>
   </button>
 
   <div #notifications>
@@ -119,6 +119,9 @@
 
 <mat-menu #institutionMenu="matMenu" [overlapTrigger]="false">
   <button mat-menu-item routerLink="/clients" tabindex="0">{{ 'labels.menus.Clients' | translate }}</button>
+  <button mat-menu-item [routerLink]="['/vault']" *mifosxHasPermission="'acceso_boveda'" tabindex="0">
+    {{ 'labels.menus.Vault' | translate }}
+  </button>
   <button mat-menu-item [routerLink]="['/comite-otorgamiento']" *mifosxHasPermission="'see_loan_comittee'" tabindex="0">
     Comite - otorgamiento
   </button>

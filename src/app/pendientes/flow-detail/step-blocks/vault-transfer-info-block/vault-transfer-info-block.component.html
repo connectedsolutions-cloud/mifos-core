@@ -1,0 +1,19 @@
+<span *ngIf="blockData?.loading" class="step-detail-block-loading">
+  <mat-spinner diameter="20"></mat-spinner>
+</span>
+<span *ngIf="!blockData?.loading">
+  <span *ngIf="blockData?.error" class="step-detail-block-error">{{ blockData.error }}</span>
+  <span *ngIf="blockData?.value != null && !blockData?.error" class="step-detail-block-value">
+    <div class="step-detail-block-row">
+      <span class="step-detail-block-description"
+        >{{ block.amountLabelKey || 'labels.pendientes.amountToTransfer' | translate }}:</span
+      >
+      {{ amount | number: '1.2-2' }}
+      <ng-container *ngIf="currencyCode">{{ currencyCode }}</ng-container>
+    </div>
+    <div *ngIf="notes" class="step-detail-block-row">
+      <span class="step-detail-block-description">{{ 'labels.pendientes.notes' | translate }}:</span>
+      {{ notes }}
+    </div>
+  </span>
+</span>

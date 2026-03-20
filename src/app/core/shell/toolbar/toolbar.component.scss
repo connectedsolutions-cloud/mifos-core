@@ -58,14 +58,14 @@
   }
 }
 
-// Show icon on small screens
-.lg-icon {
+// Language icon button: show only when language dropdown is hidden (same breakpoint as hide-lt-md: 768px)
+.language-menu-button {
   display: none;
 }
 
-@media (width <= 959px) {
-  .lg-icon {
-    display: block;
+@media (width <= 768px) {
+  .language-menu-button {
+    display: inline-flex;
     margin-left: 5px;
   }
 }

@@ -1,6 +1,6 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 /** rxjs Imports */
 import { Observable, of, Subject, merge } from 'rxjs';
@@ -34,24 +34,31 @@ export class CashierSessionService {
 
   /**
    * Fetches the active (open) cashier session for the currently authenticated user.
-   * Re-emits when refreshSession() is called.
-   * @returns Observable of CashierSession or null if no active session (404/error)
+   * Re-emits when refreshSession() is called. Use skipCache when refetching after a
+   * mutation (e.g. close till) so the GET is not served from cache.
    */
-  getActiveSession(): Observable<CashierSession | null> {
-    const fetchSession = (): Observable<CashierSession | null> =>
-      this.http.get<CashierSession>('/cashiers/session').pipe(
-        map((data) => this.toCashierSession(data)),
-        catchError(() => of(null))
-      );
-
-    return merge(fetchSession(), this.refresh$.pipe(switchMap(() => fetchSession())));
+  getActiveSession(options?: { skipCache?: boolean }): Observable<CashierSession | null> {
+    const skipCache = options?.skipCache === true;
+    return merge(this.fetchSession(skipCache), this.refresh$.pipe(switchMap(() => this.fetchSession(true))));
   }
 
   /**
-   * Triggers a refetch of the active session (e.g. after opening a till).
+   * Triggers a refetch of the active session (e.g. after opening or closing a till).
    */
   refreshSession(): void {
     this.refresh$.next();
+  }
+
+  private fetchSession(skipCache?: boolean): Observable<CashierSession | null> {
+    let params = new HttpParams();
+    if (skipCache) {
+      params = params.set('_', String(Date.now()));
+    }
+    const opts = params.keys().length ? { params } : {};
+    return this.http.get<CashierSession>('/cashiers/session', opts).pipe(
+      map((data) => this.toCashierSession(data)),
+      catchError(() => of(null))
+    );
   }
 
   private toCashierSession(data: any): CashierSession | null {

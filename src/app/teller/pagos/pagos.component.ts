@@ -1,18 +1,32 @@
 /** Angular Imports */
-import { Component } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
+import { MatFormField, MatPrefix } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { AuthenticationService } from 'app/core/authentication/authentication.service';
 
-export interface PagoRow {
+export type RepaymentScheduledStatus = 'Completado' | 'Pendiente';
+
+export interface RepaymentScheduledRow {
+  /** Loan account id. Used for the loan account URL. */
   id: string;
-  factura: string;
+  clientId: string;
   cliente: string;
-  concepto: string;
   monto: number;
-  estado: 'Completado' | 'Verificando' | 'Pendiente';
+  estado: RepaymentScheduledStatus;
+}
+
+interface RepaymentScheduledApiItem {
+  id: number | string;
+  clientId: number | string;
+  clientName?: string | null;
+  amountToBeRepaid?: number | string | null;
+  status?: string | null;
 }
 
 /**
@@ -27,108 +41,185 @@ export interface PagoRow {
     FormsModule,
     MatTableModule,
     MatNativeDateModule,
-    MatIconModule,
+    MatIcon,
+    MatIconButton,
+    MatFormField,
+    MatPrefix,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })
-export class PagosComponent {
-  /** Selected date for filtering payments. */
-  selectedDate: Date = new Date();
+export class PagosComponent implements OnInit {
+  /** Selected date. */
+  selectedDate = signal(new Date());
+
+  /** Model for the mat-datepicker input. */
+  selectedDateModel: Date = new Date();
+
+  /** Selected date serialized for API requests (YYYY-MM-DD). */
+  selectedDateParam = '';
+
+  /** Formatted date for display. */
+  selectedDateFormatted = computed(() => {
+    const d = this.selectedDate();
+    return d.toLocaleDateString('es-MX', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  });
 
   /** Search filter for table. */
   searchFilter = '';
 
   /** Table columns. */
   displayedColumns: string[] = [
-    'idFactura',
     'cliente',
-    'concepto',
     'monto',
-    'estado',
-    'acciones'
+    'estado'
   ];
 
   /** Payments table data source. */
-  paymentsDataSource = new MatTableDataSource<PagoRow>([
-    {
-      id: 'PAG-001',
-      factura: 'INV-2026-001',
-      cliente: 'Carlos Ramírez López',
-      concepto: 'Pago de servicio mensual',
-      monto: 4500,
-      estado: 'Completado'
-    },
-    {
-      id: 'PAG-002',
-      factura: 'INV-2026-002',
-      cliente: 'Ana Martínez Soto',
-      concepto: 'Compra de productos',
-      monto: 2300,
-      estado: 'Completado'
-    },
-    {
-      id: 'PAG-003',
-      factura: 'INV-2026-003',
-      cliente: 'Empresa XYZ SA',
-      concepto: 'Pago de factura corporativa',
-      monto: 15000,
-      estado: 'Verificando'
-    },
-    {
-      id: 'PAG-004',
-      factura: 'INV-2026-004',
-      cliente: 'Roberto González',
-      concepto: 'Pago anticipado',
-      monto: 8700,
-      estado: 'Pendiente'
-    },
-    {
-      id: 'PAG-005',
-      factura: 'INV-2026-005',
-      cliente: 'Laura Hernández',
-      concepto: 'Pago de cuota',
-      monto: 3200,
-      estado: 'Completado'
-    }
-  ]);
+  paymentsDataSource = new MatTableDataSource<RepaymentScheduledRow>([]);
 
-  constructor() {
-    this.paymentsDataSource.filterPredicate = (data: PagoRow, filter: string) => {
+  /** Increments on each date-driven load so stale HTTP responses are ignored. */
+  private repaymentLoadGeneration = 0;
+
+  constructor(
+    private http: HttpClient,
+    private authenticationService: AuthenticationService
+  ) {
+    this.paymentsDataSource.filterPredicate = (data: RepaymentScheduledRow, filter: string) => {
       const s = filter.toLowerCase();
       return (
         data.cliente.toLowerCase().includes(s) ||
-        data.concepto.toLowerCase().includes(s) ||
-        data.factura.toLowerCase().includes(s) ||
-        data.id.toLowerCase().includes(s)
+        data.id.toLowerCase().includes(s) ||
+        data.clientId.toLowerCase().includes(s) ||
+        data.estado.toLowerCase().includes(s)
       );
     };
   }
 
-  onPrevDay(): void {
-    const d = new Date(this.selectedDate);
-    d.setDate(d.getDate() - 1);
-    this.selectedDate = d;
+  ngOnInit(): void {
+    this.applySelectedDateAndReload(new Date(), { clearSearch: false });
   }
 
-  onNextDay(): void {
-    const d = new Date(this.selectedDate);
+  onPrevDate(): void {
+    const d = new Date(this.selectedDate());
+    d.setDate(d.getDate() - 1);
+    this.applySelectedDateAndReload(d, { clearSearch: true });
+  }
+
+  onNextDate(): void {
+    const d = new Date(this.selectedDate());
     d.setDate(d.getDate() + 1);
-    this.selectedDate = d;
+    this.applySelectedDateAndReload(d, { clearSearch: true });
+  }
+
+  /**
+   * Fired when the datepicker input model changes (calendar pick or typing).
+   * Keeps the display + API requests in sync.
+   */
+  onSelectedDateModelChange(value: Date | null): void {
+    this.applySelectedDateAndReload(value, { clearSearch: true });
+  }
+
+  private applySelectedDateAndReload(date: Date | null, opts: { clearSearch: boolean }): void {
+    if (!date || !(date instanceof Date) || Number.isNaN(date.getTime())) {
+      return;
+    }
+
+    this.selectedDateModel = date;
+    this.selectedDate.set(date);
+    this.updateSelectedDateParam(date);
+
+    if (opts.clearSearch) {
+      this.searchFilter = '';
+      this.paymentsDataSource.filter = '';
+    }
+
+    this.loadRepaymentsForDate(date);
   }
 
   onRegistrarPago(): void {
     // TODO: open register payment dialog
   }
 
-  onConfirmar(row: PagoRow): void {
-    // TODO: confirm payment
-  }
-
-  onVerificar(row: PagoRow): void {
-    // TODO: verify payment
-  }
-
   applyFilter(): void {
     this.paymentsDataSource.filter = this.searchFilter.trim().toLowerCase();
+  }
+
+  onRepaymentClick(row: RepaymentScheduledRow): void {
+    if (!row?.clientId || row.clientId === '-' || !row?.id || row.id === '-') {
+      return;
+    }
+
+    const url = `/#/clients/${row.clientId}/loans-accounts/${row.id}/general`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  private loadRepaymentsForDate(_date: Date): void {
+    const generation = ++this.repaymentLoadGeneration;
+    const dateParam = this.toYyyyMmDd(_date);
+
+    const credentials = this.authenticationService.getCredentials();
+    const currentOfficeId = credentials?.officeId;
+
+    let params = new HttpParams().set('fromDate', dateParam).set('toDate', dateParam).set('limit', '1000');
+
+    if (currentOfficeId != null && currentOfficeId !== 0) {
+      params = params.set('current_office_id', String(currentOfficeId));
+    }
+
+    this.http.get<{ pageItems?: RepaymentScheduledApiItem[] }>('/loans/repayment-scheduled', { params }).subscribe({
+      next: (response) => {
+        if (generation !== this.repaymentLoadGeneration) {
+          return;
+        }
+
+        const pageItems = response?.pageItems ?? [];
+        this.paymentsDataSource.data = pageItems.map((item) => this.mapApiItemToRow(item));
+        this.applyFilter();
+      },
+      error: (error) => {
+        if (generation !== this.repaymentLoadGeneration) {
+          return;
+        }
+        this.paymentsDataSource.data = [];
+        this.paymentsDataSource.filter = '';
+        console.error('[Pagos] /loans/repayment-scheduled request failed', error);
+      }
+    });
+  }
+
+  private mapApiItemToRow(item: RepaymentScheduledApiItem): RepaymentScheduledRow {
+    const rawStatus = String(item.status ?? '');
+    const estado: RepaymentScheduledStatus = rawStatus === 'Completado' ? 'Completado' : 'Pendiente';
+
+    return {
+      id: String(item.id ?? '-'),
+      clientId: String(item.clientId ?? '-'),
+      cliente: item.clientName ?? '-',
+      monto: this.toNumberOrZero(item.amountToBeRepaid),
+      estado
+    };
+  }
+
+  private toNumberOrZero(value: number | string | null | undefined): number {
+    const n = Number(value ?? 0);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  private updateSelectedDateParam(date: Date): void {
+    this.selectedDateParam = this.toYyyyMmDd(date);
+  }
+
+  private toYyyyMmDd(date: Date): string {
+    // Convert Date -> "YYYY-MM-DD" for backend filtering.
+    // We use UTC components here because the backend range is date-based (no time).
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(date.getUTCDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

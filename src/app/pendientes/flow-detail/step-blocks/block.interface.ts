@@ -9,4 +9,6 @@ export interface BlockData {
 export interface BlockConfig {
   key: string;
   labelKey: string;
+  /** Optional i18n key for the amount line (e.g. vault request vs transfer to vault). */
+  amountLabelKey?: string;
 }

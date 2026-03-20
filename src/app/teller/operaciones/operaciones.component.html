@@ -16,9 +16,19 @@
           {{ limiteCaja != null ? (limiteCaja | formatNumber) : ('labels.teller.Sin límite' | translate) }}
         </div>
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="onTransferirBoveda()">
-            {{ 'labels.teller.Transferir a Bóveda' | translate }}
-          </button>
+          <div class="transfer-actions layout-column">
+            <p *ngIf="hasPendingTellerVaultTransfer" class="pending-transfer-message">
+              {{ 'labels.teller.PendingTransferToVaultMessage' | translate }}
+            </p>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="onTransferirBoveda()"
+              [disabled]="hasPendingTellerVaultTransfer"
+            >
+              {{ 'labels.teller.Transferir a Bóveda' | translate }}
+            </button>
+          </div>
         </mat-card-actions>
       </mat-card-content>
     </mat-card>
@@ -43,7 +53,10 @@
           <button mat-raised-button color="primary" (click)="onCierreCaja()">
             {{ 'labels.teller.Cierre de Caja' | translate }}
           </button>
-          <button mat-stroked-button (click)="onRequerirFondos()">
+          <p *ngIf="hasPendingRequerirFondos" class="ui-warning">
+            {{ 'labels.teller.PendingRequerirFondosMessage' | translate }}
+          </p>
+          <button mat-stroked-button (click)="onRequerirFondos()" [disabled]="hasPendingRequerirFondos">
             {{ 'labels.teller.Requerir Fondos de Bóveda' | translate }}
           </button>
           <button mat-stroked-button (click)="onOperacionManual()">
@@ -69,7 +82,14 @@
   <mat-card class="operaciones-table-card">
     <mat-card-content>
       <div *ngIf="cashierData">
-        <table mat-table [dataSource]="dataSource" matSort class="operaciones-table">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          matSortActive="date"
+          matSortDirection="desc"
+          class="operaciones-table"
+        >
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Date' | translate }}</th>
             <td mat-cell *matCellDef="let transaction">{{ transaction.txnDate | dateFormat }}</td>
@@ -83,7 +103,10 @@
           <ng-container matColumnDef="amount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Amount' | translate }}</th>
             <td mat-cell *matCellDef="let transaction">
-              {{ transaction.txnAmount != null ? (transaction.txnAmount | formatNumber) : '-' }}
+              <ng-container *ngIf="getAmountDisplay(transaction) !== null; else noAmount">{{
+                getAmountDisplay(transaction) | formatNumber
+              }}</ng-container>
+              <ng-template #noAmount>-</ng-template>
             </td>
           </ng-container>
 

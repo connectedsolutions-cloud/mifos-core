@@ -2,15 +2,27 @@
   padding: 0;
 }
 
-.desembolsos-date-bar {
+.disbursements-date-bar {
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
+.date-text {
+  text-transform: capitalize;
+  font-size: 0.95rem;
+}
+
 .date-display {
   gap: 0.5rem;
   align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    .date-text {
+      text-decoration: underline;
+    }
+  }
 }
 
 .date-icon {
@@ -20,32 +32,36 @@
   color: rgb(0 0 0 / 60%);
 }
 
-.date-text {
-  text-transform: capitalize;
-  font-size: 0.95rem;
-}
-
 .cambiar-btn {
   margin-left: 0.25rem;
 }
 
-.desembolsos-toolbar {
+.disbursements-date-picker-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.disbursements-toolbar {
   margin-bottom: 1.5rem;
   gap: 1rem;
 }
 
-.desembolsos-search {
+.disbursements-search {
   flex: 1;
   max-width: 400px;
 }
 
-.desembolsos-list {
+.disbursements-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.desembolso-card {
+.disbursement-card {
   cursor: pointer;
   transition: box-shadow 0.2s ease;
   border-radius: 12px;
@@ -55,12 +71,12 @@
   }
 }
 
-.desembolso-card mat-card-content {
+.disbursement-card mat-card-content {
   padding: 1rem 1.25rem !important;
   gap: 1rem;
 }
 
-.desembolso-status-icon {
+.disbursement-status-icon {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
@@ -89,40 +105,40 @@
   }
 }
 
-.desembolso-details {
+.disbursement-details {
   min-width: 0;
 }
 
-.desembolso-header {
+.disbursement-header {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.desembolso-beneficiario {
+.disbursement-beneficiary {
   font-weight: 600;
   font-size: 1rem;
 }
 
-.desembolso-id {
+.disbursement-id {
   font-size: 0.85rem;
   color: rgb(0 0 0 / 60%);
 }
 
-.desembolso-concepto {
+.disbursement-concept {
   font-size: 0.9rem;
   color: rgb(0 0 0 / 70%);
   margin-top: 0.15rem;
 }
 
-.desembolso-monto {
+.disbursement-amount {
   font-weight: 600;
   font-size: 1.1rem;
   flex-shrink: 0;
 }
 
-.desembolsos-empty {
+.disbursements-empty {
   padding: 2rem;
   text-align: center;
   color: rgb(0 0 0 / 50%);

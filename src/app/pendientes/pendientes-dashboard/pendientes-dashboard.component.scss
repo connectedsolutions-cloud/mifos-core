@@ -35,6 +35,20 @@
   .view-toggle-btn {
     flex-shrink: 0;
   }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .scope-toggle {
+    display: inline-flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
 }
 
 .loading-container {

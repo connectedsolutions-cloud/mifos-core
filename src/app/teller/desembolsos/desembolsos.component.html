@@ -1,45 +1,55 @@
 <div class="tab-container mat-typography">
   <!-- Date selection bar -->
-  <div class="desembolsos-date-bar layout-row align-items-center">
+  <div class="disbursements-date-bar layout-row align-items-center">
     <button mat-icon-button (click)="onPrevDate()" [attr.aria-label]="'labels.teller.Previous day' | translate">
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <div class="date-display layout-row align-items-center">
+    <div
+      class="date-display layout-row align-items-center"
+      role="button"
+      tabindex="0"
+      (click)="datePicker.open()"
+      (keydown.enter)="$event.preventDefault(); datePicker.open()"
+      (keydown.space)="$event.preventDefault(); datePicker.open()"
+    >
       <mat-icon class="date-icon">calendar_today</mat-icon>
-      <span class="date-text">{{ selectedDateFormatted }}</span>
-      <mat-icon class="date-icon">calendar_today</mat-icon>
-      <button mat-stroked-button class="cambiar-btn" (click)="openDatePicker()">
-        {{ 'labels.teller.Cambiar' | translate }}
-      </button>
+      <span class="date-text">{{ selectedDateFormatted() }}</span>
     </div>
+
+    <!-- Hidden datepicker input for selecting the selected date -->
+    <mat-form-field class="disbursements-date-picker-hidden" appearance="outline">
+      <input
+        matInput
+        [matDatepicker]="datePicker"
+        [(ngModel)]="selectedDateModel"
+        (ngModelChange)="onSelectedDateModelChange($event)"
+      />
+      <mat-datepicker #datePicker></mat-datepicker>
+    </mat-form-field>
     <button mat-icon-button (click)="onNextDate()" [attr.aria-label]="'labels.teller.Next day' | translate">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
 
   <!-- Search and action -->
-  <div class="desembolsos-toolbar layout-row align-between align-items-center">
-    <mat-form-field appearance="outline" class="desembolsos-search">
+  <div class="disbursements-toolbar layout-row align-between align-items-center">
+    <mat-form-field appearance="outline" class="disbursements-search">
       <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
-        [placeholder]="'labels.teller.Buscar por beneficiario concepto o ID' | translate"
+        [placeholder]="'labels.teller.Buscar por cliente o ID' | translate"
         [(ngModel)]="searchFilter"
         (keyup)="applyFilter()"
       />
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="onNuevoDesembolso()">
-      <mat-icon>add</mat-icon>
-      {{ 'labels.teller.Nuevo Desembolso' | translate }}
-    </button>
   </div>
 
   <!-- Disbursement list -->
-  <div class="desembolsos-list">
-    @for (item of filteredDesembolsos; track item.id) {
-      <mat-card class="desembolso-card" (click)="onDesembolsoClick(item)">
+  <div class="disbursements-list">
+    @for (item of filteredDisbursements; track item.id) {
+      <mat-card class="disbursement-card" (click)="onDisbursementClick(item)">
         <mat-card-content class="layout-row align-items-center">
-          <div class="desembolso-status-icon" [class]="'status-' + item.status">
+          <div class="disbursement-status-icon" [class]="'status-' + item.status">
             @switch (item.status) {
               @case ('completado') {
                 <mat-icon>check_circle</mat-icon>
@@ -55,19 +65,18 @@
               }
             }
           </div>
-          <div class="desembolso-details flex-1">
-            <div class="desembolso-header">
-              <span class="desembolso-beneficiario">{{ item.beneficiario }}</span>
-              <span class="desembolso-id">{{ item.id }}</span>
+          <div class="disbursement-details flex-1">
+            <div class="disbursement-header">
+              <span class="disbursement-beneficiary">{{ item.clientName }}</span>
+              <span class="disbursement-id">{{ item.clientId }} - {{ item.expectedDisbursedOnDate }}</span>
             </div>
-            <div class="desembolso-concepto">{{ item.concepto }}</div>
           </div>
-          <div class="desembolso-monto">${{ item.monto | number: '1.2-2' }}</div>
+          <div class="disbursement-amount">${{ item.approvedNetDisbursalAmount | number: '1.2-2' }}</div>
         </mat-card-content>
       </mat-card>
     } @empty {
-      <div class="desembolsos-empty">
-        {{ 'labels.text.No data' | translate }}
+      <div class="disbursements-empty">
+        {{ 'labels.text.No Data' | translate }}
       </div>
     }
   </div>

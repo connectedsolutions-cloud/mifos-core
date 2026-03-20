@@ -28,6 +28,7 @@ export class PendientesDashboardComponent implements OnInit {
   mySteps: any[] = [];
   completedSteps: any[] = [];
   viewMode: 'open' | 'closed' = 'open';
+  listScope: 'assignedToMe' | 'myFlowsOthers' = 'assignedToMe';
   loading = true;
   loadingCompleted = false;
   error: string | null = null;
@@ -45,7 +46,11 @@ export class PendientesDashboardComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.error = null;
-    this.pendientesService.getMySteps().subscribe({
+    const request$ =
+      this.listScope === 'assignedToMe'
+        ? this.pendientesService.getMySteps()
+        : this.pendientesService.getStepsOnMyFlowsAssignedToOthers();
+    request$.subscribe({
       next: (data: any) => {
         this.mySteps = Array.isArray(data) ? data : (data?.pageItems ?? data ?? []);
         this.loading = false;
@@ -63,7 +68,11 @@ export class PendientesDashboardComponent implements OnInit {
 
   loadCompleted(): void {
     this.loadingCompleted = true;
-    this.pendientesService.getMyCompletedSteps().subscribe({
+    const request$ =
+      this.listScope === 'assignedToMe'
+        ? this.pendientesService.getMyCompletedSteps()
+        : this.pendientesService.getCompletedStepsOnMyFlowsAssignedToOthers();
+    request$.subscribe({
       next: (data: any) => {
         this.completedSteps = Array.isArray(data) ? data : (data?.pageItems ?? data ?? []);
         this.loadingCompleted = false;
@@ -82,6 +91,19 @@ export class PendientesDashboardComponent implements OnInit {
 
   showOpenView(): void {
     this.viewMode = 'open';
+    this.load();
+  }
+
+  setListScope(scope: 'assignedToMe' | 'myFlowsOthers'): void {
+    if (this.listScope === scope) {
+      return;
+    }
+    this.listScope = scope;
+    if (this.viewMode === 'closed') {
+      this.loadCompleted();
+      return;
+    }
+    this.load();
   }
 
   get completedGroups(): { date: string; dateDisplay: string; steps: any[] }[] {

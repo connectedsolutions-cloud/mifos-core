@@ -37,8 +37,11 @@ export class PendientesService {
     return this.http.get(this.flowsUrl, options);
   }
 
-  getFlow(id: number, includeSteps = true): Observable<any> {
-    const params = new HttpParams().set('includeSteps', String(includeSteps));
+  getFlow(id: number, includeSteps = true, skipCache = false): Observable<any> {
+    let params = new HttpParams().set('includeSteps', String(includeSteps));
+    if (skipCache) {
+      params = params.set('_', String(Date.now()));
+    }
     return this.http.get(`${this.flowsUrl}/${id}`, { params });
   }
 
@@ -59,6 +62,18 @@ export class PendientesService {
 
   getMyCompletedSteps(officeId?: number): Observable<any> {
     let params = new HttpParams().set('mySteps', 'true').set('closed', 'true');
+    if (officeId != null) params = params.set('officeId', String(officeId));
+    return this.http.get(this.stepsUrl, { params });
+  }
+
+  getStepsOnMyFlowsAssignedToOthers(officeId?: number): Observable<any> {
+    let params = new HttpParams().set('myFlowsOthersSteps', 'true');
+    if (officeId != null) params = params.set('officeId', String(officeId));
+    return this.http.get(this.stepsUrl, { params });
+  }
+
+  getCompletedStepsOnMyFlowsAssignedToOthers(officeId?: number): Observable<any> {
+    let params = new HttpParams().set('myFlowsOthersSteps', 'true').set('closed', 'true');
     if (officeId != null) params = params.set('officeId', String(officeId));
     return this.http.get(this.stepsUrl, { params });
   }

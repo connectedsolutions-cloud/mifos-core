@@ -1,0 +1,130 @@
+:host {
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  margin: 20px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 16px;
+}
+
+.header-section {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.error-message,
+.info-message {
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.info-message {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.top-cards-row {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (width <= 768px) {
+  .top-cards-row {
+    flex-direction: column;
+  }
+}
+
+.balance-card,
+.actions-card {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.balance-card > mat-card,
+.actions-card > mat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.balance-card > mat-card mat-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.actions-card > mat-card mat-card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.balance-row.total-row {
+  font-weight: 600;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.balance-label {
+  margin-right: 16px;
+}
+
+.action-bar {
+  display: flex;
+  gap: 12px;
+}
+
+.transactions-section {
+  margin-top: 8px;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.m-r-10 {
+  margin-right: 10px;
+}
