@@ -40,6 +40,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   ]
 })
 export class CreateClientComponent {
+  private readonly personalDatatableName = 'credesal_client_datos_personales';
   /** Client General Step */
   @ViewChild(ClientGeneralStepComponent, { static: true }) clientGeneralStep: ClientGeneralStepComponent;
   /** Client Family Members Step */
@@ -50,6 +51,7 @@ export class CreateClientComponent {
   @ViewChildren('dtclient') clientDatatables: QueryList<ClientDatatableStepComponent>;
 
   datatables: any = [];
+  personalDetailsDatatable: any;
   legalFormType = 1;
 
   /** Client Template */
@@ -116,19 +118,19 @@ export class CreateClientComponent {
     return areValids;
   }
 
-  setDatatables(): void {
-    this.datatables = [];
-    let legalFormTypeVal = 'person';
-    if (this.legalFormType === 2) {
-      legalFormTypeVal = 'entity';
+  /** Datatable payloads for preview step (same shape as submit). */
+  get datatablesPreview(): { registeredTableName: string; data: Record<string, unknown> }[] {
+    const out: { registeredTableName: string; data: Record<string, unknown> }[] = [];
+    if (this.clientGeneralStep.personalDatatablePayload) {
+      out.push(this.clientGeneralStep.personalDatatablePayload);
     }
-    if (this.clientTemplate.datatables) {
-      this.clientTemplate.datatables.forEach((datatable: any) => {
-        if (datatable.entitySubType.toLowerCase() === legalFormTypeVal) {
-          this.datatables.push(datatable);
-        }
-      });
+    if (!this.clientDatatables?.length) {
+      return out;
     }
+    this.clientDatatables.forEach((dt: ClientDatatableStepComponent) => {
+      out.push(dt.payload);
+    });
+    return out;
   }
 
   legalFormChange(eventData: { legalForm: number }) {
@@ -148,11 +150,16 @@ export class CreateClientComponent {
       locale
     };
 
+    const datatables: any[] = [];
+    if (this.clientGeneralStep.personalDatatablePayload) {
+      datatables.push(this.clientGeneralStep.personalDatatablePayload);
+    }
     if (this.clientTemplate.datatables && this.clientTemplate.datatables.length > 0) {
-      const datatables: any[] = [];
       this.clientDatatables.forEach((clientDatatable: ClientDatatableStepComponent) => {
         datatables.push(clientDatatable.payload);
       });
+    }
+    if (datatables.length) {
       clientData['datatables'] = datatables;
     }
 
@@ -165,5 +172,26 @@ export class CreateClientComponent {
         { relativeTo: this.route }
       );
     });
+  }
+
+  setDatatables(): void {
+    this.datatables = [];
+    this.personalDetailsDatatable = null;
+    let legalFormTypeVal = 'person';
+    if (this.legalFormType === 2) {
+      legalFormTypeVal = 'entity';
+    }
+    if (this.clientTemplate.datatables) {
+      this.clientTemplate.datatables.forEach((datatable: any) => {
+        const sub = datatable.entitySubType;
+        if (sub && sub.toLowerCase() === legalFormTypeVal) {
+          if (datatable.registeredTableName === this.personalDatatableName) {
+            this.personalDetailsDatatable = datatable;
+            return;
+          }
+          this.datatables.push(datatable);
+        }
+      });
+    }
   }
 }

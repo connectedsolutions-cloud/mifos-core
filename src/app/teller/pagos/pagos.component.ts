@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
-import { MatFormField, MatPrefix } from '@angular/material/form-field';
+import { MatFormField } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
-import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { StandaloneSharedImportsModule } from 'app/standalone-shared.module';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
 
 export type RepaymentScheduledStatus = 'Completado' | 'Pendiente';
@@ -44,8 +44,7 @@ interface RepaymentScheduledApiItem {
     MatIcon,
     MatIconButton,
     MatFormField,
-    MatPrefix,
-    ...STANDALONE_SHARED_IMPORTS
+    StandaloneSharedImportsModule
   ]
 })
 export class PagosComponent implements OnInit {

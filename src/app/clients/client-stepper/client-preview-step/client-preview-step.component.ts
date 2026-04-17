@@ -46,6 +46,8 @@ export class ClientPreviewStepComponent {
   @Input() clientTemplate: any;
   /** Client Object */
   @Input() client: any;
+  /** Datatable payloads collected from create-client datatable steps (optional). */
+  @Input() datatablesPayload: { registeredTableName: string; data: Record<string, unknown> }[] = [];
 
   /** Form submission event */
   @Output() submitEvent = new EventEmitter();
@@ -68,5 +70,25 @@ export class ClientPreviewStepComponent {
    */
   isFieldEnabled(fieldName: any) {
     return this.clientAddressFieldConfig.find((fieldObj: any) => fieldObj.field === fieldName)?.isEnabled;
+  }
+
+  datatableEntries(data: Record<string, unknown> | undefined): { key: string; value: unknown }[] {
+    if (!data) {
+      return [];
+    }
+    return Object.keys(data)
+      .filter((k) => k !== 'dateFormat' && k !== 'locale')
+      .map((key) => ({ key, value: data[key] }));
+  }
+
+  formatDatatableFieldLabel(key: string): string {
+    return key.replace(/_/g, ' ');
+  }
+
+  formatPreviewScalar(value: unknown): string {
+    if (value === null || value === undefined || value === '') {
+      return '—';
+    }
+    return String(value);
   }
 }

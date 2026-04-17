@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { ClientsService } from 'app/clients/clients.service';
 import { Dates } from 'app/core/utils/dates';
+import { Datatables } from 'app/core/utils/datatables';
 
 /** Custom Services */
 import { SettingsService } from 'app/settings/settings.service';
@@ -37,7 +38,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatStepperNext
   ]
 })
-export class ClientGeneralStepComponent implements OnInit {
+export class ClientGeneralStepComponent implements OnInit, OnChanges {
   @Output() legalFormChangeEvent = new EventEmitter<{ legalForm: number }>();
 
   /** Minimum date allowed. */
@@ -47,8 +48,10 @@ export class ClientGeneralStepComponent implements OnInit {
 
   /** Client Template */
   @Input() clientTemplate: any;
+  @Input() personalDetailsDatatable: any;
   /** Create Client Form */
   createClientForm: UntypedFormGroup;
+  personalDatatableInputs: any[] = [];
 
   /** Office Options */
   officeOptions: any;
@@ -87,7 +90,8 @@ export class ClientGeneralStepComponent implements OnInit {
     private dateUtils: Dates,
     private settingsService: SettingsService,
     private clientService: ClientsService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private datatableService: Datatables
   ) {
     this.setClientForm();
     this.checkPermission();
@@ -107,6 +111,40 @@ export class ClientGeneralStepComponent implements OnInit {
     this.maxDate = this.settingsService.businessDate;
     this.setOptions();
     this.buildDependencies();
+    this.setupPersonalDatatableControls();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.personalDetailsDatatable && this.createClientForm) {
+      this.setupPersonalDatatableControls();
+    }
+  }
+
+  setupPersonalDatatableControls() {
+    this.personalDatatableInputs = [];
+    Object.keys(this.createClientForm.controls)
+      .filter((controlName) => controlName.startsWith('personalDt_'))
+      .forEach((controlName) => this.createClientForm.removeControl(controlName));
+    if (!this.personalDetailsDatatable?.columnHeaderData?.length) {
+      return;
+    }
+
+    const datatableInputs = this.datatableService.filterSystemColumns(this.personalDetailsDatatable.columnHeaderData);
+    datatableInputs.forEach((input: any) => {
+      const controlName = this.datatableService.getInputName(input);
+      const formControlName = `personalDt_${controlName}`;
+      const defaultValue = !input.isColumnNullable && this.isNumeric(input.columnDisplayType) ? 0 : '';
+      const validators = !input.isColumnNullable ? [Validators.required] : [];
+
+      this.personalDatatableInputs.push({
+        ...input,
+        controlName,
+        formControlName
+      });
+      if (!this.createClientForm.contains(formControlName)) {
+        this.createClientForm.addControl(formControlName, new UntypedFormControl(defaultValue, validators));
+      }
+    });
   }
 
   /**
@@ -237,6 +275,55 @@ export class ClientGeneralStepComponent implements OnInit {
     return legalFormId === 1 ? values[0] : values[1];
   }
 
+  isNumeric(columnType: string) {
+    return this.datatableService.isNumeric(columnType);
+  }
+
+  isDate(columnType: string) {
+    return this.datatableService.isDate(columnType);
+  }
+
+  isBoolean(columnType: string) {
+    return this.datatableService.isBoolean(columnType);
+  }
+
+  isDropdown(columnType: string) {
+    return this.datatableService.isDropdown(columnType);
+  }
+
+  isString(columnType: string) {
+    return this.datatableService.isString(columnType);
+  }
+
+  isText(columnType: string) {
+    return this.datatableService.isText(columnType);
+  }
+
+  get personalDatatablePayload(): { registeredTableName: string; data: Record<string, unknown> } | null {
+    if (!this.personalDetailsDatatable || !this.personalDatatableInputs.length) {
+      return null;
+    }
+
+    const values: Record<string, unknown> = {};
+    this.personalDatatableInputs.forEach((input: any) => {
+      values[input.controlName] = this.createClientForm.get(input.formControlName)?.value;
+    });
+
+    const data = this.datatableService.buildPayload(
+      this.personalDatatableInputs,
+      values,
+      this.settingsService.dateFormat,
+      {
+        locale: this.settingsService.language.code
+      }
+    );
+
+    return {
+      registeredTableName: this.personalDetailsDatatable.registeredTableName,
+      data
+    };
+  }
+
   /**
    * Client General Details
    */
@@ -245,7 +332,7 @@ export class ClientGeneralStepComponent implements OnInit {
     const dateFormat = this.settingsService.dateFormat;
     const locale = this.settingsService.language.code;
     for (const key in generalDetails) {
-      if (generalDetails[key] === '' || key === 'addSavings') {
+      if (generalDetails[key] === '' || key === 'addSavings' || key.startsWith('personalDt_')) {
         delete generalDetails[key];
       }
     }

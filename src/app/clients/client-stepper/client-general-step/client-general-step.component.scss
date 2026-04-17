@@ -6,6 +6,50 @@ form {
   }
 }
 
+// Flex items default to min-width: auto; allow ~48% columns to shrink so the datepicker suffix stays inline
+:host ::ng-deep .layout-row-wrap > mat-form-field.flex-48,
+:host ::ng-deep .layout-row-wrap > div.flex-48 {
+  min-width: 0;
+}
+
+// MDC uses inline-flex + infix width:180px; force a single row so suffix datepicker never drops below the input
+:host ::ng-deep mat-form-field.mat-mdc-form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  .mat-mdc-text-field-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field-flex {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field-infix {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    flex: 0 0 auto;
+  }
+}
+
 mat-form-field {
   margin-bottom: 8px;
 }

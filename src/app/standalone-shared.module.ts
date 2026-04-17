@@ -1,5 +1,6 @@
 // src/app/shared/standalone-shared.module.ts
 
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -51,5 +52,16 @@ export const STANDALONE_SHARED_IMPORTS = [
   NgxTranslatePipe,
   TranslatePipe
 ];
+
+/**
+ * NgModule wrapper for {@link STANDALONE_SHARED_IMPORTS} so standalone components can import
+ * shared Material/pipes without `...spread` (Angular requires `imports` to be statically analyzable).
+ */
+@NgModule({
+  imports: STANDALONE_SHARED_IMPORTS,
+  exports: STANDALONE_SHARED_IMPORTS
+})
+export class StandaloneSharedImportsModule {}
+
 export { HasPermissionDirective } from './directives/has-permission/has-permission.directive';
 export { IsEnabledDirective } from './directives/is-enabled/is-enabled.directive';

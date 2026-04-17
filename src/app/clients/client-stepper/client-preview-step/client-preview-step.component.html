@@ -230,6 +230,28 @@
       </mat-expansion-panel>
     </mat-accordion>
   </div>
+
+  <div *ngIf="datatablesPayload?.length" class="layout-row-wrap responsive-column flex-fill m-b-20">
+    <h3 class="mat-h3 flex-fill">{{ 'labels.heading.Client Application Data' | translate }}</h3>
+    <mat-divider class="flex-fill"></mat-divider>
+    <mat-accordion class="flex-fill m-t-5" multi="true">
+      <mat-expansion-panel *ngFor="let dt of datatablesPayload" [expanded]="true" class="datatable-preview-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ 'labels.inputs.' + dt.registeredTableName | translate }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-divider></mat-divider>
+        <div class="p-t-10" *ngFor="let entry of datatableEntries(dt.data)">
+          <div class="flex-fill">
+            <span class="flex-40">{{ formatDatatableFieldLabel(entry.key) }}</span>
+            <span class="flex-60">
+              <span *ngIf="entry.value === true || entry.value === false">{{ entry.value | yesNo }}</span>
+              <span *ngIf="entry.value !== true && entry.value !== false">{{ formatPreviewScalar(entry.value) }}</span>
+            </span>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
 </div>
 
 <div class="layout-row responsive-column align-center gap-2px margin-t">

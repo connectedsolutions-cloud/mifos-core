@@ -25,6 +25,7 @@
 
       <mifosx-client-general-step
         [clientTemplate]="clientTemplate"
+        [personalDetailsDatatable]="personalDetailsDatatable"
         (legalFormChangeEvent)="legalFormChange($event)"
       ></mifosx-client-general-step>
     </mat-step>
@@ -50,7 +51,7 @@
     </mat-step>
 
     <mat-step *ngFor="let datatable of datatables">
-      <ng-template matStepLabel>{{ datatable.registeredTableName }}</ng-template>
+      <ng-template matStepLabel>{{ 'labels.inputs.' + datatable.registeredTableName | translate }}</ng-template>
 
       <mifosx-client-datatable-step [datatableData]="datatable" #dtclient></mifosx-client-datatable-step>
     </mat-step>
@@ -62,6 +63,7 @@
         [clientTemplate]="clientTemplate"
         [clientAddressFieldConfig]="clientAddressFieldConfig"
         [client]="client"
+        [datatablesPayload]="datatablesPreview"
         (submitEvent)="submit()"
       >
       </mifosx-client-preview-step>
