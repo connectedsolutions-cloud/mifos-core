@@ -135,6 +135,27 @@
       </mat-form-field>
     </div>
 
+    <mat-form-field
+      *ngIf="createClientForm.value.legalFormId === 1 && createClientForm.contains('personalDt_estado_civil')"
+      class="flex-48"
+    >
+      <mat-label>{{ 'labels.inputs.Estado Civil' | translate }}</mat-label>
+      <mat-select formControlName="personalDt_estado_civil">
+        <mat-option [value]="'Soltero/a'">{{ 'labels.inputs.Soltero/a' | translate }}</mat-option>
+        <mat-option [value]="'Casado/a'">{{ 'labels.inputs.Casado/a' | translate }}</mat-option>
+        <mat-option [value]="'Divorciado/a'">{{ 'labels.inputs.Divorciado/a' | translate }}</mat-option>
+        <mat-option [value]="'Viudo/a'">{{ 'labels.inputs.Viudo/a' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      *ngIf="createClientForm.value.legalFormId === 1 && createClientForm.contains('personalDt_conocido_por')"
+      class="flex-48"
+    >
+      <mat-label>{{ 'labels.inputs.Conocido Por' | translate }}</mat-label>
+      <input matInput formControlName="personalDt_conocido_por" />
+    </mat-form-field>
+
     <mat-form-field *ngIf="createClientForm.value.legalFormId === 1" class="flex-48">
       <mat-label>{{ 'labels.inputs.Gender' | translate }}</mat-label>
       <mat-select formControlName="genderId">
@@ -294,85 +315,89 @@
         <mat-datepicker #dateOfBirthDatePicker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field
-        class="flex-48"
-        *ngIf="
-          datatableInput.controlName !== 'lugar_nacimiento' &&
-          !isBoolean(datatableInput.columnDisplayType) &&
-          isDropdown(datatableInput.columnDisplayType)
-        "
+      <ng-container
+        *ngIf="datatableInput.controlName !== 'estado_civil' && datatableInput.controlName !== 'conocido_por'"
       >
-        <mat-label>{{ datatableInput.controlName }}</mat-label>
-        <mat-select [formControlName]="datatableInput.formControlName">
-          <mat-option *ngFor="let code of datatableInput.columnValues" [value]="code.id">
-            {{ code.value }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field
+          class="flex-48"
+          *ngIf="
+            datatableInput.controlName !== 'lugar_nacimiento' &&
+            !isBoolean(datatableInput.columnDisplayType) &&
+            isDropdown(datatableInput.columnDisplayType)
+          "
+        >
+          <mat-label>{{ datatableInput.controlName }}</mat-label>
+          <mat-select [formControlName]="datatableInput.formControlName">
+            <mat-option *ngFor="let code of datatableInput.columnValues" [value]="code.id">
+              {{ code.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field
-        class="flex-48"
-        *ngIf="
-          datatableInput.controlName !== 'lugar_nacimiento' &&
-          !isBoolean(datatableInput.columnDisplayType) &&
-          isNumeric(datatableInput.columnDisplayType)
-        "
-      >
-        <mat-label>{{ datatableInput.controlName }}</mat-label>
-        <input matInput type="number" [formControlName]="datatableInput.formControlName" />
-      </mat-form-field>
+        <mat-form-field
+          class="flex-48"
+          *ngIf="
+            datatableInput.controlName !== 'lugar_nacimiento' &&
+            !isBoolean(datatableInput.columnDisplayType) &&
+            isNumeric(datatableInput.columnDisplayType)
+          "
+        >
+          <mat-label>{{ datatableInput.controlName }}</mat-label>
+          <input matInput type="number" [formControlName]="datatableInput.formControlName" />
+        </mat-form-field>
 
-      <mat-form-field
-        class="flex-48"
-        *ngIf="
-          datatableInput.controlName !== 'lugar_nacimiento' &&
-          !isBoolean(datatableInput.columnDisplayType) &&
-          isString(datatableInput.columnDisplayType)
-        "
-      >
-        <mat-label>{{ datatableInput.controlName }}</mat-label>
-        <input matInput [formControlName]="datatableInput.formControlName" />
-      </mat-form-field>
+        <mat-form-field
+          class="flex-48"
+          *ngIf="
+            datatableInput.controlName !== 'lugar_nacimiento' &&
+            !isBoolean(datatableInput.columnDisplayType) &&
+            isString(datatableInput.columnDisplayType)
+          "
+        >
+          <mat-label>{{ datatableInput.controlName }}</mat-label>
+          <input matInput [formControlName]="datatableInput.formControlName" />
+        </mat-form-field>
 
-      <mat-form-field
-        class="flex-48"
-        *ngIf="
-          datatableInput.controlName !== 'lugar_nacimiento' &&
-          !isBoolean(datatableInput.columnDisplayType) &&
-          isText(datatableInput.columnDisplayType)
-        "
-      >
-        <mat-label>{{ datatableInput.controlName }}</mat-label>
-        <textarea matInput [formControlName]="datatableInput.formControlName"></textarea>
-      </mat-form-field>
+        <mat-form-field
+          class="flex-48"
+          *ngIf="
+            datatableInput.controlName !== 'lugar_nacimiento' &&
+            !isBoolean(datatableInput.columnDisplayType) &&
+            isText(datatableInput.columnDisplayType)
+          "
+        >
+          <mat-label>{{ datatableInput.controlName }}</mat-label>
+          <textarea matInput [formControlName]="datatableInput.formControlName"></textarea>
+        </mat-form-field>
 
-      <mat-form-field
-        class="flex-48"
-        *ngIf="
-          datatableInput.controlName !== 'lugar_nacimiento' &&
-          !isBoolean(datatableInput.columnDisplayType) &&
-          isDate(datatableInput.columnDisplayType)
-        "
-      >
-        <mat-label>{{ datatableInput.controlName }}</mat-label>
-        <input
-          matInput
-          [matDatepicker]="datePicker"
+        <mat-form-field
+          class="flex-48"
+          *ngIf="
+            datatableInput.controlName !== 'lugar_nacimiento' &&
+            !isBoolean(datatableInput.columnDisplayType) &&
+            isDate(datatableInput.columnDisplayType)
+          "
+        >
+          <mat-label>{{ datatableInput.controlName }}</mat-label>
+          <input
+            matInput
+            [matDatepicker]="datePicker"
+            [formControlName]="datatableInput.formControlName"
+            class="date-picker"
+          />
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-checkbox
+          *ngIf="isBoolean(datatableInput.columnDisplayType)"
           [formControlName]="datatableInput.formControlName"
-          class="date-picker"
-        />
-        <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-        <mat-datepicker #datePicker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-checkbox
-        *ngIf="isBoolean(datatableInput.columnDisplayType)"
-        [formControlName]="datatableInput.formControlName"
-        labelPosition="before"
-        class="margin-v flex-48"
-      >
-        {{ datatableInput.controlName }}
-      </mat-checkbox>
+          labelPosition="before"
+          class="margin-v flex-48"
+        >
+          {{ datatableInput.controlName }}
+        </mat-checkbox>
+      </ng-container>
     </ng-container>
   </div>
 

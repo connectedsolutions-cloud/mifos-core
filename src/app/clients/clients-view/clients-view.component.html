@@ -110,6 +110,18 @@
                     <td *ngIf="clientViewData.gestorName">{{ clientViewData.gestorName }}</td>
                     <td *ngIf="!clientViewData.gestorName">{{ 'labels.inputs.Unassigned' | translate }}</td>
                   </tr>
+                  <tr *ngIf="personalDetails.estadoCivil">
+                    <td>
+                      <b>{{ 'labels.inputs.Estado Civil' | translate }}</b>
+                    </td>
+                    <td>{{ personalDetails.estadoCivil }}</td>
+                  </tr>
+                  <tr *ngIf="personalDetails.conocidoPor">
+                    <td>
+                      <b>{{ 'labels.inputs.Conocido Por' | translate }}</b>
+                    </td>
+                    <td>{{ personalDetails.conocidoPor }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -162,12 +174,14 @@
       </div>
 
       <mat-menu #clientMenu="matMenu">
-        <button mat-menu-item [routerLink]="['edit']" *mifosxHasPermission="'UPDATE_CLIENT'">
-          <mat-icon matListIcon>
-            <fa-icon icon="edit" size="sm"></fa-icon>
-          </mat-icon>
-          <span>{{ 'labels.buttons.Edit' | translate }}</span>
-        </button>
+        <ng-container *mifosxHasPermission="'modificar_datos_clientes'">
+          <button mat-menu-item [routerLink]="['edit']" *mifosxHasPermission="'UPDATE_CLIENT'">
+            <mat-icon matListIcon>
+              <fa-icon icon="edit" size="sm"></fa-icon>
+            </mat-icon>
+            <span>{{ 'labels.buttons.Edit' | translate }}</span>
+          </button>
+        </ng-container>
 
         <button *ngIf="isActive()" mat-menu-item [matMenuTriggerFor]="accountApplications">
           <mat-icon matListIcon>
@@ -403,7 +417,17 @@
       >
         {{ 'labels.inputs.Notes' | translate }}
       </a>
-      <ng-container *ngFor="let clientDatatable of clientDatatables">
+      <a
+        mat-tab-link
+        *ngIf="showDatosClienteTab"
+        [routerLink]="['./datos-cliente']"
+        routerLinkActive
+        #datosCliente="routerLinkActive"
+        [active]="datosCliente.isActive"
+      >
+        {{ 'labels.inputs.ClientData' | translate }}
+      </a>
+      <ng-container *ngFor="let clientDatatable of otherClientDatatables">
         <a
           mat-tab-link
           [routerLink]="['./datatables', clientDatatable.registeredTableName]"
@@ -412,7 +436,7 @@
           [active]="datatable.isActive"
           *mifosxHasPermission="'READ_' + clientDatatable.registeredTableName"
         >
-          {{ clientDatatable.registeredTableName }}
+          {{ 'labels.inputs.' + clientDatatable.registeredTableName | translate }}
         </a>
       </ng-container>
     </nav>

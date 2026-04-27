@@ -13,10 +13,18 @@ import {
 import { ClientsService } from '../clients.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
+import { Datatables } from 'app/core/utils/datatables';
 import { MatDivider } from '@angular/material/divider';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { catchError, forkJoin, of } from 'rxjs';
+import {
+  CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES,
+  CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
+  CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
+  CREDESAL_WORK_BUSINESS_DATATABLE_NAME
+} from '../clients-view/credesal-client-data-datatables';
 
 /**
  * Edit Client Component
@@ -33,6 +41,11 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   ]
 })
 export class EditClientComponent implements OnInit {
+  private readonly personalDatatableName = 'credesal_client_datos_personales';
+  private readonly workBusinessDatatableName = CREDESAL_WORK_BUSINESS_DATATABLE_NAME;
+  private readonly clientTypeRestrictedDatatableNames = CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES;
+  private readonly allowedClientTypeTagNames = CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES;
+  private readonly allowedShareholderTagNames = CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES;
   /** Minimum date allowed. */
   minDate = new Date(2000, 0, 1);
   /** Maximum date allowed. */
@@ -63,6 +76,10 @@ export class EditClientComponent implements OnInit {
   genderOptions: any;
   /** Tag Options */
   tagOptions: any;
+  personalDetailsDatatable: any;
+  datatables: any[] = [];
+  personalDatatableInputs: any[] = [];
+  extraDatatableSections: Array<{ datatable: any; inputs: any[]; prefix: string }> = [];
   legalFormId = 1;
 
   /**
@@ -80,7 +97,8 @@ export class EditClientComponent implements OnInit {
     private router: Router,
     private clientsService: ClientsService,
     private dateUtils: Dates,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private datatableService: Datatables
   ) {
     this.route.data.subscribe((data: { clientDataAndTemplate: any }) => {
       this.clientDataAndTemplate = data.clientDataAndTemplate;
@@ -92,7 +110,11 @@ export class EditClientComponent implements OnInit {
     this.createEditClientForm();
     this.setOptions();
     this.buildDependencies();
-    this.legalFormId = 1;
+    this.setupShareholderTagDependency();
+    this.legalFormId = this.clientDataAndTemplate.legalForm?.id || 1;
+    this.setDatatables();
+    this.setupDatatableControls();
+    this.debugDatatablePayload('initial');
 
     // Check if tags is a Set and convert to array if needed
     let tagsArray: any[] = [];
@@ -142,6 +164,7 @@ export class EditClientComponent implements OnInit {
     if (this.clientDataAndTemplate.legalForm) {
       this.legalFormId = this.clientDataAndTemplate.legalForm.id;
     }
+    this.loadExistingDatatableValues();
   }
 
   /**
@@ -196,6 +219,7 @@ export class EditClientComponent implements OnInit {
    */
   buildDependencies() {
     this.editClientForm.get('legalFormId').valueChanges.subscribe((legalFormId: any) => {
+      this.legalFormId = legalFormId;
       if (legalFormId === 1) {
         this.editClientForm.removeControl('fullname');
         this.editClientForm.removeControl('clientNonPersonDetails');
@@ -236,6 +260,18 @@ export class EditClientComponent implements OnInit {
           })
         );
       }
+      this.setDatatables();
+      this.setupDatatableControls();
+      this.debugDatatablePayload('legal-form-change');
+      this.loadExistingDatatableValues();
+    });
+  }
+
+  setupShareholderTagDependency(): void {
+    this.editClientForm.get('tagIds')?.valueChanges.subscribe(() => {
+      this.setDatatables();
+      this.setupDatatableControls();
+      this.loadExistingDatatableValues();
     });
   }
 
@@ -274,8 +310,240 @@ export class EditClientComponent implements OnInit {
     } else {
       clientData.clientNonPersonDetails = {};
     }
+    const datatablesPayload = this.getDatatablesPayload();
+    if (datatablesPayload.length) {
+      clientData.datatables = datatablesPayload;
+    }
     this.clientsService.updateClient(this.clientDataAndTemplate.id, clientData).subscribe(() => {
       this.router.navigate(['../'], { relativeTo: this.route });
+    });
+  }
+
+  setDatatables(): void {
+    this.datatables = [];
+    this.personalDetailsDatatable = null;
+    const legalFormTypeVal = this.legalFormId === 2 ? 'entity' : 'person';
+    if (!this.clientDataAndTemplate?.datatables?.length) {
+      return;
+    }
+    this.clientDataAndTemplate.datatables.forEach((datatable: any) => {
+      const subType = datatable.entitySubType?.toLowerCase();
+      // Keep legal-form filtering, but include datatables that don't declare entitySubType
+      // so users can always see and fill all configured input fields.
+      if ((!subType || subType === legalFormTypeVal) && this.shouldDisplayDatatable(datatable.registeredTableName)) {
+        if (datatable.registeredTableName === this.personalDatatableName) {
+          this.personalDetailsDatatable = datatable;
+          return;
+        }
+        this.datatables.push(datatable);
+      }
+    });
+  }
+
+  private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (registeredTableName === this.workBusinessDatatableName) {
+      return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
+    }
+    if (!this.clientTypeRestrictedDatatableNames.has(registeredTableName)) {
+      return true;
+    }
+    return this.isAnyAllowedTypeSelected(this.allowedClientTypeTagNames);
+  }
+
+  private isAnyAllowedTypeSelected(allowedTagNames: Set<string>): boolean {
+    const selectedTagIds: Array<number | string> = this.editClientForm?.get('tagIds')?.value || [];
+    if (!Array.isArray(selectedTagIds) || !selectedTagIds.length) {
+      return false;
+    }
+    const selectedTagIdSet = new Set(selectedTagIds.map((id) => String(id)));
+
+    const selectedTags = (this.tagOptions || []).filter((tag: any) => selectedTagIdSet.has(String(tag.id)));
+    return selectedTags.some((tag: any) => allowedTagNames.has(this.normalizeTagName(tag?.name)));
+  }
+
+  private normalizeTagName(name: string): string {
+    return (name || '').toLowerCase().trim();
+  }
+
+  setupDatatableControls(): void {
+    this.removeExistingDatatableControls();
+    this.personalDatatableInputs = [];
+    this.extraDatatableSections = [];
+    this.setupPersonalDatatableControls();
+    this.setupAdditionalDatatableControls();
+  }
+
+  removeExistingDatatableControls(): void {
+    Object.keys(this.editClientForm.controls)
+      .filter((controlName) => controlName.startsWith('personalDt_') || controlName.startsWith('dt_'))
+      .forEach((controlName) => this.editClientForm.removeControl(controlName));
+  }
+
+  setupPersonalDatatableControls(): void {
+    if (!this.personalDetailsDatatable?.columnHeaderData?.length) {
+      return;
+    }
+    const inputs = this.datatableService.filterSystemColumns(this.personalDetailsDatatable.columnHeaderData);
+    this.personalDatatableInputs = inputs.map((input: any) => {
+      const controlName = this.datatableService.getInputName(input);
+      const formControlName = `personalDt_${controlName}`;
+      this.addDatatableControl(formControlName, input);
+      return {
+        ...input,
+        controlName,
+        formControlName
+      };
+    });
+  }
+
+  setupAdditionalDatatableControls(): void {
+    this.datatables.forEach((datatable: any, index: number) => {
+      const sectionPrefix = `dt_${index}_`;
+      const inputs = this.datatableService.filterSystemColumns(datatable.columnHeaderData).map((input: any) => {
+        const controlName = this.datatableService.getInputName(input);
+        const formControlName = `${sectionPrefix}${controlName}`;
+        this.addDatatableControl(formControlName, input);
+        return {
+          ...input,
+          controlName,
+          formControlName
+        };
+      });
+      this.extraDatatableSections.push({
+        datatable,
+        inputs,
+        prefix: sectionPrefix
+      });
+    });
+  }
+
+  addDatatableControl(formControlName: string, input: any): void {
+    const validators = input.isColumnNullable ? [] : [Validators.required];
+    const defaultValue = !input.isColumnNullable && this.isNumeric(input.columnDisplayType) ? 0 : '';
+    if (!this.editClientForm.contains(formControlName)) {
+      this.editClientForm.addControl(formControlName, new UntypedFormControl(defaultValue, validators));
+    }
+  }
+
+  loadExistingDatatableValues(): void {
+    const requests = [
+      this.personalDetailsDatatable,
+      ...this.datatables
+    ]
+      .filter((datatable) => !!datatable?.registeredTableName)
+      .map((datatable) =>
+        this.clientsService
+          .getClientDatatable(this.clientDataAndTemplate.id, datatable.registeredTableName)
+          .pipe(catchError(() => of(null)))
+      );
+    if (!requests.length) {
+      return;
+    }
+    forkJoin(requests).subscribe((datatableRows: any[]) => {
+      datatableRows.forEach((datatableResponse: any, idx: number) => {
+        if (!datatableResponse?.columnHeaders || !datatableResponse?.data?.length) {
+          return;
+        }
+        const filteredColumns = this.datatableService.filterSystemColumns(datatableResponse.columnHeaders);
+        const row = datatableResponse.data[0]?.row || [];
+        const isPersonal = idx === 0 && !!this.personalDetailsDatatable;
+        const sectionIndex = this.personalDetailsDatatable ? idx - 1 : idx;
+        filteredColumns.forEach((column: any) => {
+          const controlName = this.datatableService.getInputName(column);
+          const formControlName = isPersonal ? `personalDt_${controlName}` : `dt_${sectionIndex}_${controlName}`;
+          if (!this.editClientForm.contains(formControlName)) {
+            return;
+          }
+          const value = row[column.idx];
+          if (value === null || value === undefined || value === '') {
+            return;
+          }
+          if (this.isDate(column.columnDisplayType)) {
+            this.editClientForm.get(formControlName)?.setValue(this.dateUtils.parseDate(value));
+          } else {
+            this.editClientForm.get(formControlName)?.setValue(value);
+          }
+        });
+      });
+    });
+  }
+
+  getDatatablesPayload(): any[] {
+    const payload: any[] = [];
+    if (this.personalDetailsDatatable && this.personalDatatableInputs.length) {
+      const personalValues: any = {};
+      this.personalDatatableInputs.forEach((input: any) => {
+        personalValues[input.controlName] = this.editClientForm.get(input.formControlName)?.value;
+      });
+      payload.push({
+        registeredTableName: this.personalDetailsDatatable.registeredTableName,
+        data: this.datatableService.buildPayload(
+          this.personalDatatableInputs,
+          personalValues,
+          this.settingsService.dateFormat,
+          {
+            locale: this.settingsService.language.code
+          }
+        )
+      });
+    }
+
+    this.extraDatatableSections.forEach((section) => {
+      const values: any = {};
+      section.inputs.forEach((input: any) => {
+        values[input.controlName] = this.editClientForm.get(input.formControlName)?.value;
+      });
+      payload.push({
+        registeredTableName: section.datatable.registeredTableName,
+        data: this.datatableService.buildPayload(section.inputs, values, this.settingsService.dateFormat, {
+          locale: this.settingsService.language.code
+        })
+      });
+    });
+
+    return payload;
+  }
+
+  isNumeric(columnType: string) {
+    return this.datatableService.isNumeric(columnType);
+  }
+
+  isDate(columnType: string) {
+    return this.datatableService.isDate(columnType);
+  }
+
+  isBoolean(columnType: string) {
+    return this.datatableService.isBoolean(columnType);
+  }
+
+  isDropdown(columnType: string) {
+    return this.datatableService.isDropdown(columnType);
+  }
+
+  isString(columnType: string) {
+    return this.datatableService.isString(columnType);
+  }
+
+  isText(columnType: string) {
+    return this.datatableService.isText(columnType);
+  }
+
+  private debugDatatablePayload(context: string): void {
+    const templateDatatables = this.clientDataAndTemplate?.datatables || [];
+    // Temporary diagnostics to confirm backend payload used to render edit form.
+    console.info('[EditClient datatables]', {
+      context,
+      clientId: this.clientDataAndTemplate?.id,
+      legalFormId: this.legalFormId,
+      templateDatatablesCount: templateDatatables.length,
+      templateDatatables: templateDatatables.map((dt: any) => ({
+        name: dt.registeredTableName,
+        entitySubType: dt.entitySubType,
+        columnsCount: dt.columnHeaderData?.length || 0
+      })),
+      personalDatatable: this.personalDetailsDatatable?.registeredTableName || null,
+      personalInputsCount: this.personalDatatableInputs.length,
+      extraSectionsCount: this.extraDatatableSections.length
     });
   }
 }

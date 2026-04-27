@@ -15,6 +15,7 @@ import { IdentitiesTabComponent } from './clients-view/identities-tab/identities
 import { NotesTabComponent } from './clients-view/notes-tab/notes-tab.component';
 import { DocumentsTabComponent } from './clients-view/documents-tab/documents-tab.component';
 import { DatatableTabComponent } from './clients-view/datatable-tab/datatable-tab.component';
+import { ClientDatosClienteTabComponent } from './clients-view/client-datos-cliente-tab/client-datos-cliente-tab.component';
 import { AddressTabComponent } from './clients-view/address-tab/address-tab.component';
 import { ClientActionsComponent } from './clients-view/client-actions/client-actions.component';
 import { ViewChargeComponent } from './clients-view/charges/view-charge/view-charge.component';
@@ -160,6 +161,21 @@ const routes: Routes = [
               resolve: {
                 clientNotes: ClientNotesResolver
               }
+            },
+            {
+              path: 'datos-cliente',
+              component: ClientDatosClienteTabComponent,
+              data: { title: 'Client data', breadcrumb: 'Client data', routeParamBreadcrumb: false },
+              children: [
+                {
+                  path: ':datatableName',
+                  component: DatatableTabComponent,
+                  data: { title: 'Data Table View', routeParamBreadcrumb: 'datatableName' },
+                  resolve: {
+                    clientDatatable: ClientDatatableResolver
+                  }
+                }
+              ]
             },
             {
               path: 'datatables',

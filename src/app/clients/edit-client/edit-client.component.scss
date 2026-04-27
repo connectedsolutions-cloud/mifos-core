@@ -7,119 +7,98 @@
   max-width: 32%;
 }
 
-.gap-2percent {
-  gap: 2%;
-}
-
 .align-center {
   align-items: center;
 }
 
-// Enhanced layout styles with Material compatibility
 .container {
-  margin: 24px auto;
+  margin: 16px auto;
   max-width: 1200px;
   width: 100%;
-  padding: 0 24px;
+  padding: 0 16px;
   box-sizing: border-box;
 }
 
-// More specific Material overrides
-:host ::ng-deep .mat-card {
-  padding: 32px;
-  margin: 16px 0;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+form {
+  padding: 16px 0;
+
+  .layout-row-wrap {
+    gap: 8px !important;
+    margin-bottom: 8px;
+  }
 }
 
-:host ::ng-deep .mat-card-content {
-  padding: 0;
-}
-
-// Flex utilities with better responsive support
 .flex-24 {
-  flex: 0 1 calc(25% - 15px);
-  max-width: calc(25% - 15px);
-  margin-right: 0;
+  flex: 0 1 24%;
+  max-width: 24%;
 }
 
 .flex-48 {
-  flex: 0 1 calc(50% - 10px);
-  max-width: calc(50% - 10px);
-  margin-right: 0;
+  flex: 0 1 48%;
+  max-width: 48%;
 }
 
-.responsive-row {
+// Match create behavior for compact form spacing and datepicker suffix layout
+:host ::ng-deep .layout-row-wrap > mat-form-field.flex-48,
+:host ::ng-deep .layout-row-wrap > div.flex-48 {
+  min-width: 0;
+}
+
+:host ::ng-deep mat-form-field.mat-mdc-form-field {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 24px;
-  align-items: flex-start;
-}
-
-.responsive-row:last-child {
-  margin-bottom: 0;
-}
-
-// Enhanced Material form field styling
-:host ::ng-deep .mat-form-field {
-  margin-bottom: 16px;
+  flex-direction: column;
   width: 100%;
-}
+  min-width: 0;
+  box-sizing: border-box;
 
-:host ::ng-deep .mat-form-field:last-child {
-  margin-right: 0;
-}
-
-// Ensure consistent form field appearance
-:host ::ng-deep .responsive-row .mat-form-field {
-  min-height: 56px;
-}
-
-:host ::ng-deep .responsive-row .mat-form-field .mat-form-field-wrapper {
-  padding-bottom: 1.3438em;
-}
-
-// Error state styling and form field appearance consistency
-:host ::ng-deep .mat-form-field-appearance-outline {
-  .mat-form-field-outline {
-    color: rgb(0 0 0 / 12%);
+  .mat-mdc-text-field-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
-  .mat-form-field-outline-thick {
-    color: #3f51b5;
+  .mat-mdc-form-field-flex {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field-infix {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    flex: 0 0 auto;
   }
 }
 
-:host ::ng-deep .mat-form-field.mat-form-field-invalid {
-  .mat-form-field-outline-thick {
-    color: #f44336;
-    opacity: 1;
-  }
+mat-form-field {
+  margin-bottom: 8px;
 }
 
-:host ::ng-deep .mat-error {
-  font-size: 12px;
-  margin-top: 4px;
+mat-divider {
+  margin: 16px 0;
 }
 
 .section-divider {
-  margin: 32px 0 24px;
-  border-color: rgb(0 0 0 / 12%);
+  margin: 16px 0;
 }
 
-:host ::ng-deep .mat-checkbox {
-  margin: 20px 0;
-}
-
-// Enhanced button styling with better Material integration
 :host ::ng-deep mat-card-actions {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 24px 0;
-  margin-top: 32px;
-  border-top: 1px solid rgb(0 0 0 / 12%);
+  gap: 12px;
+  padding: 16px 0 0;
+  margin-top: 16px;
   width: 100%;
 }
 
@@ -135,20 +114,23 @@
   margin: 0;
 }
 
-// Enhanced responsive breakpoints
 @media (width <= 1024px) {
   .flex-24 {
-    flex: 0 1 calc(50% - 10px);
-    max-width: calc(50% - 10px);
-  }
-
-  .flex-48 {
-    flex: 0 1 100%;
-    max-width: 100%;
+    flex: 0 1 48%;
+    max-width: 48%;
   }
 }
 
 @media (width <= 768px) {
+  form {
+    padding: 12px 0;
+
+    .layout-row-wrap {
+      gap: 6px !important;
+      margin-bottom: 6px;
+    }
+  }
+
   .flex-32,
   .flex-24,
   .flex-48 {
@@ -161,19 +143,13 @@
     padding: 0 16px;
   }
 
-  :host ::ng-deep .mat-card {
-    padding: 20px;
+  mat-form-field {
+    margin-bottom: 6px;
   }
 
-  .responsive-row {
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .responsive-row .mat-form-field {
-    flex: 1 1 100%;
-    max-width: 100%;
-    margin-right: 0;
+  mat-divider,
+  .section-divider {
+    margin: 12px 0;
   }
 }
 
@@ -190,14 +166,13 @@
 }
 
 @media (width <= 480px) {
-  :host ::ng-deep .mat-card {
-    padding: 16px;
-    margin: 8px 0;
-  }
+  form {
+    padding: 8px 0;
 
-  .responsive-row {
-    gap: 8px;
-    margin-bottom: 12px;
+    .layout-row-wrap {
+      gap: 4px !important;
+      margin-bottom: 4px;
+    }
   }
 
   .container {
@@ -205,23 +180,7 @@
   }
 }
 
-// Fix for potential Material Design conflicts
 :host {
   display: block;
   width: 100%;
-}
-
-// Ensure proper form styling
-:host ::ng-deep form {
-  width: 100%;
-}
-
-// DatePicker specific styling
-:host ::ng-deep .mat-datepicker-toggle {
-  color: rgb(0 0 0 / 54%);
-}
-
-// Select dropdown styling
-:host ::ng-deep .mat-select-panel {
-  max-height: 256px;
 }

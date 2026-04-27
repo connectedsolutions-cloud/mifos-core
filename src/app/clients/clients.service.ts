@@ -78,8 +78,14 @@ export class ClientsService {
     return this.http.delete(`/clients/${clientId}`);
   }
 
-  getClientDataAndTemplate(clientId: string) {
-    const httpParams = new HttpParams().set('template', 'true').set('staffInSelectedOfficeOnly', 'true');
+  /**
+   * @param options.skipCache If true, adds cache-busting query param
+   */
+  getClientDataAndTemplate(clientId: string, options?: { skipCache?: boolean }) {
+    let httpParams = new HttpParams().set('template', 'true').set('staffInSelectedOfficeOnly', 'true');
+    if (options?.skipCache) {
+      httpParams = httpParams.set('_', String(Date.now()));
+    }
     return this.http.get(`/clients/${clientId}`, { params: httpParams });
   }
 

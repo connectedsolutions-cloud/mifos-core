@@ -1,0 +1,20 @@
+<div class="datos-cliente-shell mat-typography">
+  <nav mat-tab-nav-bar class="subcategory-tabs" [tabPanel]="subPanel">
+    <ng-container *ngFor="let datatable of credesalClientDataDatatables">
+      <a
+        mat-tab-link
+        [routerLink]="[datatable.registeredTableName]"
+        routerLinkActive
+        #tabLink="routerLinkActive"
+        [active]="tabLink.isActive"
+        *mifosxHasPermission="'READ_' + datatable.registeredTableName"
+      >
+        {{ 'labels.inputs.' + datatable.registeredTableName | translate }}
+      </a>
+    </ng-container>
+  </nav>
+
+  <mat-tab-nav-panel #subPanel>
+    <router-outlet></router-outlet>
+  </mat-tab-nav-panel>
+</div>

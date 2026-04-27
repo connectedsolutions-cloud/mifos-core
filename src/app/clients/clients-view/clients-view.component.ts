@@ -17,6 +17,7 @@ import { CaptureImageDialogComponent } from './custom-dialogs/capture-image-dial
 /** Custom Services */
 import { ClientViewRefreshService } from '../client-view-refresh.service';
 import { ClientsService } from '../clients.service';
+import { AuthenticationService } from 'app/core/authentication/authentication.service';
 import {
   MatCard,
   MatCardHeader,
@@ -39,6 +40,13 @@ import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { StatusLookupPipe } from '../../pipes/status-lookup.pipe';
 import { DateFormatPipe } from '../../pipes/date-format.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import {
+  CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES,
+  CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
+  CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
+  CREDESAL_CLIENT_DATA_DATATABLE_NAMES,
+  CREDESAL_WORK_BUSINESS_DATATABLE_NAME
+} from './credesal-client-data-datatables';
 
 @Component({
   selector: 'mifosx-clients-view',
@@ -72,15 +80,22 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   ]
 })
 export class ClientsViewComponent implements OnInit {
+  private readonly personalDetailsTableName = 'credesal_client_datos_personales';
   clientViewData: any;
   clientDatatables: any;
   clientImage: any;
   clientTemplateData: any;
+  personalDetails: { estadoCivil?: string; conocidoPor?: string } = {};
+  private readonly workBusinessDatatableName = CREDESAL_WORK_BUSINESS_DATATABLE_NAME;
+  private readonly allowedClientTypeTagNames = CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES;
+  private readonly allowedShareholderTagNames = CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES;
+  private readonly clientTypeRestrictedDatatableNames = CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private clientsService: ClientsService,
+    private authenticationService: AuthenticationService,
     private clientViewRefreshService: ClientViewRefreshService,
     private cdr: ChangeDetectorRef,
     private _sanitizer: DomSanitizer,
@@ -117,10 +132,132 @@ export class ClientsViewComponent implements OnInit {
         }
       });
     }
+    this.loadPersonalDetailsDatatable();
+  }
+
+  private loadPersonalDetailsDatatable() {
+    this.clientsService.getClientDatatable(this.clientViewData.id, this.personalDetailsTableName).subscribe({
+      next: (datatable: any) => {
+        this.personalDetails = this.extractPersonalDetails(datatable);
+      },
+      error: () => {
+        this.personalDetails = {};
+      }
+    });
+  }
+
+  private extractPersonalDetails(datatable: any): { estadoCivil?: string; conocidoPor?: string } {
+    const row = datatable?.data?.[0]?.row;
+    const headers = datatable?.columnHeaders || [];
+    if (!row || !headers.length) {
+      return {};
+    }
+
+    const getValue = (columnName: string): string | undefined => {
+      const index = headers.findIndex((header: any) => header.columnName === columnName);
+      if (index < 0) {
+        return undefined;
+      }
+      const value = row[index];
+      if (value === null || value === undefined || value === '') {
+        return undefined;
+      }
+      return String(value);
+    };
+
+    return {
+      estadoCivil: getValue('estado_civil'),
+      conocidoPor: getValue('conocido_por')
+    };
   }
 
   isActive(): boolean {
     return this.clientViewData.status.value === 'Active';
+  }
+
+  get credesalClientDataDatatables(): { registeredTableName: string }[] {
+    if (!this.clientDatatables?.length) {
+      return [];
+    }
+
+    const byName = new Map(
+      this.clientDatatables.map((datatable: { registeredTableName: string }) => [
+        datatable.registeredTableName,
+        datatable
+      ])
+    );
+    return CREDESAL_CLIENT_DATA_DATATABLE_NAMES.map((name) => byName.get(name))
+      .filter(Boolean)
+      .filter((datatable: any) => this.shouldDisplayDatatable(datatable.registeredTableName)) as {
+      registeredTableName: string;
+    }[];
+  }
+
+  get otherClientDatatables(): any[] {
+    if (!this.clientDatatables?.length) {
+      return [];
+    }
+
+    const groupedDatatableNames = new Set(CREDESAL_CLIENT_DATA_DATATABLE_NAMES);
+    return this.clientDatatables.filter(
+      (datatable: { registeredTableName: string }) =>
+        !groupedDatatableNames.has(datatable.registeredTableName) &&
+        this.shouldDisplayDatatable(datatable.registeredTableName)
+    );
+  }
+
+  get showDatosClienteTab(): boolean {
+    return this.credesalClientDataDatatables.some((datatable) =>
+      this.userHasReadDatatable(datatable.registeredTableName)
+    );
+  }
+
+  private userHasReadDatatable(registeredTableName: string): boolean {
+    const permission = `READ_${registeredTableName}`;
+    const permissions = this.authenticationService.getCredentials().permissions;
+
+    if (permissions.includes('ALL_FUNCTIONS')) {
+      return true;
+    }
+
+    if (permission.startsWith('READ_') && permissions.includes('ALL_FUNCTIONS_READ')) {
+      return true;
+    }
+
+    return permissions.includes(permission);
+  }
+
+  private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (registeredTableName === this.workBusinessDatatableName) {
+      return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
+    }
+    if (!this.clientTypeRestrictedDatatableNames.has(registeredTableName)) {
+      return true;
+    }
+    return this.isAnyAllowedTypeSelected(this.allowedClientTypeTagNames);
+  }
+
+  private isAnyAllowedTypeSelected(allowedTagNames: Set<string>): boolean {
+    const normalizedTypeTags = this.getClientTypeTags().map((tag) => this.normalizeTagName(tag?.name));
+    return normalizedTypeTags.some((tagName) => allowedTagNames.has(tagName));
+  }
+
+  private getClientTypeTags(): any[] {
+    const tags = this.clientViewData?.tags;
+    if (!tags) {
+      return [];
+    }
+    if (Array.isArray(tags)) {
+      return tags.filter((tag: any) => tag?.tagGroup === 'tipo_cliente');
+    }
+    if (tags instanceof Set) {
+      return Array.from(tags).filter((tag: any) => tag?.tagGroup === 'tipo_cliente');
+    }
+    return Object.values(tags).filter((tag: any) => tag?.tagGroup === 'tipo_cliente');
+  }
+
+  private normalizeTagName(name: string): string {
+    return (name || '').toLowerCase().trim();
   }
 
   /**

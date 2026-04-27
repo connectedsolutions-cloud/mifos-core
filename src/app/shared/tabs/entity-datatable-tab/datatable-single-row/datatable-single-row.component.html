@@ -1,23 +1,44 @@
 <div class="tab-container mat-typography">
   <h3>{{ datatableName }}</h3>
   <div class="layout-row align-end m-b-20">
-    <button mat-raised-button color="primary" (click)="add()" *ngIf="!dataObject.data[0]">
-      <fa-icon icon="plus" class="m-r-10"></fa-icon>{{ 'labels.buttons.Add' | translate }}
-    </button>
-    <button mat-raised-button color="primary" (click)="edit()" *ngIf="dataObject.data[0]">
-      <fa-icon icon="edit" class="m-r-10"></fa-icon>{{ 'labels.buttons.Edit' | translate }}
-    </button>
-    <button class="delete-button" mat-raised-button color="warn" (click)="delete()" *ngIf="dataObject.data[0]">
-      <fa-icon icon="trash" class="m-r-10"></fa-icon>{{ 'labels.buttons.Delete' | translate }}
-    </button>
+    <ng-container *ngIf="datatableName !== 'credesal_client_datos_personales'">
+      <button mat-raised-button color="primary" (click)="add()" *ngIf="!hasRowData()">
+        <fa-icon icon="plus" class="m-r-10"></fa-icon>{{ 'labels.buttons.Add' | translate }}
+      </button>
+      <button mat-raised-button color="primary" (click)="edit()" *ngIf="hasRowData()">
+        <fa-icon icon="edit" class="m-r-10"></fa-icon>{{ 'labels.buttons.Edit' | translate }}
+      </button>
+    </ng-container>
+    <ng-container *ngIf="datatableName === 'credesal_client_datos_personales'">
+      <ng-container *mifosxHasPermission="'modificar_datos_clientes'">
+        <button mat-raised-button color="primary" (click)="add()" *ngIf="!hasRowData()">
+          <fa-icon icon="plus" class="m-r-10"></fa-icon>{{ 'labels.buttons.Add' | translate }}
+        </button>
+        <button mat-raised-button color="primary" (click)="edit()" *ngIf="hasRowData()">
+          <fa-icon icon="edit" class="m-r-10"></fa-icon>{{ 'labels.buttons.Edit' | translate }}
+        </button>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="datatableName !== 'credesal_client_datos_personales'">
+      <button class="delete-button" mat-raised-button color="warn" (click)="delete()" *ngIf="hasRowData()">
+        <fa-icon icon="trash" class="m-r-10"></fa-icon>{{ 'labels.buttons.Delete' | translate }}
+      </button>
+    </ng-container>
+    <ng-container *ngIf="datatableName === 'credesal_client_datos_personales'">
+      <ng-container *mifosxHasPermission="'modificar_datos_clientes'">
+        <button class="delete-button" mat-raised-button color="warn" (click)="delete()" *ngIf="hasRowData()">
+          <fa-icon icon="trash" class="m-r-10"></fa-icon>{{ 'labels.buttons.Delete' | translate }}
+        </button>
+      </ng-container>
+    </ng-container>
   </div>
 
   <mat-divider></mat-divider>
 
-  <div class="m-t-10" *ngIf="dataObject.data.length > 0">
+  <div class="m-t-10" *ngIf="displayColumns.length > 0">
     <div
       class="flex-fill"
-      *ngFor="let columnHeader of dataObject.columnHeaders; let i = index"
+      *ngFor="let columnHeader of displayColumns"
       [ngClass]="setAttributeClass(columnHeader.columnName)"
     >
       <div class="mat-body-strong left flex-40">
@@ -27,42 +48,62 @@
 
       <div [ngSwitch]="getColumnType(columnHeader.columnDisplayType, columnHeader.columnType)" class="right flex-60">
         <span *ngSwitchCase="'DATE'">
-          {{ dataObject.data[0].row[i] | dateFormat }}
+          {{
+            hasDisplayValue(getRowValue(columnHeader))
+              ? (getRowValue(columnHeader) | dateFormat)
+              : emptyValuePlaceholder
+          }}
         </span>
         <span *ngSwitchCase="'DATETIME'">
-          {{ dataObject.data[0].row[i] | datetimeFormat }}
+          {{
+            hasDisplayValue(getRowValue(columnHeader))
+              ? (getRowValue(columnHeader) | datetimeFormat)
+              : emptyValuePlaceholder
+          }}
         </span>
         <span *ngSwitchCase="'INTEGER'">
-          {{ dataObject.data[0].row[i] }}
+          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
         </span>
         <span *ngSwitchCase="'DECIMAL'">
-          {{ dataObject.data[0].row[i] | formatNumber }}
+          {{
+            hasDisplayValue(getRowValue(columnHeader))
+              ? (getRowValue(columnHeader) | formatNumber)
+              : emptyValuePlaceholder
+          }}
         </span>
         <span *ngSwitchCase="'TEXT'" class="long-text">
-          {{ dataObject.data[0].row[i] }}
+          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
         </span>
-        <textarea
-          *ngSwitchCase="'JSON'"
-          cdkTextareaAutosize="true"
-          cdkAutosizeMaxRows="20"
-          cdkAutosizeMinRows="1"
-          class="json-textarea"
-          [innerHTML]="dataObject.data[0].row[i].value | prettyPrint"
-        >
-        </textarea>
+        <ng-container *ngSwitchCase="'JSON'">
+          <textarea
+            *ngIf="hasDisplayValue(getRowValue(columnHeader)?.value); else emptyJsonValue"
+            cdkTextareaAutosize="true"
+            cdkAutosizeMaxRows="20"
+            cdkAutosizeMinRows="1"
+            class="json-textarea"
+            [innerHTML]="getRowValue(columnHeader).value | prettyPrint"
+          >
+          </textarea>
+          <ng-template #emptyJsonValue>
+            <span>{{ emptyValuePlaceholder }}</span>
+          </ng-template>
+        </ng-container>
         <span *ngSwitchDefault>
-          <span class="m-r-5" *ngIf="isValidUrl(dataObject.data[0].row[i])">
+          <span
+            class="m-r-5"
+            *ngIf="hasDisplayValue(getRowValue(columnHeader)) && isValidUrl(getRowValue(columnHeader))"
+          >
             <button
               mat-icon-button
               matTooltip="{{ 'tooltips.View Link' | translate }}"
-              (click)="openSite(dataObject.data[0].row[i])"
+              (click)="openSite(getRowValue(columnHeader))"
               matTooltipPosition="right"
               class="small-icon"
             >
               <fa-icon icon="eye" size="lg"></fa-icon>
             </button>
           </span>
-          {{ dataObject.data[0].row[i] }}
+          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
         </span>
       </div>
     </div>

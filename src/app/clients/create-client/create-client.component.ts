@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 /** Custom Services */
@@ -17,6 +17,12 @@ import { MatStepper, MatStepperIcon, MatStep, MatStepLabel } from '@angular/mate
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { ClientPreviewStepComponent } from '../client-stepper/client-preview-step/client-preview-step.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import {
+  CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES,
+  CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
+  CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
+  CREDESAL_WORK_BUSINESS_DATATABLE_NAME
+} from '../clients-view/credesal-client-data-datatables';
 
 /**
  * Create Client Component.
@@ -39,8 +45,12 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ClientPreviewStepComponent
   ]
 })
-export class CreateClientComponent {
+export class CreateClientComponent implements AfterViewInit {
   private readonly personalDatatableName = 'credesal_client_datos_personales';
+  private readonly workBusinessDatatableName = CREDESAL_WORK_BUSINESS_DATATABLE_NAME;
+  private readonly clientTypeRestrictedDatatableNames = CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES;
+  private readonly allowedClientTypeTagNames = CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES;
+  private readonly allowedShareholderTagNames = CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES;
   /** Client General Step */
   @ViewChild(ClientGeneralStepComponent, { static: true }) clientGeneralStep: ClientGeneralStepComponent;
   /** Client Family Members Step */
@@ -75,6 +85,12 @@ export class CreateClientComponent {
     this.route.data.subscribe((data: { clientTemplate: any; clientAddressFieldConfig: any }) => {
       this.clientTemplate = data.clientTemplate;
       this.clientAddressFieldConfig = data.clientAddressFieldConfig;
+      this.setDatatables();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.clientGeneralStep.createClientForm.get('tagIds')?.valueChanges.subscribe(() => {
       this.setDatatables();
     });
   }
@@ -184,7 +200,11 @@ export class CreateClientComponent {
     if (this.clientTemplate.datatables) {
       this.clientTemplate.datatables.forEach((datatable: any) => {
         const sub = datatable.entitySubType;
-        if (sub && sub.toLowerCase() === legalFormTypeVal) {
+        if (
+          sub &&
+          sub.toLowerCase() === legalFormTypeVal &&
+          this.shouldDisplayDatatable(datatable.registeredTableName)
+        ) {
           if (datatable.registeredTableName === this.personalDatatableName) {
             this.personalDetailsDatatable = datatable;
             return;
@@ -193,5 +213,32 @@ export class CreateClientComponent {
         }
       });
     }
+  }
+
+  private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (registeredTableName === this.workBusinessDatatableName) {
+      return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
+    }
+    if (!this.clientTypeRestrictedDatatableNames.has(registeredTableName)) {
+      return true;
+    }
+    return this.isAnyAllowedTypeSelected(this.allowedClientTypeTagNames);
+  }
+
+  private isAnyAllowedTypeSelected(allowedTagNames: Set<string>): boolean {
+    const selectedTagIds: Array<number | string> = this.clientGeneralStep?.createClientForm?.get('tagIds')?.value || [];
+    if (!Array.isArray(selectedTagIds) || !selectedTagIds.length) {
+      return false;
+    }
+    const selectedTagIdSet = new Set(selectedTagIds.map((id) => String(id)));
+
+    const selectedTags = (this.clientTemplate?.tagOptions || []).filter((tag: any) =>
+      selectedTagIdSet.has(String(tag.id))
+    );
+    return selectedTags.some((tag: any) => allowedTagNames.has(this.normalizeTagName(tag?.name)));
+  }
+
+  private normalizeTagName(name: string): string {
+    return (name || '').toLowerCase().trim();
   }
 }

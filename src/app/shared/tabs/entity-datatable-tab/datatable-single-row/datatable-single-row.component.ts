@@ -46,6 +46,7 @@ export class DatatableSingleRowComponent implements OnInit {
   @Input() entityId: string;
   @Input() entityType: string;
   datatableName: string;
+  readonly emptyValuePlaceholder = '-';
 
   /**
    * @param {ActivatedRoute} route Activated Route.
@@ -171,6 +172,25 @@ export class DatatableSingleRowComponent implements OnInit {
         });
       }
     });
+  }
+
+  get displayColumns(): any[] {
+    return this.datatables.filterSystemColumns(this.dataObject?.columnHeaders || []);
+  }
+
+  hasRowData(): boolean {
+    return !!this.dataObject?.data?.[0]?.row;
+  }
+
+  getRowValue(column: any): any {
+    if (!this.hasRowData()) {
+      return null;
+    }
+    return this.dataObject.data[0].row[column.idx];
+  }
+
+  hasDisplayValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
   }
 
   setAttributeClass(attr: string): string {
