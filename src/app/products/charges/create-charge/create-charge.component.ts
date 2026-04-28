@@ -137,7 +137,8 @@ export class CreateChargeComponent implements OnInit {
         [minNumberValueValidator('minCap')]
       ],
       debitAccountId: [null],
-      creditAccountId: [null]
+      creditAccountId: [null],
+      delinquencyRangeId: [null]
     });
   }
 
@@ -183,6 +184,13 @@ export class CreateChargeComponent implements OnInit {
    */
   filteredChargeCalculationType(): any {
     return this.chargeCalculationTypeData.filter((chargeCalculationType: any) => {
+      const chargeTimeType = this.chargeForm.get('chargeTimeType').value;
+      if (chargeTimeType === 18 && chargeCalculationType.id !== 7) {
+        return false;
+      }
+      if (chargeTimeType !== 18 && chargeCalculationType.id === 7) {
+        return false;
+      }
       if (
         this.chargeForm.get('chargeTimeType').value === 12 &&
         (chargeCalculationType.id === 3 || chargeCalculationType.id === 4)
@@ -218,7 +226,8 @@ export class CreateChargeComponent implements OnInit {
         chargeCalculationType === 2 ||
         chargeCalculationType === 3 ||
         chargeCalculationType === 4 ||
-        chargeCalculationType === 5
+        chargeCalculationType === 5 ||
+        chargeCalculationType === 7
       );
     } else if (chargeAppliesTo === 2) {
       return (chargeTimeType === 16 || chargeTimeType === 5) && chargeCalculationType === 2;
@@ -261,6 +270,9 @@ export class CreateChargeComponent implements OnInit {
       this.chargeForm.removeControl('feeInterval');
       this.chargeForm.removeControl('feeOnMonthDay');
       this.chargeForm.removeControl('addFeeFrequency');
+      this.chargeForm.get('delinquencyRangeId')?.clearValidators();
+      this.chargeForm.get('delinquencyRangeId')?.setValue(null);
+      this.chargeForm.get('delinquencyRangeId')?.updateValueAndValidity();
       if (this.chargeForm.get('chargeAppliesTo').value !== 4) {
         this.chargeForm.get('penalty').enable();
       }
@@ -279,6 +291,11 @@ export class CreateChargeComponent implements OnInit {
               Validators.pattern('^[1-9]\\d*$')])
           );
           this.repeatEveryLabel = 'Months';
+          break;
+        case 18: // Delinquency classification range (COB)
+          this.chargeForm.get('penalty').setValue(true);
+          this.chargeForm.get('delinquencyRangeId')?.setValidators(Validators.required);
+          this.chargeForm.get('delinquencyRangeId')?.updateValueAndValidity();
           break;
         case 9: // Overdue Fee
           this.chargeForm.get('penalty').setValue(true);
@@ -307,6 +324,15 @@ export class CreateChargeComponent implements OnInit {
           );
           this.repeatEveryLabel = 'Weeks';
           break;
+      }
+      if (chargeTimeType === 18 && this.chargeForm.get('chargeAppliesTo').value === 1) {
+        this.chargeForm.get('chargeCalculationType').setValue(7);
+      } else if (
+        chargeTimeType != null &&
+        chargeTimeType !== 18 &&
+        this.chargeForm.get('chargeCalculationType').value === 7
+      ) {
+        this.chargeForm.get('chargeCalculationType').setValue('');
       }
     });
     this.chargeForm.get('currencyCode').valueChanges.subscribe((currencyCode) => {
@@ -355,6 +381,12 @@ export class CreateChargeComponent implements OnInit {
       data.creditAccountId = typeof creditId === 'number' ? creditId : Number(creditId);
     } else {
       delete data.creditAccountId;
+    }
+    const dr = data.delinquencyRangeId;
+    if (dr == null || dr === '') {
+      delete data.delinquencyRangeId;
+    } else {
+      data.delinquencyRangeId = typeof dr === 'number' ? dr : Number(dr);
     }
     this.productsService.createCharge(data).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });

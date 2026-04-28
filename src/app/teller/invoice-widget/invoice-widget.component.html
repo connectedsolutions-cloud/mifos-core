@@ -1,0 +1,159 @@
+<h2 mat-dialog-title>{{ 'labels.teller.InvoiceWidgetTitle' | translate }}</h2>
+
+<mat-dialog-content>
+  <p *ngIf="loading">{{ 'labels.teller.LoadingInvoiceData' | translate }}</p>
+  <p *ngIf="lookupError" class="submit-error">{{ lookupError }}</p>
+  <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
+
+  <div *ngIf="invoice && readonlyMode" class="invoice-readonly">
+    <p>
+      <strong>{{ 'labels.teller.InvoiceId' | translate }}:</strong> {{ invoice.id }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceStatus' | translate }}:</strong> {{ invoice.status || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.MhValidationStatus' | translate }}:</strong> {{ invoice.mhValidationStatus || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.MhTransmissionStatus' | translate }}:</strong> {{ invoice.mhTransmissionStatus || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.NumeroControl' | translate }}:</strong> {{ invoice.numeroControl || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.CodigoGeneracion' | translate }}:</strong> {{ invoice.codigoGeneracion || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverName' | translate }}:</strong> {{ invoice.receptorNombre || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}:</strong>
+      {{ invoice.receptorTipoDocumento || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverDoc' | translate }}:</strong> {{ invoice.receptorDocId || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverNit' | translate }}:</strong> {{ invoice.receptorNit || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverNrc' | translate }}:</strong> {{ invoice.receptorNrc || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}:</strong>
+      {{ invoice.receptorCodActividad || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}:</strong>
+      {{ invoice.receptorDescActividad || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}:</strong>
+      {{ invoice.receptorDireccionDepartamento || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}:</strong>
+      {{ invoice.receptorDireccionMunicipio || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}:</strong>
+      {{ invoice.receptorDireccionComplemento || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverEmail' | translate }}:</strong> {{ invoice.receptorCorreo || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceReceiverPhone' | translate }}:</strong> {{ invoice.receptorTelefono || '-' }}
+    </p>
+    <p>
+      <strong>{{ 'labels.teller.InvoiceLastError' | translate }}:</strong> {{ invoice.mhLastError || '-' }}
+    </p>
+  </div>
+
+  <form *ngIf="!readonlyMode && !loading" [formGroup]="form" class="layout-column">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}</mat-label>
+      <input matInput formControlName="receptorTipoDocumento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverName' | translate }}</mat-label>
+      <input matInput formControlName="receptorNombre" />
+      <mat-error *ngIf="form.get('receptorNombre')?.hasError('required')">
+        {{ 'labels.teller.InvoiceReceiverNameRequired' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverDoc' | translate }}</mat-label>
+      <input matInput formControlName="receptorDocId" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverNit' | translate }}</mat-label>
+      <input matInput formControlName="receptorNit" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverNrc' | translate }}</mat-label>
+      <input matInput formControlName="receptorNrc" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}</mat-label>
+      <input matInput formControlName="receptorCodActividad" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}</mat-label>
+      <input matInput formControlName="receptorDescActividad" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverNombreComercial' | translate }}</mat-label>
+      <input matInput formControlName="receptorNombreComercial" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}</mat-label>
+      <input matInput formControlName="receptorDireccionDepartamento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}</mat-label>
+      <input matInput formControlName="receptorDireccionMunicipio" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}</mat-label>
+      <input matInput formControlName="receptorDireccionComplemento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverEmail' | translate }}</mat-label>
+      <input matInput formControlName="receptorCorreo" />
+      <mat-error *ngIf="form.get('receptorCorreo')?.hasError('email')">
+        {{ 'labels.teller.InvoiceReceiverEmailInvalid' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'labels.teller.InvoiceReceiverPhone' | translate }}</mat-label>
+      <input matInput formControlName="receptorTelefono" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">{{ 'labels.buttons.Close' | translate }}</button>
+  <button
+    *ngIf="!readonlyMode"
+    mat-raised-button
+    color="primary"
+    (click)="saveAndValidate()"
+    [disabled]="submitting || validating || loading"
+  >
+    {{ 'labels.teller.GenerateAndValidateInvoice' | translate }}
+  </button>
+</mat-dialog-actions>

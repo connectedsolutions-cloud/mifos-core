@@ -286,6 +286,11 @@ export class EditClientComponent implements OnInit {
     const locale = this.settingsService.language.code;
     const dateFormat = this.settingsService.dateFormat;
     const editClientFormValue: any = this.editClientForm.getRawValue();
+    Object.keys(editClientFormValue).forEach((key) => {
+      if (key.startsWith('personalDt_') || key.startsWith('dt_')) {
+        delete editClientFormValue[key];
+      }
+    });
     const clientData = {
       ...editClientFormValue,
       dateOfBirth:

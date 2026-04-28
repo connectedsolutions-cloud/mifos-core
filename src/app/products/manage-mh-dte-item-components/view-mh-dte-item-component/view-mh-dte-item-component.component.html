@@ -1,0 +1,38 @@
+<div class="container m-b-20 layout-row layout-lt-md-column align-end gap-2percent">
+  <button
+    mat-raised-button
+    color="primary"
+    [routerLink]="['edit']"
+    *mifosxHasPermission="'UPDATE_MH_DTE_ITEM_COMPONENT'"
+  >
+    <fa-icon icon="edit" class="m-r-10"></fa-icon>
+    Edit
+  </button>
+  <button mat-raised-button color="warn" (click)="delete()" *mifosxHasPermission="'DELETE_MH_DTE_ITEM_COMPONENT'">
+    <fa-icon icon="trash" class="m-r-10"></fa-icon>
+    Delete
+  </button>
+</div>
+
+<div class="container" *ngIf="mhDteItem">
+  <mat-card>
+    <mat-card-content>
+      <div class="layout-row-wrap card-content">
+        <div class="mat-body-strong flex-33">Name</div>
+        <div class="flex-67">{{ mhDteItem.name }}</div>
+        <div class="mat-body-strong flex-33">DTE amount type</div>
+        <div class="flex-67">{{ mhDteItem.dteAmountType || '—' }}</div>
+        <div class="mat-body-strong flex-33">Charge id</div>
+        <div class="flex-67">{{ mhDteItem.chargeId ?? '—' }}</div>
+        <div class="mat-body-strong flex-33">Loan component</div>
+        <div class="flex-67">{{ mhDteItem.loanComponent ?? '—' }}</div>
+        <div class="mat-body-strong flex-33">Client type</div>
+        <div class="flex-67">{{ mhDteItem.clientType || '(default)' }}</div>
+        <div class="mat-body-strong flex-33">Client type key</div>
+        <div class="flex-67">{{ mhDteItem.clientTypeKey }}</div>
+        <div class="mat-body-strong flex-33">Target (internal)</div>
+        <div class="flex-67">{{ mhDteItem.targetUq }}</div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

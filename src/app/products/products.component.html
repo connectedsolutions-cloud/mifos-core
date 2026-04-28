@@ -343,6 +343,17 @@
             </div>
           </mat-list-item>
 
+          <mat-list-item [routerLink]="['mh-dte-item-components']" *mifosxHasPermission="'READ_MH_DTE_ITEM_COMPONENT'">
+            <div class="menu-list-item-content">
+              <div class="menu-left-section" [routerLink]="['mh-dte-item-components']">
+                <mat-icon matListIcon>
+                  <fa-icon icon="file-invoice" size="sm"></fa-icon>
+                </mat-icon>
+                <div matLine>MH DTE item components</div>
+              </div>
+            </div>
+          </mat-list-item>
+
           <mat-list-item [routerLink]="['floating-rates']" *mifosxHasPermission="'READ_FLOATINGRATE'">
             <div class="menu-list-item-content">
               <div class="menu-left-section" [routerLink]="['floating-rates']">

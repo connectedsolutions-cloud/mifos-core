@@ -39,6 +39,7 @@ import { Dates } from 'app/core/utils/dates';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import type { CashierSession } from '../cashier-session.service';
+import { InvoiceWidgetComponent } from '../invoice-widget/invoice-widget.component';
 
 /**
  * Operaciones section component.
@@ -96,7 +97,8 @@ export class OperacionesComponent implements OnInit, OnDestroy {
     'date',
     'transactions',
     'amount',
-    'txnNote'
+    'txnNote',
+    'invoiceAction'
   ];
 
   /** Data source for transactions table. */
@@ -439,6 +441,38 @@ export class OperacionesComponent implements OnInit, OnDestroy {
 
   applyFilter(): void {
     this.dataSource.filter = this.searchFilter.trim().toLowerCase();
+  }
+
+  isRepaymentInflow(transaction: any): boolean {
+    const type = String(transaction?.txnType?.value ?? '').toLowerCase();
+    const note = String(transaction?.txnNote ?? '').toLowerCase();
+    return type === 'cash in' && note.includes('repayment');
+  }
+
+  canShowInvoiceAction(transaction: any): boolean {
+    const entityType = transaction?.entityType;
+    return this.isRepaymentInflow(transaction) && [
+        'loans',
+        'savings',
+        'client'
+      ].includes(entityType);
+  }
+
+  openInvoiceWidget(transaction: any): void {
+    if (!this.canShowInvoiceAction(transaction) || transaction?.id == null) {
+      return;
+    }
+    const dialogRef = this.dialog.open(InvoiceWidgetComponent, {
+      width: '680px',
+      maxHeight: '85vh',
+      data: {
+        transactionId: Number(transaction.id),
+        entityType: transaction.entityType,
+        transactionNote: transaction.txnNote,
+        currencyCode: this.defaultCurrencyCode
+      }
+    });
+    dialogRef.afterClosed().subscribe(() => this.loadData());
   }
 
   /**

@@ -115,6 +115,23 @@
             <td mat-cell *matCellDef="let transaction">{{ transaction.txnNote || '-' }}</td>
           </ng-container>
 
+          <ng-container matColumnDef="invoiceAction">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.Invoice' | translate }}</th>
+            <td mat-cell *matCellDef="let transaction">
+              <button
+                *ngIf="canShowInvoiceAction(transaction)"
+                mat-icon-button
+                type="button"
+                (click)="openInvoiceWidget(transaction)"
+                [matTooltip]="'labels.teller.OpenInvoiceWidget' | translate"
+                aria-label="Open invoice widget"
+              >
+                <mat-icon>description</mat-icon>
+              </button>
+              <span *ngIf="!canShowInvoiceAction(transaction)">-</span>
+            </td>
+          </ng-container>
+
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 

@@ -98,6 +98,12 @@ import { FixedDepositProductAndTemplateResolver } from './fixed-deposit-products
 import { CollateralResolver } from './collaterals/collateral.resolver';
 import { CollateralsResolver } from './collaterals/collaterals.resolver';
 import { CollateralTemplateResolver } from './collaterals/collaterals-template.resolver';
+import { ManageMhDteItemComponentsComponent } from './manage-mh-dte-item-components/manage-mh-dte-item-components.component';
+import { CreateMhDteItemComponentComponent } from './manage-mh-dte-item-components/create-mh-dte-item-component/create-mh-dte-item-component.component';
+import { ViewMhDteItemComponentComponent } from './manage-mh-dte-item-components/view-mh-dte-item-component/view-mh-dte-item-component.component';
+import { EditMhDteItemComponentComponent } from './manage-mh-dte-item-components/edit-mh-dte-item-component/edit-mh-dte-item-component.component';
+import { ManageMhDteItemComponentsResolver } from './manage-mh-dte-item-components/manage-mh-dte-item-components.resolver';
+import { MhDteItemComponentResolver } from './manage-mh-dte-item-components/mh-dte-item-component.resolver';
 import { ManageDelinquencyBucketsComponent } from './manage-delinquency-buckets/manage-delinquency-buckets.component';
 import { DelinquencyBucketComponent } from './manage-delinquency-buckets/delinquency-bucket/delinquency-bucket.component';
 import { DelinquencyRangeComponent } from './manage-delinquency-buckets/delinquency-range/delinquency-range.component';
@@ -840,6 +846,48 @@ const routes: Routes = [
           ]
         },
         {
+          path: 'mh-dte-item-components',
+          data: { title: 'MH DTE Item Components', breadcrumb: 'MH DTE Item Components' },
+          children: [
+            {
+              path: '',
+              component: ManageMhDteItemComponentsComponent,
+              resolve: {
+                mhDteItemComponents: ManageMhDteItemComponentsResolver
+              }
+            },
+            {
+              path: 'create',
+              component: CreateMhDteItemComponentComponent,
+              data: { title: 'Create MH DTE Item Component', breadcrumb: 'Create' }
+            },
+            {
+              path: ':id',
+              data: { title: 'View MH DTE Item Component', breadcrumb: 'id', routeParamBreadcrumb: 'id' },
+              resolve: {
+                mhDteItem: MhDteItemComponentResolver
+              },
+              children: [
+                {
+                  path: '',
+                  component: ViewMhDteItemComponentComponent,
+                  resolve: {
+                    mhDteItem: MhDteItemComponentResolver
+                  }
+                },
+                {
+                  path: 'edit',
+                  component: EditMhDteItemComponentComponent,
+                  data: { title: 'Edit MH DTE Item Component', breadcrumb: 'Edit', routeParamBreadcrumb: false },
+                  resolve: {
+                    mhDteItem: MhDteItemComponentResolver
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
           path: 'collaterals',
           data: { title: 'Collaterals', breadcrumb: 'Collaterals' },
           children: [
@@ -944,7 +992,9 @@ const routes: Routes = [
     CollateralsResolver,
     CollateralTemplateResolver,
     DelinquencyRangeComponentsResolver,
-    DelinquencyBucketComponentsResolver
+    DelinquencyBucketComponentsResolver,
+    ManageMhDteItemComponentsResolver,
+    MhDteItemComponentResolver
   ]
 })
 export class ProductsRoutingModule {}

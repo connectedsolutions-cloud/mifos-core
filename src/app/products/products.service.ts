@@ -592,4 +592,43 @@ export class ProductsService {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
     return this.http.delete(`/datatables/${datatableName}/${productId}`, { params: httpParams });
   }
+
+  getMhDteItemComponents(skipCache: boolean = false): Observable<any> {
+    let params = new HttpParams();
+    if (skipCache) {
+      params = params.set('_', String(Date.now()));
+    }
+    return this.http.get('/v1/mh-dte-item-components', params.keys().length ? { params } : {});
+  }
+
+  getMhDteItemComponent(id: string): Observable<any> {
+    return this.http.get(`/v1/mh-dte-item-components/${id}`);
+  }
+
+  createMhDteItemComponent(payload: any): Observable<any> {
+    return this.http.post('/v1/mh-dte-item-components', payload);
+  }
+
+  updateMhDteItemComponent(id: string, payload: any): Observable<any> {
+    return this.http.put(`/v1/mh-dte-item-components/${id}`, payload);
+  }
+
+  deleteMhDteItemComponent(id: string): Observable<any> {
+    return this.http.delete(`/v1/mh-dte-item-components/${id}`);
+  }
+
+  previewMhDteItemComponent(
+    loanTransactionId: number,
+    clientType?: string,
+    includeJournalEntries?: boolean
+  ): Observable<any> {
+    let params = new HttpParams().set('loanTransactionId', String(loanTransactionId));
+    if (clientType != null && clientType !== '') {
+      params = params.set('clientType', clientType);
+    }
+    if (includeJournalEntries) {
+      params = params.set('includeJournalEntries', 'true');
+    }
+    return this.http.get('/v1/mh-dte-item-components/preview', { params });
+  }
 }

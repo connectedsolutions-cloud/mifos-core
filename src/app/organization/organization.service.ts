@@ -440,6 +440,29 @@ export class OrganizationService {
     return this.http.get(`/tellers/${tellerId}/cashiers/${cashierId}/summaryandtransactions`, { params: httpParams });
   }
 
+  getInvoiceByTransaction(transactionType: 'loans' | 'savings' | 'client', transactionId: number): Observable<any> {
+    const queryKey =
+      transactionType === 'loans'
+        ? 'loanTransactionId'
+        : transactionType === 'savings'
+          ? 'savingsTransactionId'
+          : 'clientTransactionId';
+    const params = new HttpParams().set(queryKey, String(transactionId));
+    return this.http.get('/v1/invoices', { params });
+  }
+
+  createInvoiceDraft(invoicePayload: any): Observable<any> {
+    return this.http.post('/v1/invoices', invoicePayload);
+  }
+
+  updateInvoiceMetadata(invoiceId: number, metadataPayload: any): Observable<any> {
+    return this.http.put(`/v1/invoices/${invoiceId}/metadata`, metadataPayload);
+  }
+
+  validateInvoiceById(invoiceId: number): Observable<any> {
+    return this.http.post(`/v1/invoices/${invoiceId}/mh/validate`, {});
+  }
+
   /**
    * Get Cashier Transaction template.
    * @param {string} tellerId Teller Id.

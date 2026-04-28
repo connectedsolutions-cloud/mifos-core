@@ -63,6 +63,10 @@ import { FixedDepositProductAccountingStepComponent } from './fixed-deposit-prod
 import { FixedDepositProductPreviewStepComponent } from './fixed-deposit-products/fixed-deposit-product-stepper/fixed-deposit-product-preview-step/fixed-deposit-product-preview-step.component';
 import { DepositProductIncentiveFormDialogComponent } from './deposit-product-incentive-form-dialog/deposit-product-incentive-form-dialog.component';
 import { ManageTaxGroupsComponent } from './manage-tax-groups/manage-tax-groups.component';
+import { ManageMhDteItemComponentsComponent } from './manage-mh-dte-item-components/manage-mh-dte-item-components.component';
+import { CreateMhDteItemComponentComponent } from './manage-mh-dte-item-components/create-mh-dte-item-component/create-mh-dte-item-component.component';
+import { ViewMhDteItemComponentComponent } from './manage-mh-dte-item-components/view-mh-dte-item-component/view-mh-dte-item-component.component';
+import { EditMhDteItemComponentComponent } from './manage-mh-dte-item-components/edit-mh-dte-item-component/edit-mh-dte-item-component.component';
 import { ViewTaxComponentComponent } from './manage-tax-components/view-tax-component/view-tax-component.component';
 import { FloatingRatesComponent } from './floating-rates/floating-rates.component';
 import { CreateFloatingRateComponent } from './floating-rates/create-floating-rate/create-floating-rate.component';
@@ -196,6 +200,10 @@ import { AdvancedAccountingMappingRuleComponent } from './loan-products/loan-pro
     FixedDepositProductAccountingStepComponent,
     FixedDepositProductPreviewStepComponent,
     ManageTaxGroupsComponent,
+    ManageMhDteItemComponentsComponent,
+    CreateMhDteItemComponentComponent,
+    ViewMhDteItemComponentComponent,
+    EditMhDteItemComponentComponent,
     ViewTaxComponentComponent,
     CreateTaxComponentComponent,
     EditTaxComponentComponent,

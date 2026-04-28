@@ -145,6 +145,13 @@ export class EditChargeComponent implements OnInit {
           'chargePaymentMode',
           this.formBuilder.control(this.chargeData.chargePaymentMode.id, Validators.required)
         );
+        this.chargeForm.addControl(
+          'delinquencyRangeId',
+          this.formBuilder.control(this.chargeData.delinquencyRangeId ?? null)
+        );
+        if (this.chargeData.chargeTimeType.id === 18) {
+          this.chargeForm.get('delinquencyRangeId')?.setValidators(Validators.required);
+        }
         if (this.showFeeOptions) {
           this.getFeeFrequency(this.showFeeOptions);
           this.chargeForm.patchValue({
@@ -209,6 +216,17 @@ export class EditChargeComponent implements OnInit {
       if (chargeTimeType === 12 && (currentChargeCalculationType === 3 || currentChargeCalculationType === 4)) {
         this.chargeForm.get('chargeCalculationType')?.setValue('');
       }
+
+      if (chargeTimeType === 18 && this.chargeForm.get('chargeAppliesTo')?.value === 1) {
+        this.chargeForm.get('delinquencyRangeId')?.setValidators(Validators.required);
+        this.chargeForm.get('chargeCalculationType')?.setValue(7);
+      } else {
+        this.chargeForm.get('delinquencyRangeId')?.clearValidators();
+        if (chargeTimeType !== 18 && currentChargeCalculationType === 7) {
+          this.chargeForm.get('chargeCalculationType')?.setValue('');
+        }
+      }
+      this.chargeForm.get('delinquencyRangeId')?.updateValueAndValidity();
     });
   }
 
@@ -241,6 +259,13 @@ export class EditChargeComponent implements OnInit {
       // Always include the currently selected value so it's visible even if it would be filtered out
       if (chargeCalculationType.id === currentChargeCalculationType) {
         return true;
+      }
+
+      if (chargeTimeType === 18 && chargeCalculationType.id !== 7) {
+        return false;
+      }
+      if (chargeTimeType !== 18 && chargeCalculationType.id === 7) {
+        return false;
       }
 
       // Filter out option 5 (% disbursed amount) unless chargeTimeType is 12 (TRANCHE_DISBURSEMENT)
@@ -294,6 +319,12 @@ export class EditChargeComponent implements OnInit {
       charges.creditAccountId = typeof creditId === 'number' ? creditId : Number(creditId);
     } else {
       delete charges.creditAccountId;
+    }
+    const dr = charges.delinquencyRangeId;
+    if (dr == null || dr === '') {
+      delete charges.delinquencyRangeId;
+    } else {
+      charges.delinquencyRangeId = typeof dr === 'number' ? dr : Number(dr);
     }
     this.productsService.updateCharge(this.chargeData.id.toString(), charges).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });
