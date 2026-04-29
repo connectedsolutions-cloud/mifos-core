@@ -94,9 +94,10 @@ export class ClientsService {
     return this.http.get(`/datatables`, { params: httpParams });
   }
 
-  getClientDatatable(clientId: string, datatableName: string) {
+  getClientDatatable(clientId: string, datatableName: string, options?: { skipErrorHandler?: boolean }) {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
-    return this.http.get(`/datatables/${datatableName}/${clientId}`, { params: httpParams });
+    const httpClient = options?.skipErrorHandler ? this.http.skipErrorHandler() : this.http;
+    return httpClient.get(`/datatables/${datatableName}/${clientId}`, { params: httpParams });
   }
 
   addClientDatatableEntry(clientId: string, datatableName: string, data: any) {

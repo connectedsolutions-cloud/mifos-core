@@ -488,7 +488,9 @@ export class EditClientComponent implements OnInit {
       .filter((datatable) => !!datatable?.registeredTableName)
       .map((datatable) =>
         this.clientsService
-          .getClientDatatable(this.clientDataAndTemplate.id, datatable.registeredTableName)
+          .getClientDatatable(this.clientDataAndTemplate.id, datatable.registeredTableName, {
+            skipErrorHandler: true
+          })
           .pipe(catchError(() => of(null)))
       );
     if (!requests.length) {
