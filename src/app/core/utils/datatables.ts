@@ -149,13 +149,21 @@ export class Datatables {
     let existDate = false;
     datatableInputs.forEach((input: any) => {
       const controlName = this.getInputName(input);
+      const value = datatableDataValues[controlName] ?? datatableDataValues[input.columnName];
+      const isEmptyValue = value === '' || value === undefined;
+
+      if (input.isColumnNullable && isEmptyValue) {
+        output[input.columnName] = null;
+        return;
+      }
+
       if (this.isNumeric(input.columnDisplayType)) {
-        output[input.columnName] = datatableDataValues[controlName] * 1;
+        output[input.columnName] = value * 1;
       } else if (this.isDate(input.columnDisplayType)) {
-        output[input.columnName] = this.dateUtils.formatDate(datatableDataValues[controlName], dateFormat);
+        output[input.columnName] = this.dateUtils.formatDate(value, dateFormat);
         existDate = true;
       } else {
-        output[input.columnName] = datatableDataValues[controlName];
+        output[input.columnName] = value;
       }
     });
 

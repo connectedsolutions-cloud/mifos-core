@@ -1,6 +1,7 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -18,7 +19,7 @@ import { MatDivider } from '@angular/material/divider';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, forkJoin, of, switchMap } from 'rxjs';
 import {
   CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES,
   CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
@@ -80,6 +81,7 @@ export class EditClientComponent implements OnInit {
   datatables: any[] = [];
   personalDatatableInputs: any[] = [];
   extraDatatableSections: Array<{ datatable: any; inputs: any[]; prefix: string }> = [];
+  private datatablesWithExistingRows = new Set<string>();
   legalFormId = 1;
 
   /**
@@ -316,11 +318,58 @@ export class EditClientComponent implements OnInit {
       clientData.clientNonPersonDetails = {};
     }
     const datatablesPayload = this.getDatatablesPayload();
-    if (datatablesPayload.length) {
-      clientData.datatables = datatablesPayload;
+    this.clientsService
+      .updateClient(this.clientDataAndTemplate.id, clientData)
+      .pipe(switchMap(() => this.saveDatatables(this.clientDataAndTemplate.id, datatablesPayload)))
+      .subscribe(() => {
+        this.router.navigate(['../'], { relativeTo: this.route });
+      });
+  }
+
+  private saveDatatables(clientId: string, datatablesPayload: any[]) {
+    if (!datatablesPayload.length) {
+      return of(null);
     }
-    this.clientsService.updateClient(this.clientDataAndTemplate.id, clientData).subscribe(() => {
-      this.router.navigate(['../'], { relativeTo: this.route });
+    const requests = datatablesPayload.map((datatable) => {
+      const datatableName = datatable.registeredTableName;
+      const data = datatable.data;
+      const hasExistingRow = this.datatablesWithExistingRows.has(datatableName);
+      const hasMeaningfulValues = this.hasMeaningfulDatatableValues(data);
+
+      if (!hasExistingRow && !hasMeaningfulValues) {
+        return of(null);
+      }
+
+      if (hasExistingRow) {
+        return this.clientsService.editClientDatatableEntry(clientId, datatableName, data);
+      }
+
+      return this.clientsService.editClientDatatableEntry(clientId, datatableName, data).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error?.status === 404) {
+            return this.clientsService.addClientDatatableEntry(clientId, datatableName, data);
+          }
+          throw error;
+        })
+      );
+    });
+    return forkJoin(requests);
+  }
+
+  private hasMeaningfulDatatableValues(data: any): boolean {
+    return Object.keys(data || {}).some((key) => {
+      if (key === 'locale' || key === 'dateFormat') {
+        return false;
+      }
+      const value = data[key];
+      if (value === null || value === undefined || value === '') {
+        return false;
+      }
+      // Avoid creating new datatable rows from untouched checkbox/numeric defaults.
+      if (value === false || value === 0) {
+        return false;
+      }
+      return true;
     });
   }
 
@@ -431,6 +480,7 @@ export class EditClientComponent implements OnInit {
   }
 
   loadExistingDatatableValues(): void {
+    this.datatablesWithExistingRows.clear();
     const requests = [
       this.personalDetailsDatatable,
       ...this.datatables
@@ -449,9 +499,15 @@ export class EditClientComponent implements OnInit {
         if (!datatableResponse?.columnHeaders || !datatableResponse?.data?.length) {
           return;
         }
+        const isPersonal = idx === 0 && !!this.personalDetailsDatatable;
+        const datatableName = isPersonal
+          ? this.personalDetailsDatatable?.registeredTableName
+          : this.datatables[this.personalDetailsDatatable ? idx - 1 : idx]?.registeredTableName;
+        if (datatableName) {
+          this.datatablesWithExistingRows.add(datatableName);
+        }
         const filteredColumns = this.datatableService.filterSystemColumns(datatableResponse.columnHeaders);
         const row = datatableResponse.data[0]?.row || [];
-        const isPersonal = idx === 0 && !!this.personalDetailsDatatable;
         const sectionIndex = this.personalDetailsDatatable ? idx - 1 : idx;
         filteredColumns.forEach((column: any) => {
           const controlName = this.datatableService.getInputName(column);

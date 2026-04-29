@@ -154,14 +154,9 @@ export class DatatableMultiRowComponent implements OnInit, OnDestroy, OnChanges 
    * Adds a new row to the given multi row data table.
    */
   add() {
-    let dataTableEntryObject: any = { locale: this.settingsService.language.code };
-    const dateTransformColumns: string[] = [];
+    const dataTableEntryObject: any = { locale: this.settingsService.language.code };
     const columns = this.datatables.filterSystemColumns(this.dataObject.columnHeaders);
-    const formfields: FormfieldBase[] = this.datatables.getFormfields(
-      columns,
-      dateTransformColumns,
-      dataTableEntryObject
-    );
+    const formfields: FormfieldBase[] = this.datatables.getFormfields(columns, [], dataTableEntryObject);
     const data = {
       title: 'Add ' + this.datatableName + ' for ' + this.entityType,
       formfields: formfields
@@ -169,15 +164,11 @@ export class DatatableMultiRowComponent implements OnInit, OnDestroy, OnChanges 
     const addDialogRef = this.dialog.open(FormDialogComponent, { data, width: '50rem' });
     addDialogRef.afterClosed().subscribe((response: any) => {
       if (response.data) {
-        dateTransformColumns.forEach((column) => {
-          response.data.value[column] = this.dateUtils.formatDate(
-            response.data.value[column],
-            dataTableEntryObject.dateFormat
-          );
+        const payload = this.datatables.buildPayload(columns, response.data.value, this.settingsService.dateFormat, {
+          ...dataTableEntryObject
         });
-        dataTableEntryObject = { ...response.data.value, ...dataTableEntryObject };
         this.systemService
-          .addEntityDatatableEntry(this.entityId, this.datatableName, dataTableEntryObject)
+          .addEntityDatatableEntry(this.entityId, this.datatableName, payload)
           .subscribe((result: any) => {
             this.getData();
           });

@@ -71,16 +71,11 @@ export class DatatableSingleRowComponent implements OnInit {
   }
 
   add() {
-    let dataTableEntryObject: any = {
+    const dataTableEntryObject: any = {
       locale: this.settingsService.language.code
     };
-    const dateTransformColumns: string[] = [];
     const columns = this.datatables.filterSystemColumns(this.dataObject.columnHeaders);
-    const formfields: FormfieldBase[] = this.datatables.getFormfields(
-      columns,
-      dateTransformColumns,
-      dataTableEntryObject
-    );
+    const formfields: FormfieldBase[] = this.datatables.getFormfields(columns, [], dataTableEntryObject);
     const data = {
       title: 'Add ' + this.datatableName + ' for ' + this.entityType,
       formfields: formfields
@@ -88,35 +83,24 @@ export class DatatableSingleRowComponent implements OnInit {
     const addDialogRef = this.dialog.open(FormDialogComponent, { data, width: '50rem' });
     addDialogRef.afterClosed().subscribe((response: any) => {
       if (response.data) {
-        dateTransformColumns.forEach((column) => {
-          response.data.value[column] = this.dateUtils.formatDate(
-            response.data.value[column],
-            dataTableEntryObject.dateFormat
-          );
+        const payload = this.datatables.buildPayload(columns, response.data.value, this.settingsService.dateFormat, {
+          ...dataTableEntryObject
         });
-        dataTableEntryObject = { ...response.data.value, ...dataTableEntryObject };
-        this.systemService
-          .addEntityDatatableEntry(this.entityId, this.datatableName, dataTableEntryObject)
-          .subscribe(() => {
-            this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
-              this.dataObject = dataObject;
-            });
+        this.systemService.addEntityDatatableEntry(this.entityId, this.datatableName, payload).subscribe(() => {
+          this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
+            this.dataObject = dataObject;
           });
+        });
       }
     });
   }
 
   edit() {
-    let dataTableEntryObject: any = {
+    const dataTableEntryObject: any = {
       locale: this.settingsService.language.code
     };
-    const dateTransformColumns: string[] = [];
     const columns = this.datatables.filterSystemColumns(this.dataObject.columnHeaders);
-    let formfields: FormfieldBase[] = this.datatables.getFormfields(
-      columns,
-      dateTransformColumns,
-      dataTableEntryObject
-    );
+    let formfields: FormfieldBase[] = this.datatables.getFormfields(columns, [], dataTableEntryObject);
     formfields = formfields.map((formfield: FormfieldBase, index: number) => {
       if (formfield.controlType === 'datepicker') {
         formfield.value = this.dataObject.data[0].row[columns[index].idx]
@@ -141,20 +125,14 @@ export class DatatableSingleRowComponent implements OnInit {
     const editDialogRef = this.dialog.open(FormDialogComponent, { data, width: '50rem' });
     editDialogRef.afterClosed().subscribe((response: any) => {
       if (response.data) {
-        dateTransformColumns.forEach((column) => {
-          response.data.value[column] = this.dateUtils.formatDate(
-            response.data.value[column],
-            dataTableEntryObject.dateFormat
-          );
+        const payload = this.datatables.buildPayload(columns, response.data.value, this.settingsService.dateFormat, {
+          ...dataTableEntryObject
         });
-        dataTableEntryObject = { ...response.data.value, ...dataTableEntryObject };
-        this.systemService
-          .editEntityDatatableEntry(this.entityId, this.datatableName, dataTableEntryObject)
-          .subscribe(() => {
-            this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
-              this.dataObject = dataObject;
-            });
+        this.systemService.editEntityDatatableEntry(this.entityId, this.datatableName, payload).subscribe(() => {
+          this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
+            this.dataObject = dataObject;
           });
+        });
       }
     });
   }
