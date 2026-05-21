@@ -1,0 +1,287 @@
+/* PDF spacing mirror: dte-print-spacing.ts (96px per inch) */
+.dte-print-page {
+  --dte-maroon: #6b2c2c;
+  --dte-grey: #787878;
+  --dte-page-width: 816px;
+  --dte-page-min-height: 1056px;
+  --dte-page-padding: 52.8px;
+
+  box-sizing: border-box;
+  width: var(--dte-page-width);
+  min-height: var(--dte-page-min-height);
+  margin: 0 auto;
+  padding: var(--dte-page-padding);
+  background: #fff;
+  color: #111;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.dte-print-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.dte-print-header-left {
+  display: table;
+  flex-shrink: 0;
+  border-spacing: 0;
+}
+
+.dte-print-brand-cell,
+.dte-print-emisor-cell {
+  display: table-row;
+}
+
+.dte-print-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dte-print-emisor {
+  margin-bottom: 0;
+}
+
+.dte-print-fields {
+  display: grid;
+  gap: 4px;
+}
+
+.dte-print-field {
+  display: grid;
+  grid-template-columns: 140px auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.dte-print-field-label {
+  font-weight: 700;
+}
+
+.dte-print-field-value {
+  word-break: break-word;
+}
+
+.dte-print-brand-cell .dte-print-brand,
+.dte-print-emisor-cell .dte-print-emisor {
+  display: table-cell;
+  vertical-align: top;
+}
+
+.dte-print-brand-cell .dte-print-brand {
+  width: 1px;
+  white-space: nowrap;
+  padding-bottom: 10px;
+}
+
+.dte-print-emisor .dte-print-field {
+  display: block;
+}
+
+.dte-print-emisor .dte-print-field-label {
+  margin-right: 4px;
+}
+
+.dte-print-emisor .dte-print-field-value {
+  word-break: break-word;
+}
+
+.dte-print-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.dte-print-brand-text {
+  min-width: 0;
+}
+
+.dte-print-brand-name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--dte-grey);
+  line-height: 1;
+}
+
+.dte-print-brand-tagline {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dte-grey);
+  text-transform: uppercase;
+}
+
+.dte-print-header-right {
+  width: 370px;
+  max-width: 52%;
+  flex-shrink: 0;
+}
+
+.dte-print-doc-type {
+  width: 100%;
+  background: var(--dte-maroon);
+  color: #fff;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 2px;
+}
+
+.dte-print-identification {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.dte-print-identification .dte-print-field {
+  grid-template-columns: 128px auto;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.dte-print-doc-type-label {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.dte-print-doc-type-title {
+  margin: 6px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.dte-print-header-right .dte-print-qr {
+  text-align: center;
+  margin: 10px 0 0;
+}
+
+.dte-print-header-right .dte-print-qr img {
+  width: 100%;
+  max-width: 88px;
+  height: auto;
+  aspect-ratio: 1;
+  display: inline-block;
+}
+
+.dte-print-qr-caption {
+  margin: 6px 0 0;
+  font-size: 10px;
+  color: var(--dte-grey);
+}
+
+.dte-print-qr-url {
+  margin: 4px auto 0;
+  max-width: 100%;
+  font-size: 8px;
+  color: var(--dte-grey);
+  word-break: break-all;
+}
+
+.dte-print-section {
+  margin-bottom: 14px;
+}
+
+.dte-print-section-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.dte-print-receptor {
+  border-top: 1px solid #000;
+  padding-top: 12px;
+
+  .dte-print-fields {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    gap: 4px 16px;
+  }
+
+  .dte-print-field {
+    grid-template-columns: 108px auto;
+    gap: 6px;
+  }
+
+  .dte-print-field--right-col {
+    grid-column: 2;
+  }
+}
+
+.dte-print-table-wrap {
+  overflow-x: auto;
+}
+
+.dte-print-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.dte-print-table th,
+.dte-print-table td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.dte-print-table th {
+  background: var(--dte-maroon);
+  color: #fff;
+  font-weight: 700;
+}
+
+.dte-print-table td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dte-print-totals {
+  margin-left: auto;
+  width: min(100%, 320px);
+}
+
+.dte-print-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.dte-print-total-row strong {
+  font-weight: 700;
+}
+
+.dte-print-total-letras {
+  margin-top: 10px;
+  font-size: 10px;
+  font-style: italic;
+  color: #333;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    background: #fff;
+  }
+
+  .dte-print-page {
+    box-shadow: none;
+    margin: 0;
+  }
+}

@@ -159,4 +159,21 @@
     padding: 1.5rem;
     color: #666;
   }
+
+  .invoice-action-btn {
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &.invoice-verified {
+      background-color: #1565c0;
+      color: #fff;
+
+      mat-icon {
+        color: #fff;
+      }
+    }
+  }
 }

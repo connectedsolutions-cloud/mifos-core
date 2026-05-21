@@ -44,7 +44,7 @@ export class IsEnabledDirective implements AfterViewInit, OnDestroy {
     private snackBar: MatSnackBar
   ) {
     const savedCredentials = this.authenticationService.getCredentials();
-    this.userPermissions = savedCredentials.permissions;
+    this.userPermissions = savedCredentials?.permissions ?? [];
   }
 
   /**

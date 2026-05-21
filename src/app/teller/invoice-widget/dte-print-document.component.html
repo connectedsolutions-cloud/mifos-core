@@ -1,0 +1,101 @@
+<article #printPage class="dte-print-page" *ngIf="viewModel">
+  <header class="dte-print-header">
+    <div class="dte-print-header-left">
+      <div class="dte-print-brand-cell">
+        <div class="dte-print-brand">
+          <img class="dte-print-logo" src="assets/images/credesal-imagotipo.png" alt="CREDESAL" />
+          <div class="dte-print-brand-text">
+            <h1 class="dte-print-brand-name">CREDESAL</h1>
+            <p class="dte-print-brand-tagline">AHORRO Y CRÉDITO</p>
+          </div>
+        </div>
+      </div>
+      <div class="dte-print-emisor-cell">
+        <section class="dte-print-section dte-print-emisor">
+          <h2 class="dte-print-section-title">EMISOR</h2>
+          <div class="dte-print-fields">
+            <div class="dte-print-field" *ngFor="let row of viewModel.emisor">
+              <span class="dte-print-field-label">{{ row.label }}:</span>
+              <span class="dte-print-field-value">{{ row.value }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="dte-print-header-right">
+      <div class="dte-print-doc-type">
+        <p class="dte-print-doc-type-label">TIPO DE DOCUMENTO</p>
+        <p class="dte-print-doc-type-title">{{ viewModel.documentTitle }}</p>
+      </div>
+      <section class="dte-print-section dte-print-identification">
+        <h2 class="dte-print-section-title">IDENTIFICACIÓN</h2>
+        <div class="dte-print-fields">
+          <div class="dte-print-field" *ngFor="let row of viewModel.identification">
+            <span class="dte-print-field-label">{{ row.label }}:</span>
+            <span class="dte-print-field-value">{{ row.value }}</span>
+          </div>
+        </div>
+      </section>
+      <section class="dte-print-qr">
+        <img [src]="qrDataUrl" alt="QR consulta MH" />
+        <p class="dte-print-qr-caption">Consulta pública MH</p>
+        <p class="dte-print-qr-url">{{ viewModel.qrUrl }}</p>
+      </section>
+    </div>
+  </header>
+
+  <section class="dte-print-section dte-print-receptor">
+    <h2 class="dte-print-section-title">RECEPTOR</h2>
+    <div class="dte-print-fields">
+      <div
+        class="dte-print-field"
+        *ngFor="let row of viewModel.receptor"
+        [class.dte-print-field--right-col]="row.column === 2"
+      >
+        <span class="dte-print-field-label">{{ row.label }}:</span>
+        <span class="dte-print-field-value">{{ row.value }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="dte-print-section">
+    <h2 class="dte-print-section-title">DETALLE</h2>
+    <div class="dte-print-table-wrap">
+      <table class="dte-print-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descripción</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Gravada</th>
+            <th>Exenta</th>
+            <th>No Suj.</th>
+            <th>No Grav.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of viewModel.lines">
+            <td>{{ line.numItem }}</td>
+            <td>{{ line.descripcion }}</td>
+            <td class="num">{{ line.cantidad }}</td>
+            <td class="num">{{ line.precioUni }}</td>
+            <td class="num">{{ line.ventaGravada }}</td>
+            <td class="num">{{ line.ventaExenta }}</td>
+            <td class="num">{{ line.ventaNoSuj }}</td>
+            <td class="num">{{ line.noGravado }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="dte-print-section dte-print-totals">
+    <h2 class="dte-print-section-title">RESUMEN</h2>
+    <div class="dte-print-total-row" *ngFor="let row of viewModel.totals">
+      <span>{{ row.label }}</span>
+      <strong>{{ row.value }}</strong>
+    </div>
+    <p class="dte-print-total-letras" *ngIf="viewModel.totalLetras">{{ viewModel.totalLetras }}</p>
+  </section>
+</article>

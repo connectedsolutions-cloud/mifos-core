@@ -69,15 +69,18 @@ export class AuthenticationService {
     this.userLoggedIn = false;
     this.rememberMe = false;
     this.storage = sessionStorage;
-    const savedCredentials = JSON.parse(
-      sessionStorage.getItem(this.credentialsStorageKey) || localStorage.getItem(this.credentialsStorageKey)
-    );
+    const credentialsRaw =
+      sessionStorage.getItem(this.credentialsStorageKey) || localStorage.getItem(this.credentialsStorageKey);
+    const savedCredentials = credentialsRaw ? JSON.parse(credentialsRaw) : null;
     if (savedCredentials) {
-      if (savedCredentials.rememberMe) {
-        this.rememberMe = true;
-        this.storage = localStorage;
-      }
-      const twoFactorAccessToken = JSON.parse(this.storage.getItem(this.twoFactorAuthenticationTokenStorageKey));
+      this.rememberMe = !!savedCredentials.rememberMe;
+      const credentialsInLocalOnly =
+        !sessionStorage.getItem(this.credentialsStorageKey) && !!localStorage.getItem(this.credentialsStorageKey);
+      this.storage = this.rememberMe || credentialsInLocalOnly ? localStorage : sessionStorage;
+      const twoFactorRaw =
+        sessionStorage.getItem(this.twoFactorAuthenticationTokenStorageKey) ||
+        localStorage.getItem(this.twoFactorAuthenticationTokenStorageKey);
+      const twoFactorAccessToken = twoFactorRaw ? JSON.parse(twoFactorRaw) : null;
       if (environment.oauth.enabled) {
         this.refreshOAuthAccessToken();
       } else {
@@ -283,7 +286,10 @@ export class AuthenticationService {
    * @returns {boolean} True if the two factor access token is valid or two factor authentication is not required.
    */
   twoFactorAccessTokenIsValid(): boolean {
-    const twoFactorAccessToken = JSON.parse(this.storage.getItem(this.twoFactorAuthenticationTokenStorageKey));
+    const twoFactorRaw =
+      sessionStorage.getItem(this.twoFactorAuthenticationTokenStorageKey) ||
+      localStorage.getItem(this.twoFactorAuthenticationTokenStorageKey);
+    const twoFactorAccessToken = twoFactorRaw ? JSON.parse(twoFactorRaw) : null;
     if (twoFactorAccessToken) {
       return new Date().getTime() < twoFactorAccessToken.validTo;
     }
@@ -307,7 +313,8 @@ export class AuthenticationService {
    * @returns {Credentials} The user credentials if the user is authenticated otherwise null.
    */
   getCredentials(): Credentials | null {
-    return JSON.parse(this.storage.getItem(this.credentialsStorageKey));
+    const raw = sessionStorage.getItem(this.credentialsStorageKey) || localStorage.getItem(this.credentialsStorageKey);
+    return raw ? JSON.parse(raw) : null;
   }
 
   /**

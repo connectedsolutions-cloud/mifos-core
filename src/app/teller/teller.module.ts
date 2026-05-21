@@ -12,7 +12,6 @@ import { AperturarCajaDialogComponent } from './aperturar-caja-dialog/aperturar-
 import { OperacionesComponent } from './operaciones/operaciones.component';
 import { DesembolsosComponent } from './desembolsos/desembolsos.component';
 import { PagosComponent } from './pagos/pagos.component';
-
 /**
  * Teller Module
  *

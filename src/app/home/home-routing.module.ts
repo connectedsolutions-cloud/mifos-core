@@ -8,6 +8,7 @@ import { Route } from '../core/route/route.service';
 /** Custom Components */
 import { HomeComponent } from './home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { DtePrintPreviewComponent } from '../teller/invoice-widget/dte-print-preview.component';
 
 /** Custom Resolvers */
 import { OfficesResolver } from '../accounting/common-resolvers/offices.resolver';
@@ -32,6 +33,16 @@ const routes: Routes = [
       resolve: {
         offices: OfficesResolver
       }
+    },
+    {
+      path: 'dte-preview',
+      data: { title: 'Vista previa DTE', breadcrumb: 'Vista previa DTE' },
+      children: [
+        {
+          path: '',
+          component: DtePrintPreviewComponent
+        }
+      ]
     }
   ])
 

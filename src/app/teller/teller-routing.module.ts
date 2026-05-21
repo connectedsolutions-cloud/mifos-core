@@ -10,7 +10,6 @@ import { TellerComponent } from './teller.component';
 import { OperacionesComponent } from './operaciones/operaciones.component';
 import { DesembolsosComponent } from './desembolsos/desembolsos.component';
 import { PagosComponent } from './pagos/pagos.component';
-
 /** Teller Routes */
 const routes: Routes = [
   Route.withShell([

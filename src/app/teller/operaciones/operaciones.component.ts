@@ -18,13 +18,16 @@ import {
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { CashierSessionService } from '../cashier-session.service';
 import { OrganizationService } from 'app/organization/organization.service';
 import { PendientesService } from 'app/pendientes/pendientes.service';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
 import { Subject, takeUntil, switchMap, of, forkJoin } from 'rxjs';
-import { tap, filter } from 'rxjs/operators';
+import { tap, filter, map, catchError } from 'rxjs/operators';
 import { FormatNumberPipe } from '../../pipes/format-number.pipe';
 import { TransferirBovedaDialogComponent } from '../transferir-boveda-dialog/transferir-boveda-dialog.component';
 import { RequerirFondosDialogComponent } from '../requerir-fondos-dialog/requerir-fondos-dialog.component';
@@ -65,6 +68,9 @@ import { InvoiceWidgetComponent } from '../invoice-widget/invoice-widget.compone
     MatRowDef,
     MatRow,
     MatPaginator,
+    MatIcon,
+    MatIconButton,
+    MatTooltip,
     FormatNumberPipe,
     ...STANDALONE_SHARED_IMPORTS
   ]
@@ -247,6 +253,7 @@ export class OperacionesComponent implements OnInit, OnDestroy {
             this.dataSource.data = items;
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
+            this.refreshInvoiceStatuses(items);
             this.refreshPendingTellerVaultTransfer();
             this.refreshPendingRequerirFondos();
           }
@@ -458,21 +465,67 @@ export class OperacionesComponent implements OnInit, OnDestroy {
       ].includes(entityType);
   }
 
+  isInvoiceVerified(transaction: any): boolean {
+    return transaction?._invoiceVerified === true;
+  }
+
   openInvoiceWidget(transaction: any): void {
     if (!this.canShowInvoiceAction(transaction) || transaction?.id == null) {
       return;
     }
     const dialogRef = this.dialog.open(InvoiceWidgetComponent, {
-      width: '680px',
-      maxHeight: '85vh',
+      width: '920px',
+      maxHeight: '90vh',
       data: {
         transactionId: Number(transaction.id),
         entityType: transaction.entityType,
         transactionNote: transaction.txnNote,
-        currencyCode: this.defaultCurrencyCode
+        currencyCode: this.defaultCurrencyCode,
+        loanId:
+          transaction.entityType === 'loans' && transaction.entityId != null ? Number(transaction.entityId) : undefined
       }
     });
     dialogRef.afterClosed().subscribe(() => this.loadData());
+  }
+
+  private refreshInvoiceStatuses(transactions: any[]): void {
+    const eligible = transactions.filter((t) => this.canShowInvoiceAction(t) && t.id != null);
+    for (const transaction of transactions) {
+      transaction._invoiceVerified = false;
+    }
+    if (eligible.length === 0) {
+      return;
+    }
+
+    forkJoin(
+      eligible.map((transaction) =>
+        this.organizationService.getInvoiceByTransaction(transaction.entityType, Number(transaction.id)).pipe(
+          map((invoice) => ({ transaction, invoice })),
+          catchError(() => of({ transaction, invoice: null }))
+        )
+      )
+    )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((results) => {
+        for (const { transaction, invoice } of results) {
+          transaction._invoiceVerified = this.isInvoiceVerifiedFromData(invoice);
+        }
+        this.cdr.markForCheck();
+      });
+  }
+
+  private isInvoiceVerifiedFromData(invoice: any): boolean {
+    if (!invoice?.id) {
+      return false;
+    }
+    const status = String(invoice.status ?? '').toUpperCase();
+    const mhStatus = String(invoice.mhValidationStatus ?? '').toUpperCase();
+    return [
+        'GENERATED',
+        'SIGNED',
+        'SUBMITTED',
+        'ACCEPTED'
+      ].includes(status) || mhStatus === 'SUCCESS';
   }
 
   /**

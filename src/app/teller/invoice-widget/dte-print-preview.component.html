@@ -1,0 +1,29 @@
+<div class="dte-preview-shell">
+  <div class="dte-preview-toolbar">
+    <h1>Vista previa DTE (HTML)</h1>
+    <p class="dte-preview-hint" *ngIf="!loading && !loadError">
+      Edita estilos en
+      <code>dte-print-document.component.scss</code>
+      . Generar PDF usa la vista HTML actual; Imprimir abre el diálogo del navegador.
+    </p>
+    <p class="dte-preview-error" *ngIf="loadError">{{ loadError }}</p>
+    <button mat-stroked-button type="button" (click)="reload()" [disabled]="loading">Recargar</button>
+    <button mat-stroked-button type="button" (click)="loadSample()" [disabled]="loading">Datos de ejemplo</button>
+    <button mat-raised-button color="primary" type="button" (click)="print()" [disabled]="!viewModel">Imprimir</button>
+    <button
+      mat-raised-button
+      color="accent"
+      type="button"
+      (click)="downloadPdf()"
+      [disabled]="!invoice || pdfGenerating"
+    >
+      Generar PDF
+    </button>
+  </div>
+
+  <p class="dte-preview-loading" *ngIf="loading">Cargando factura…</p>
+
+  <div class="dte-preview-canvas" *ngIf="viewModel && !loading">
+    <mifosx-dte-print-document [viewModel]="viewModel" />
+  </div>
+</div>

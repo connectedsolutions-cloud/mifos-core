@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>{{ 'labels.teller.InvoiceWidgetTitle' | translate }}</h2>
 
-<mat-dialog-content>
+<mat-dialog-content class="invoice-dialog-content">
   <p *ngIf="loading">{{ 'labels.teller.LoadingInvoiceData' | translate }}</p>
   <p *ngIf="lookupError" class="submit-error">{{ lookupError }}</p>
   <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
@@ -25,128 +25,238 @@
       <strong>{{ 'labels.teller.CodigoGeneracion' | translate }}:</strong> {{ invoice.codigoGeneracion || '-' }}
     </p>
     <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverName' | translate }}:</strong> {{ invoice.receptorNombre || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}:</strong>
-      {{ invoice.receptorTipoDocumento || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverDoc' | translate }}:</strong> {{ invoice.receptorDocId || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverNit' | translate }}:</strong> {{ invoice.receptorNit || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverNrc' | translate }}:</strong> {{ invoice.receptorNrc || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}:</strong>
-      {{ invoice.receptorCodActividad || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}:</strong>
-      {{ invoice.receptorDescActividad || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}:</strong>
-      {{ invoice.receptorDireccionDepartamento || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}:</strong>
-      {{ invoice.receptorDireccionMunicipio || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}:</strong>
-      {{ invoice.receptorDireccionComplemento || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverEmail' | translate }}:</strong> {{ invoice.receptorCorreo || '-' }}
-    </p>
-    <p>
-      <strong>{{ 'labels.teller.InvoiceReceiverPhone' | translate }}:</strong> {{ invoice.receptorTelefono || '-' }}
-    </p>
-    <p>
       <strong>{{ 'labels.teller.InvoiceLastError' | translate }}:</strong> {{ invoice.mhLastError || '-' }}
     </p>
   </div>
 
-  <form *ngIf="!readonlyMode && !loading" [formGroup]="form" class="layout-column">
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}</mat-label>
-      <input matInput formControlName="receptorTipoDocumento" />
-    </mat-form-field>
+  <ng-container *ngIf="!loading">
+    <section class="invoice-section">
+      <h3 class="invoice-section-title">{{ 'labels.teller.InvoiceSectionDocumentoTributario' | translate }}</h3>
+      <div class="readonly-grid" *ngIf="readonlyMode">
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorTipoDocumento || '13' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceFecEmi' | translate }}</span>
+          <span class="readonly-value">{{ emissionDateDisplay }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceTipoEstablecimiento' | translate }}</span>
+          <span class="readonly-value">
+            {{ 'labels.teller.InvoiceTipoEstablecimientoCasaMatriz' | translate }} ({{ tipoEstablecimientoCode }})
+          </span>
+        </div>
+      </div>
+      <div class="form-grid form-grid--compact" *ngIf="!readonlyMode" [formGroup]="form">
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverTipoDocumento' | translate }}</mat-label>
+          <input matInput formControlName="receptorTipoDocumento" />
+        </mat-form-field>
+        <div class="readonly-field form-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceFecEmi' | translate }}</span>
+          <span class="readonly-value">{{ emissionDateDisplay }}</span>
+        </div>
+        <div class="readonly-field form-field form-field--span-2">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceTipoEstablecimiento' | translate }}</span>
+          <span class="readonly-value">
+            {{ 'labels.teller.InvoiceTipoEstablecimientoCasaMatriz' | translate }} ({{ tipoEstablecimientoCode }})
+          </span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverName' | translate }}</mat-label>
-      <input matInput formControlName="receptorNombre" />
-      <mat-error *ngIf="form.get('receptorNombre')?.hasError('required')">
-        {{ 'labels.teller.InvoiceReceiverNameRequired' | translate }}
-      </mat-error>
-    </mat-form-field>
+    <section class="invoice-section">
+      <h3 class="invoice-section-title">{{ 'labels.teller.InvoiceSectionReceptor' | translate }}</h3>
+      <div class="readonly-grid" *ngIf="readonlyMode">
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverName' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorNombre || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverDoc' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorDocId || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverNit' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorNit || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverNrc' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorNrc || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorCodActividad || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorDescActividad || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverNombreComercial' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorNombreComercial || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorDireccionDepartamento || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorDireccionMunicipio || '-' }}</span>
+        </div>
+        <div class="readonly-field form-field--span-2">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorDireccionComplemento || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverEmail' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorCorreo || '-' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceReceiverPhone' | translate }}</span>
+          <span class="readonly-value">{{ invoice?.receptorTelefono || '-' }}</span>
+        </div>
+      </div>
+      <div class="form-grid" *ngIf="!readonlyMode" [formGroup]="form">
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverName' | translate }}</mat-label>
+          <input matInput formControlName="receptorNombre" />
+          <mat-error *ngIf="form.get('receptorNombre')?.hasError('required')">
+            {{ 'labels.teller.InvoiceReceiverNameRequired' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverDoc' | translate }}</mat-label>
+          <input matInput formControlName="receptorDocId" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverNit' | translate }}</mat-label>
+          <input matInput formControlName="receptorNit" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverNrc' | translate }}</mat-label>
+          <input matInput formControlName="receptorNrc" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}</mat-label>
+          <input matInput formControlName="receptorCodActividad" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}</mat-label>
+          <input matInput formControlName="receptorDescActividad" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverNombreComercial' | translate }}</mat-label>
+          <input matInput formControlName="receptorNombreComercial" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}</mat-label>
+          <input matInput formControlName="receptorDireccionDepartamento" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}</mat-label>
+          <input matInput formControlName="receptorDireccionMunicipio" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field form-field--span-2">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}</mat-label>
+          <input matInput formControlName="receptorDireccionComplemento" />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverEmail' | translate }}</mat-label>
+          <input matInput formControlName="receptorCorreo" />
+          <mat-error *ngIf="form.get('receptorCorreo')?.hasError('email')">
+            {{ 'labels.teller.InvoiceReceiverEmailInvalid' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>{{ 'labels.teller.InvoiceReceiverPhone' | translate }}</mat-label>
+          <input matInput formControlName="receptorTelefono" />
+        </mat-form-field>
+      </div>
+    </section>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverDoc' | translate }}</mat-label>
-      <input matInput formControlName="receptorDocId" />
-    </mat-form-field>
+    <section class="invoice-section">
+      <h3 class="invoice-section-title">{{ 'labels.teller.InvoiceSectionDetalles' | translate }}</h3>
+      <div class="readonly-grid readonly-grid--details">
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceLineaCrediticia' | translate }}</span>
+          <span class="readonly-value">{{ lineaCrediticiaDisplay }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'labels.teller.InvoiceNumeroCredito' | translate }}</span>
+          <span class="readonly-value">{{ numeroCreditoDisplay }}</span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverNit' | translate }}</mat-label>
-      <input matInput formControlName="receptorNit" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverNrc' | translate }}</mat-label>
-      <input matInput formControlName="receptorNrc" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverCodActividad' | translate }}</mat-label>
-      <input matInput formControlName="receptorCodActividad" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverDescActividad' | translate }}</mat-label>
-      <input matInput formControlName="receptorDescActividad" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverNombreComercial' | translate }}</mat-label>
-      <input matInput formControlName="receptorNombreComercial" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverDepartamento' | translate }}</mat-label>
-      <input matInput formControlName="receptorDireccionDepartamento" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverMunicipio' | translate }}</mat-label>
-      <input matInput formControlName="receptorDireccionMunicipio" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverDireccion' | translate }}</mat-label>
-      <input matInput formControlName="receptorDireccionComplemento" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverEmail' | translate }}</mat-label>
-      <input matInput formControlName="receptorCorreo" />
-      <mat-error *ngIf="form.get('receptorCorreo')?.hasError('email')">
-        {{ 'labels.teller.InvoiceReceiverEmailInvalid' | translate }}
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>{{ 'labels.teller.InvoiceReceiverPhone' | translate }}</mat-label>
-      <input matInput formControlName="receptorTelefono" />
-    </mat-form-field>
-  </form>
+    <section class="invoice-section">
+      <h3 class="invoice-section-title">{{ 'labels.teller.InvoiceSectionLineItems' | translate }}</h3>
+      <p *ngIf="!isLoanTransaction" class="invoice-hint">
+        {{ 'labels.teller.InvoiceLinePreviewLoansOnly' | translate }}
+      </p>
+      <p *ngIf="isLoanTransaction && linePreviewLoading" class="invoice-hint">
+        {{ 'labels.teller.InvoiceLinePreviewLoading' | translate }}
+      </p>
+      <p *ngIf="isLoanTransaction && linePreviewError" class="submit-error">{{ linePreviewError }}</p>
+      <ul *ngIf="linePreviewWarnings.length" class="invoice-warnings">
+        <li *ngFor="let warning of linePreviewWarnings">{{ warning }}</li>
+      </ul>
+      <div *ngIf="isLoanTransaction && !linePreviewLoading && !linePreviewError" class="line-table-wrap">
+        <table mat-table [dataSource]="lineItems" class="line-items-table">
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColCantidad' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.cantidad }}</td>
+          </ng-container>
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColDescripcion' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.descripcion }}</td>
+          </ng-container>
+          <ng-container matColumnDef="precioUni">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColPrecioUni' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.precioUni | formatNumber }} {{ data.currencyCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="noGravado">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColNoGravado' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.noGravado | formatNumber }} {{ data.currencyCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="ventaNoSuj">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColVentaNoSuj' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.ventaNoSuj | formatNumber }} {{ data.currencyCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="ventaExenta">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColVentaExenta' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.ventaExenta | formatNumber }} {{ data.currencyCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="ventaGravada">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.teller.InvoiceColVentaGravada' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.ventaGravada | formatNumber }} {{ data.currencyCode }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="lineTableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: lineTableColumns"></tr>
+        </table>
+        <p *ngIf="lineItems.length === 0" class="invoice-hint">
+          {{ 'labels.teller.InvoiceLinePreviewEmpty' | translate }}
+        </p>
+      </div>
+    </section>
+  </ng-container>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">{{ 'labels.buttons.Close' | translate }}</button>
+  <button *ngIf="readonlyMode" mat-stroked-button (click)="openDtePreview()" [disabled]="!invoice?.id">
+    {{ 'labels.teller.PreviewDte' | translate }}
+  </button>
+  <button
+    *ngIf="readonlyMode"
+    mat-stroked-button
+    color="primary"
+    (click)="printDte()"
+    [disabled]="printing || !invoice?.id"
+  >
+    {{ 'labels.teller.PrintDte' | translate }}
+  </button>
   <button
     *ngIf="!readonlyMode"
     mat-raised-button

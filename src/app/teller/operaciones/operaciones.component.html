@@ -122,11 +122,13 @@
                 *ngIf="canShowInvoiceAction(transaction)"
                 mat-icon-button
                 type="button"
+                class="invoice-action-btn"
+                [class.invoice-verified]="isInvoiceVerified(transaction)"
                 (click)="openInvoiceWidget(transaction)"
                 [matTooltip]="'labels.teller.OpenInvoiceWidget' | translate"
-                aria-label="Open invoice widget"
+                [attr.aria-label]="'labels.teller.OpenInvoiceWidget' | translate"
               >
-                <mat-icon>description</mat-icon>
+                <mat-icon>receipt</mat-icon>
               </button>
               <span *ngIf="!canShowInvoiceAction(transaction)">-</span>
             </td>
