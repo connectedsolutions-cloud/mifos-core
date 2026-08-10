@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "Einnahmen aus Buy-Down-Gebühren",
       "Buy down fee Expense": "Aufwendungen aus Buy-Down-Gebühren",
       "Skip Interest Refund Transaction Posting": "Buchung der Zinsrückerstattung überspringen",
-      "Available Disbursement Amount (with Over Applied)": "Verfügbarer Auszahlungsbetrag (mit Überzahlung)"
+      "Available Disbursement Amount (with Over Applied)": "Verfügbarer Auszahlungsbetrag (mit Überzahlung)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Gemeinschaft",

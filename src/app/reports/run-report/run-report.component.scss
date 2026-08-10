@@ -10,3 +10,28 @@
 .form-field {
   width: 100%;
 }
+
+.date-range-presets {
+  margin-bottom: 1rem;
+}
+
+.date-range-presets-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: rgb(0 0 0 / 60%);
+}
+
+.year-month-field {
+  margin-bottom: 0.5rem;
+}
+
+.date-range-presets-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.date-range-presets-buttons button.active {
+  background-color: rgb(63 81 181 / 12%);
+  border-color: rgb(63 81 181 / 60%);
+}

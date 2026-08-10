@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "Revenus des commissions de rachat",
       "Buy down fee Expense": "Charges des commissions de rachat",
       "Skip Interest Refund Transaction Posting": "Ignorer la comptabilisation du remboursement des intérêts",
-      "Available Disbursement Amount (with Over Applied)": "Montant de décaissement disponible (avec sur-application)"
+      "Available Disbursement Amount (with Over Applied)": "Montant de décaissement disponible (avec sur-application)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Communauté",

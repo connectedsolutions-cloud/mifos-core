@@ -21,6 +21,7 @@ import { Dates } from 'app/core/utils/dates';
 import { GlobalConfiguration } from 'app/system/configurations/global-configurations-tab/configuration.model';
 
 import * as ExcelJS from 'exceljs';
+import moment from 'moment';
 import { AlertService } from 'app/core/alert/alert.service';
 import { NgIf, NgFor, NgSwitch, NgSwitchCase } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -29,6 +30,9 @@ import { TableAndSmsComponent } from './table-and-sms/table-and-sms.component';
 import { ChartComponent } from './chart/chart.component';
 import { PentahoComponent } from './pentaho/pentaho.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+
+/** Predefined calendar date-range preset ids (non-month shortcuts). */
+export type DateRangePresetId = 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'lastYear';
 
 /**
  * Run report component.
@@ -86,6 +90,31 @@ export class RunReportComponent implements OnInit {
   outputTypeOptions: any[] = [];
 
   isProcessing = false;
+
+  /** Cached start/end date parameters when both exist. */
+  startDateParam: ReportParameter | null = null;
+  endDateParam: ReportParameter | null = null;
+  /** Currently selected date-range preset (cleared on manual date edits). */
+  selectedDateRangePreset: DateRangePresetId | null = null;
+  /** Selected year-month value in `YYYY-MM` form. */
+  selectedYearMonth: string | null = null;
+  /** Year-month options for the month dropdown. */
+  yearMonthOptions: { value: string; label: string }[] = [];
+  /** Suppresses clearing the selected preset while applying a preset programmatically. */
+  private applyingDateRangePreset = false;
+
+  /** Predefined date-range shortcuts (quarters / years). Month is selected via dropdown. */
+  dateRangePresets: { id: DateRangePresetId; labelKey: string }[] = [
+    { id: 'thisQuarter', labelKey: 'labels.inputs.This Quarter' },
+    { id: 'lastQuarter', labelKey: 'labels.inputs.Last Quarter' },
+    { id: 'thisYear', labelKey: 'labels.inputs.This Year' },
+    { id: 'lastYear', labelKey: 'labels.inputs.Last Year' }
+  ];
+
+  /** True when the report has both start and end date parameters. */
+  get hasDateRangeParams(): boolean {
+    return !!this.startDateParam && !!this.endDateParam;
+  }
 
   /**
    * Fetches report specifications from route params and retrieves report parameters data from `resolve`.
@@ -183,7 +212,177 @@ export class RunReportComponent implements OnInit {
     }
     this.decimalChoice.patchValue('0');
     this.setChildControls();
+    this.resolveDateRangeParams();
     this.addDateRangeValidator();
+  }
+
+  /**
+   * Resolves and caches start/end date parameters; watches for manual edits to clear preset selection.
+   */
+  resolveDateRangeParams(): void {
+    const dateParams = this.paramData.filter((param: ReportParameter) => param.displayType === 'date');
+    this.startDateParam = dateParams.find((param: ReportParameter) => this.isStartDateParam(param)) ?? null;
+    this.endDateParam = dateParams.find((param: ReportParameter) => this.isEndDateParam(param)) ?? null;
+
+    if (!this.startDateParam || !this.endDateParam) {
+      return;
+    }
+
+    const startControl = this.reportForm.get(this.startDateParam.name);
+    const endControl = this.reportForm.get(this.endDateParam.name);
+    if (!startControl || !endControl) {
+      return;
+    }
+
+    this.buildYearMonthOptions();
+
+    const clearSelectedPreset = () => {
+      if (!this.applyingDateRangePreset) {
+        this.selectedDateRangePreset = null;
+        this.selectedYearMonth = null;
+      }
+    };
+    startControl.valueChanges.subscribe(clearSelectedPreset);
+    endControl.valueChanges.subscribe(clearSelectedPreset);
+
+    const currentMonth = moment().format('YYYY-MM');
+    const defaultMonth =
+      this.yearMonthOptions.find((option) => option.value === currentMonth)?.value ?? this.yearMonthOptions[0]?.value;
+    if (defaultMonth) {
+      this.applyYearMonth(defaultMonth, false);
+    }
+  }
+
+  /**
+   * Builds year-month dropdown options from minDate through the current month (clamped to maxDate).
+   */
+  private buildYearMonthOptions(): void {
+    const start = moment(this.minDate).startOf('month');
+    const end = moment(Math.min(moment().valueOf(), moment(this.maxDate).valueOf())).startOf('month');
+    const options: { value: string; label: string }[] = [];
+    const cursor = start.clone();
+
+    while (!cursor.isAfter(end, 'month')) {
+      options.push({
+        value: cursor.format('YYYY-MM'),
+        label: cursor.format('MMMM YYYY')
+      });
+      cursor.add(1, 'month');
+    }
+
+    this.yearMonthOptions = options.reverse();
+  }
+
+  /**
+   * Applies a selected year-month to the start and end date form controls.
+   * @param {string} yearMonth Value in `YYYY-MM` form.
+   * @param {boolean} markDirty Whether to mark controls dirty/touched.
+   */
+  applyYearMonth(yearMonth: string, markDirty = true): void {
+    if (!yearMonth || !this.startDateParam || !this.endDateParam) {
+      return;
+    }
+
+    const startControl = this.reportForm.get(this.startDateParam.name);
+    const endControl = this.reportForm.get(this.endDateParam.name);
+    if (!startControl || !endControl) {
+      return;
+    }
+
+    const month = moment(yearMonth, 'YYYY-MM');
+    const range = {
+      start: this.clampDate(month.clone().startOf('month').startOf('day').toDate()),
+      end: this.clampDate(month.clone().endOf('month').startOf('day').toDate())
+    };
+
+    this.applyingDateRangePreset = true;
+    this.selectedYearMonth = yearMonth;
+    this.selectedDateRangePreset = null;
+    startControl.setValue(range.start);
+    endControl.setValue(range.end);
+    if (markDirty) {
+      startControl.markAsDirty();
+      startControl.markAsTouched();
+      endControl.markAsDirty();
+      endControl.markAsTouched();
+    }
+    this.applyingDateRangePreset = false;
+  }
+
+  /**
+   * Applies a calendar date-range preset to the start and end date form controls.
+   * @param {DateRangePresetId} id Preset identifier.
+   */
+  applyDateRangePreset(id: DateRangePresetId): void {
+    if (!this.startDateParam || !this.endDateParam) {
+      return;
+    }
+
+    const startControl = this.reportForm.get(this.startDateParam.name);
+    const endControl = this.reportForm.get(this.endDateParam.name);
+    if (!startControl || !endControl) {
+      return;
+    }
+
+    const range = this.getDateRangeForPreset(id);
+    this.applyingDateRangePreset = true;
+    this.selectedDateRangePreset = id;
+    this.selectedYearMonth = null;
+    startControl.setValue(range.start);
+    endControl.setValue(range.end);
+    startControl.markAsDirty();
+    startControl.markAsTouched();
+    endControl.markAsDirty();
+    endControl.markAsTouched();
+    this.applyingDateRangePreset = false;
+  }
+
+  /**
+   * Computes start/end dates for a preset, clamped to min/max allowed dates.
+   * @param {DateRangePresetId} id Preset identifier.
+   */
+  private getDateRangeForPreset(id: DateRangePresetId): { start: Date; end: Date } {
+    let start = moment();
+    let end = moment();
+
+    switch (id) {
+      case 'thisQuarter':
+        start = moment().startOf('quarter');
+        end = moment().endOf('quarter');
+        break;
+      case 'lastQuarter':
+        start = moment().subtract(1, 'quarter').startOf('quarter');
+        end = moment().subtract(1, 'quarter').endOf('quarter');
+        break;
+      case 'thisYear':
+        start = moment().startOf('year');
+        end = moment().endOf('year');
+        break;
+      case 'lastYear':
+        start = moment().subtract(1, 'year').startOf('year');
+        end = moment().subtract(1, 'year').endOf('year');
+        break;
+    }
+
+    return {
+      start: this.clampDate(start.startOf('day').toDate()),
+      end: this.clampDate(end.startOf('day').toDate())
+    };
+  }
+
+  /**
+   * Clamps a date into the allowed min/max range for the datepickers.
+   * @param {Date} date Date to clamp.
+   */
+  private clampDate(date: Date): Date {
+    const time = date.getTime();
+    if (time < this.minDate.getTime()) {
+      return new Date(this.minDate);
+    }
+    if (time > this.maxDate.getTime()) {
+      return new Date(this.maxDate);
+    }
+    return date;
   }
 
   /**
@@ -215,22 +414,18 @@ export class RunReportComponent implements OnInit {
   }
 
   addDateRangeValidator(): void {
-    const dateParams = this.paramData.filter((param: ReportParameter) => param.displayType === 'date');
-    const startParam = dateParams.find((param: ReportParameter) => this.isStartDateParam(param));
-    const endParam = dateParams.find((param: ReportParameter) => this.isEndDateParam(param));
-
-    if (!startParam || !endParam) {
+    if (!this.startDateParam || !this.endDateParam) {
       return;
     }
 
-    const startControl = this.reportForm.get(startParam.name);
-    const endControl = this.reportForm.get(endParam.name);
+    const startControl = this.reportForm.get(this.startDateParam.name);
+    const endControl = this.reportForm.get(this.endDateParam.name);
 
     if (!startControl || !endControl) {
       return;
     }
 
-    endControl.addValidators(this.endDateAfterStartValidator(startParam.name));
+    endControl.addValidators(this.endDateAfterStartValidator(this.startDateParam.name));
     endControl.updateValueAndValidity({ emitEvent: false });
     startControl.valueChanges.subscribe(() => endControl.updateValueAndValidity({ emitEvent: false }));
   }

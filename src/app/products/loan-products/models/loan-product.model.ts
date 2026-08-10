@@ -25,6 +25,18 @@ export interface LoanProduct {
   currencyCode?: string;
   fundId?: number;
   fundName?: string;
+  idTipoLinea?: string;
+  tipoLineaName?: string;
+  idSlus?: number[];
+  slus?: {
+    id: number;
+    idTipoLinea?: string;
+    descripcion?: string;
+    montoIni?: number;
+    montoFin?: number;
+    tea?: number;
+    slu?: string;
+  }[];
   startDate?: string;
   closeDate?: string;
   description?: string;

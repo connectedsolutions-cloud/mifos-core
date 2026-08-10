@@ -90,7 +90,8 @@ export class EditReportComponent implements OnInit {
     'Loan',
     'Savings',
     'Fund',
-    'Accounting'
+    'Accounting',
+    'Especiales'
   ];
 
   /** Paginator for report parameters table. */

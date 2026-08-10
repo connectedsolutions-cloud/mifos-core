@@ -2532,7 +2532,14 @@
       "Income from Buy down fees": "매입 수수료 수입",
       "Buy down fee Expense": "매입 수수료 비용",
       "Skip Interest Refund Transaction Posting": "이자 환불 거래 게시 건너뛰기",
-      "Available Disbursement Amount (with Over Applied)": "초과 적용 금액을 포함한 사용 가능한 지급 금액"
+      "Available Disbursement Amount (with Over Applied)": "초과 적용 금액을 포함한 사용 가능한 지급 금액",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "지역 사회",

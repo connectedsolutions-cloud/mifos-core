@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "Proventi da commissioni di buy down",
       "Buy down fee Expense": "Spese da commissioni di buy down",
       "Skip Interest Refund Transaction Posting": "Salta la registrazione del rimborso degli interessi",
-      "Available Disbursement Amount (with Over Applied)": "Importo di disbrigo disponibile (con sovraapplicazione)"
+      "Available Disbursement Amount (with Over Applied)": "Importo di disbrigo disponibile (con sovraapplicazione)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Comunità",

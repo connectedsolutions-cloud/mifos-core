@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "खरिद शुल्कबाट हुने आम्दानी",
       "Buy down fee Expense": "खरीद शुल्क खर्च",
       "Skip Interest Refund Transaction Posting": "ब्याज फिर्ता पोस्टिङ्ग छोड्नुहोस्",
-      "Available Disbursement Amount (with Over Applied)": "उपलब्ध भुक्तानी रकम (अधिक लागू रकम सहित)"
+      "Available Disbursement Amount (with Over Applied)": "उपलब्ध भुक्तानी रकम (अधिक लागू रकम सहित)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "समुदाय",

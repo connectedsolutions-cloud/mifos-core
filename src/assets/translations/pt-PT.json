@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "Receita com taxas de recompra",
       "Buy down fee Expense": "Despesa com taxas de recompra",
       "Skip Interest Refund Transaction Posting": "Ignorar o lançamento do reembolso de juros",
-      "Available Disbursement Amount (with Over Applied)": "Valor de desembolso disponível (com sobreaplicação)"
+      "Available Disbursement Amount (with Over Applied)": "Valor de desembolso disponível (com sobreaplicação)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Comunidade",

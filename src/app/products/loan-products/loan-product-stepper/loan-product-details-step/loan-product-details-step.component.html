@@ -47,6 +47,25 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Tipo de línea' | translate }}</mat-label>
+      <mat-select formControlName="idTipoLinea">
+        <mat-option [value]="''"></mat-option>
+        <mat-option *ngFor="let tipoLinea of tipoLineaData" [value]="tipoLinea.id">
+          {{ tipoLinea.nombreTipoLinea }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Segmento' | translate }}</mat-label>
+      <mat-select multiple formControlName="idSlus">
+        <mat-option *ngFor="let slu of filteredSluData" [value]="slu.id">
+          {{ formatSluLabel(slu) }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-checkbox
       labelPosition="before"
       matTooltip="{{ 'tooltips.A borrower loan counter (cycle)' | translate }}"

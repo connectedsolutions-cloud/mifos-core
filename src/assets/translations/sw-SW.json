@@ -2530,7 +2530,14 @@
       "Income from Buy down fees": "Mapato kutoka kwa ada ya Kununua",
       "Buy down fee Expense": "Kununua ada ya chini Gharama",
       "Skip Interest Refund Transaction Posting": "Ruka uchapishaji wa muamala wa kurejesha riba",
-      "Available Disbursement Amount (with Over Applied)": "Tillgängligt utbetalningsbelopp (med överbetalning)"
+      "Available Disbursement Amount (with Over Applied)": "Tillgängligt utbetalningsbelopp (med överbetalning)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Jumuiya",

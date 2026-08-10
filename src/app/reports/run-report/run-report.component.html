@@ -2,6 +2,33 @@
   <mat-card *ngIf="!isCollapsed">
     <form [formGroup]="reportForm">
       <mat-card-content class="form-grid">
+        <div class="date-range-presets" *ngIf="hasDateRangeParams">
+          <div class="date-range-presets-label">
+            {{ 'labels.inputs.Date Range' | translate }}
+          </div>
+
+          <mat-form-field class="form-field year-month-field">
+            <mat-label>{{ 'labels.inputs.Month' | translate }}</mat-label>
+            <mat-select [value]="selectedYearMonth" (selectionChange)="applyYearMonth($event.value)">
+              <mat-option *ngFor="let option of yearMonthOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="date-range-presets-buttons">
+            <button
+              type="button"
+              mat-stroked-button
+              *ngFor="let preset of dateRangePresets"
+              [class.active]="selectedDateRangePreset === preset.id"
+              (click)="applyDateRangePreset(preset.id)"
+            >
+              {{ preset.labelKey | translate }}
+            </button>
+          </div>
+        </div>
+
         <ng-container *ngFor="let param of paramData" [ngSwitch]="param.displayType">
           <ng-container class="test" *ngIf="reportForm.contains(param.name)">
             <mat-form-field class="form-field" *ngSwitchCase="'text'">

@@ -32,6 +32,9 @@ export class LoanProductDetailsStepComponent implements OnInit {
   loanProductDetailsForm: UntypedFormGroup;
 
   fundData: any;
+  tipoLineaData: any[] = [];
+  sluData: any[] = [];
+  filteredSluData: any[] = [];
 
   minDate = new Date(2000, 0, 1);
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
@@ -52,6 +55,11 @@ export class LoanProductDetailsStepComponent implements OnInit {
 
   ngOnInit() {
     this.fundData = this.loanProductsTemplate.fundOptions;
+    this.tipoLineaData = this.loanProductsTemplate.tipoLineaOptions || [];
+    this.sluData = this.loanProductsTemplate.sluOptions || [];
+
+    const selectedSlus = (this.loanProductsTemplate.slus || []).map((slu: any) => slu.id);
+    const idTipoLinea = this.loanProductsTemplate.idTipoLinea || '';
 
     this.loanProductDetailsForm.patchValue({
       name: this.loanProductsTemplate.name,
@@ -59,9 +67,23 @@ export class LoanProductDetailsStepComponent implements OnInit {
       description: this.loanProductsTemplate.description,
       externalId: this.loanProductsTemplate.externalId,
       fundId: this.loanProductsTemplate.fundId,
+      idTipoLinea,
+      idSlus: selectedSlus,
       startDate: this.loanProductsTemplate.startDate && new Date(this.loanProductsTemplate.startDate),
       closeDate: this.loanProductsTemplate.closeDate && new Date(this.loanProductsTemplate.closeDate),
       includeInBorrowerCycle: this.loanProductsTemplate.includeInBorrowerCycle
+    });
+
+    this.filterSluOptions(idTipoLinea);
+
+    this.loanProductDetailsForm.get('idTipoLinea')?.valueChanges.subscribe((tipoLineaId: string) => {
+      this.filterSluOptions(tipoLineaId);
+      const currentSlus: number[] = this.loanProductDetailsForm.get('idSlus')?.value || [];
+      const allowedIds = new Set(this.filteredSluData.map((slu) => slu.id));
+      const filteredSelection = currentSlus.filter((id) => allowedIds.has(id));
+      if (filteredSelection.length !== currentSlus.length) {
+        this.loanProductDetailsForm.get('idSlus')?.setValue(filteredSelection);
+      }
     });
   }
 
@@ -78,10 +100,37 @@ export class LoanProductDetailsStepComponent implements OnInit {
       description: [''],
       externalId: [''],
       fundId: [''],
+      idTipoLinea: [''],
+      idSlus: [[]],
       startDate: [''],
       closeDate: [''],
       includeInBorrowerCycle: [false]
     });
+  }
+
+  filterSluOptions(idTipoLinea: string) {
+    if (!idTipoLinea) {
+      this.filteredSluData = [...this.sluData];
+      return;
+    }
+    this.filteredSluData = this.sluData.filter((slu) => slu.idTipoLinea === idTipoLinea);
+  }
+
+  formatSluLabel(slu: any): string {
+    const band = `${this.formatCurrencyAmount(slu.montoIni)} - ${this.formatCurrencyAmount(slu.montoFin)}`;
+    return `${slu.slu} · ${slu.descripcion} (${band})`;
+  }
+
+  formatCurrencyAmount(value: number | string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Number(value));
   }
 
   get loanProductDetails() {
@@ -94,6 +143,12 @@ export class LoanProductDetailsStepComponent implements OnInit {
     }
     if (loanProductDetailsFormData.closeDate instanceof Date) {
       loanProductDetailsFormData.closeDate = this.dateUtils.formatDate(prevCloseDate, dateFormat) || '';
+    }
+    if (!loanProductDetailsFormData.idTipoLinea) {
+      loanProductDetailsFormData.idTipoLinea = null;
+    }
+    if (!loanProductDetailsFormData.idSlus) {
+      loanProductDetailsFormData.idSlus = [];
     }
     return loanProductDetailsFormData;
   }

@@ -91,7 +91,8 @@ export class CreateReportComponent implements OnInit {
     'Loan',
     'Savings',
     'Fund',
-    'Accounting'
+    'Accounting',
+    'Especiales'
   ];
 
   /**

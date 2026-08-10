@@ -20,6 +20,21 @@
     <span class="flex-60">{{ loanProduct.fundName }}</span>
   </div>
 
+  <div class="flex-fill layout-row" *ngIf="loanProduct.idTipoLinea">
+    <span class="flex-40">{{ 'labels.inputs.Tipo de línea' | translate }}:</span>
+    <span class="flex-60">{{ loanProduct.tipoLineaName || loanProduct.idTipoLinea }}</span>
+  </div>
+
+  <div class="flex-fill layout-row" *ngIf="loanProduct.slus?.length">
+    <span class="flex-40">{{ 'labels.inputs.Segmento' | translate }}:</span>
+    <span class="flex-60">
+      <ng-container *ngFor="let slu of loanProduct.slus; let last = last">
+        {{ slu.slu }} · {{ slu.descripcion }} ({{ slu.montoIni | currency: 'USD' : 'symbol' : '1.2-2' }} -
+        {{ slu.montoFin | currency: 'USD' : 'symbol' : '1.2-2' }})<span *ngIf="!last">; </span>
+      </ng-container>
+    </span>
+  </div>
+
   <div class="flex-fill layout-row">
     <span class="flex-40">{{ 'labels.inputs.Include in Customer Loan Counter' | translate }}:</span>
     <span class="flex-60">{{ loanProduct.includeInBorrowerCycle | yesNo }}</span>

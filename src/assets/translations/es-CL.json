@@ -2597,7 +2597,16 @@
       "Income from Buy down fees": "Ingresos por comisiones de compra inicial",
       "Buy down fee Expense": "Gastos por comisiones de compra inicial",
       "Skip Interest Refund Transaction Posting": "Omitir el registro de la devolución de intereses",
-      "Available Disbursement Amount (with Over Applied)": "Monto disponible para desembolso (con sobreaplicación)"
+      "Available Disbursement Amount (with Over Applied)": "Monto disponible para desembolso (con sobreaplicación)",
+      "Date Range": "Rango de fechas",
+      "This Month": "Este mes",
+      "Last Month": "Mes anterior",
+      "This Quarter": "Este trimestre",
+      "Last Quarter": "Trimestre anterior",
+      "This Year": "Este año",
+      "Last Year": "Año anterior",
+      "Tipo de línea": "Tipo de línea",
+      "Segmento": "Segmento"
     },
     "links": {
       "Community": "Comunidad",

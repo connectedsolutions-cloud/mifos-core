@@ -2,8 +2,8 @@
   window['env'] = window['env'] || {};
 
   // BackEnd Environment variables
-  window['env']['fineractApiUrls'] = 'https://localhost:8443';
-  window['env']['fineractApiUrl'] = 'https://localhost:8443';
+  window['env']['fineractApiUrls'] = 'http://localhost:4200';
+  window['env']['fineractApiUrl'] = 'http://localhost:4200';
 
   window['env']['apiProvider'] = '/fineract-provider/api';
   window['env']['apiVersion'] = '/v1';

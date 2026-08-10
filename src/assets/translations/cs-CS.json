@@ -2531,7 +2531,14 @@
       "Income from Buy down fees": "Příjmy z poplatků za odkup",
       "Buy down fee Expense": "Náklady na poplatek za odkup",
       "Skip Interest Refund Transaction Posting": "Přeskočit zaúčtování vrácení úroků",
-      "Available Disbursement Amount (with Over Applied)": "Dostupná částka k výplatě (s přeplatkem)"
+      "Available Disbursement Amount (with Over Applied)": "Dostupná částka k výplatě (s přeplatkem)",
+      "Date Range": "Date Range",
+      "This Month": "This Month",
+      "Last Month": "Last Month",
+      "This Quarter": "This Quarter",
+      "Last Quarter": "Last Quarter",
+      "This Year": "This Year",
+      "Last Year": "Last Year"
     },
     "links": {
       "Community": "Společenství",
