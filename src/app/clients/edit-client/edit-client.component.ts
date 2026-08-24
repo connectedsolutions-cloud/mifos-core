@@ -234,10 +234,20 @@ export class EditClientComponent implements OnInit {
           'lastname',
           new UntypedFormControl(this.clientDataAndTemplate.lastname, Validators.required)
         );
+        this.editClientForm.addControl(
+          'secondlastname',
+          new UntypedFormControl(this.clientDataAndTemplate.secondlastname)
+        );
+        this.editClientForm.addControl(
+          'marriedlastname',
+          new UntypedFormControl(this.clientDataAndTemplate.marriedlastname)
+        );
       } else {
         this.editClientForm.removeControl('firstname');
         this.editClientForm.removeControl('middlename');
         this.editClientForm.removeControl('lastname');
+        this.editClientForm.removeControl('secondlastname');
+        this.editClientForm.removeControl('marriedlastname');
         this.editClientForm.addControl(
           'fullname',
           new UntypedFormControl(this.clientDataAndTemplate.fullname, Validators.required)

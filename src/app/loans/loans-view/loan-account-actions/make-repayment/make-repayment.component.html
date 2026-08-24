@@ -23,19 +23,11 @@
 
           <div class="layout-row-wrap" *ngIf="showDetails()">
             <div class="flex-50 mat-body-strong">
-              {{ 'labels.inputs.Principal' | translate }}
+              {{ 'labels.inputs.Penalties' | translate }}
             </div>
 
             <div class="flex-50 r-amount right-label">
-              {{ dataObject.principalPortion | formatNumber }}
-            </div>
-
-            <div class="flex-50 mat-body-strong">
-              {{ 'labels.inputs.Interest' | translate }}
-            </div>
-
-            <div class="flex-50 r-amount right-label">
-              {{ dataObject.interestPortion | formatNumber }}
+              {{ dataObject.penaltyChargesPortion | formatNumber }}
             </div>
 
             <div class="flex-50 mat-body-strong">
@@ -47,11 +39,19 @@
             </div>
 
             <div class="flex-50 mat-body-strong">
-              {{ 'labels.inputs.Penalties' | translate }}
+              {{ 'labels.inputs.Interest' | translate }}
             </div>
 
             <div class="flex-50 r-amount right-label">
-              {{ dataObject.penaltyChargesPortion | formatNumber }}
+              {{ dataObject.interestPortion | formatNumber }}
+            </div>
+
+            <div class="flex-50 mat-body-strong">
+              {{ 'labels.inputs.Principal' | translate }}
+            </div>
+
+            <div class="flex-50 r-amount right-label">
+              {{ dataObject.principalPortion | formatNumber }}
             </div>
           </div>
 

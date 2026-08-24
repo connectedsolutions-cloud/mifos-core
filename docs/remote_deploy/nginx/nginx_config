@@ -1,0 +1,50 @@
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Don't advertise nginx version to scanners
+    server_tokens off;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript application/json;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Block dotfiles (.env, .git, .aws, .htaccess, etc.) - defense in depth,
+    # in case one is ever accidentally dropped into the web root
+    location ~ /\. {
+        deny all;
+        return 404;
+    }
+
+    # Block common sensitive/config/backup file extensions and paths
+    location ~* \.(env|ya?ml|bak|backup|old|orig|sql|log|swp|conf|ini|pem|key|crt)$ {
+        deny all;
+        return 404;
+    }
+
+    location ~* ^/(\.git|\.aws|\.ssh|config\.json|assets/env\.template\.js)$ {
+        deny all;
+        return 404;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Angular SPA routing - serve index.html for all routes
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+

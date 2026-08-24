@@ -9,3 +9,13 @@ LICENSE
 .vscode
 dist
 .github
+.git
+.angular
+coverage
+cypress
+e2e
+*.md
+.DS_Store
+.env
+.env.*
+!.env.example

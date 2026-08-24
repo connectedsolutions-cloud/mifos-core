@@ -66,6 +66,11 @@ mat-divider {
   margin-top: 2em;
 }
 
+.name-fields-section {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 .name-fields-row {
   display: flex;
   gap: 8px;
@@ -75,14 +80,13 @@ mat-divider {
 
   .name-field {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
 
     &.first-name,
-    &.last-name {
-      flex: 1.2;
-    }
-
-    &.middle-name {
+    &.middle-name,
+    &.last-name,
+    &.second-last-name,
+    &.married-last-name {
       flex: 1;
     }
   }
@@ -101,9 +105,9 @@ mat-divider {
   }
 }
 
-.name-fields-row + mat-form-field,
-.name-fields-row + mat-divider,
-.name-fields-row + div {
+.name-fields-section + mat-form-field,
+.name-fields-section + mat-divider,
+.name-fields-section + div {
   margin-top: 8px;
 }
 

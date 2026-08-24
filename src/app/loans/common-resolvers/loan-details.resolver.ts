@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 
 /** Custom Services */
 import { LoansService } from '../loans.service';
+import { LoanViewRefreshService } from '../loan-view-refresh.service';
 
 /**
  * Clients data resolver.
@@ -15,8 +16,12 @@ import { LoansService } from '../loans.service';
 export class LoanDetailsResolver {
   /**
    * @param {LoansService} LoansService Loans service.
+   * @param {LoanViewRefreshService} loanViewRefreshService Signals cache-bust after mutate.
    */
-  constructor(private loansService: LoansService) {}
+  constructor(
+    private loansService: LoansService,
+    private loanViewRefreshService: LoanViewRefreshService
+  ) {}
 
   /**
    * Returns the Loans with Association data.
@@ -25,7 +30,9 @@ export class LoanDetailsResolver {
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
     const loanId = route.paramMap.get('loanId') || route.parent.paramMap.get('loanId');
     if (!isNaN(+loanId)) {
-      return this.loansService.getLoanAccountAssociationDetails(loanId);
+      // Peek (do not consume): parent + child routes may both resolve on one navigation.
+      const skipCache = this.loanViewRefreshService.isShouldRefresh();
+      return this.loansService.getLoanAccountAssociationDetails(loanId, { skipCache });
     }
   }
 }

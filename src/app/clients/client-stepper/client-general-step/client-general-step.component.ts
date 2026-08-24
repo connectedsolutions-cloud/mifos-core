@@ -223,10 +223,20 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
             Validators.required,
             Validators.pattern('(^[A-z]).*')])
         );
+        this.createClientForm.addControl(
+          'secondlastname',
+          new UntypedFormControl('', Validators.pattern('(^[A-z]).*'))
+        );
+        this.createClientForm.addControl(
+          'marriedlastname',
+          new UntypedFormControl('', Validators.pattern('(^[A-z]).*'))
+        );
       } else {
         this.createClientForm.removeControl('firstname');
         this.createClientForm.removeControl('middlename');
         this.createClientForm.removeControl('lastname');
+        this.createClientForm.removeControl('secondlastname');
+        this.createClientForm.removeControl('marriedlastname');
         this.createClientForm.addControl(
           'fullname',
           new UntypedFormControl('', [

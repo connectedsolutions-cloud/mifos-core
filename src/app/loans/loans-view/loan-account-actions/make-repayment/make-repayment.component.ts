@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 /** Custom Services */
 import { LoansService } from 'app/loans/loans.service';
+import { LoanViewRefreshService } from 'app/loans/loan-view-refresh.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { Currency } from 'app/shared/models/general.model';
@@ -55,6 +56,7 @@ export class MakeRepaymentComponent implements OnInit {
    * @param {ActivatedRoute} route Activated Route.
    * @param {Router} router Router for navigation.
    * @param {SettingsService} settingsService Settings Service
+   * @param {LoanViewRefreshService} loanViewRefreshService Signals loan view to refetch after mutate.
    */
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -62,7 +64,8 @@ export class MakeRepaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dateUtils: Dates,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private loanViewRefreshService: LoanViewRefreshService
   ) {
     this.loanId = this.route.snapshot.params['loanId'];
   }
@@ -240,8 +243,10 @@ export class MakeRepaymentComponent implements OnInit {
       data.interestRefundCalculation = false;
     }
     delete data.skipInterestRefund;
-    this.loanService.submitLoanActionButton(this.loanId, data, this.command).subscribe((response: any) => {
-      this.router.navigate(['../../transactions'], { relativeTo: this.route });
+    this.loanService.submitLoanActionButton(this.loanId, data, this.command).subscribe(() => {
+      // Flag loan view to cache-bust GET on return (see docs/autorefresh_frontend.md).
+      this.loanViewRefreshService.setShouldRefresh();
+      this.router.navigate(['../../repayment-schedule'], { relativeTo: this.route });
     });
   }
 }

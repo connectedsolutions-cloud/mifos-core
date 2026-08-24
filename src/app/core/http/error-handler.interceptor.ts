@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 import { Logger } from '../logger/logger.service';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core'; // Added import for TranslateService
+import { SKIP_ERROR_HANDLER } from './http-context.tokens';
 
 /** Initialize Logger */
 const log = new Logger('ErrorHandlerInterceptor');
@@ -42,6 +43,10 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
    * Error handler.
    */
   private handleError(response: HttpErrorResponse, request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    if (request.context.get(SKIP_ERROR_HANDLER)) {
+      throw response;
+    }
+
     const status = response.status;
     let errorMessage = response.error.developerMessage || response.message;
     if (response.error.errors) {

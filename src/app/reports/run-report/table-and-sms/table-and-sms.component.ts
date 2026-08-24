@@ -30,6 +30,13 @@ import * as ExcelJS from 'exceljs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { REPORT_ROW_LINK_CONFIGS, buildEntityUrl, getLinkOnlyColumnNames } from './report-row-link.config';
+import {
+  buildReporteSeguroCsv,
+  buildReporteSeguroWorkbook,
+  downloadBlob,
+  isReporteSeguro,
+  resolveReportPeriodDates
+} from '../reporte-seguro-export';
 
 /**
  * Table and SMS Component
@@ -224,8 +231,27 @@ export class TableAndSmsComponent implements OnChanges {
   }
 
   exportToXLS(): void {
-    const fileName = `${this.dataObject.report.name}.xlsx`;
+    const reportName = this.dataObject.report.name;
     const cols = this.visibleColumns;
+    const period = resolveReportPeriodDates(this.dataObject.formData);
+
+    if (isReporteSeguro(reportName)) {
+      buildReporteSeguroWorkbook({
+        columns: cols,
+        rows: this.csvData,
+        startDate: period.startDate,
+        endDate: period.endDate
+      }).then((buffer) => {
+        downloadBlob(
+          buffer,
+          'REPORTE_SEGURO.xlsx',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+      });
+      return;
+    }
+
+    const fileName = `${reportName}.xlsx`;
     const data = this.csvData.map((object: any) => {
       const row: { [key: string]: any } = {};
       cols.forEach((col) => {
@@ -247,13 +273,7 @@ export class TableAndSmsComponent implements OnChanges {
     });
 
     workbook.xlsx.writeBuffer().then((buffer: any) => {
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'filename.xlsx';
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(buffer, fileName, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     });
   }
 
@@ -262,6 +282,23 @@ export class TableAndSmsComponent implements OnChanges {
    */
   downloadCSV(fileName: string, delimiter: string) {
     const headers = this.visibleColumns;
+    const reportName = this.dataObject.report.name;
+    const period = resolveReportPeriodDates(this.dataObject.formData);
+
+    if (isReporteSeguro(reportName)) {
+      const csvBody = buildReporteSeguroCsv(
+        {
+          columns: headers,
+          rows: this.csvData,
+          startDate: period.startDate,
+          endDate: period.endDate
+        },
+        delimiter
+      );
+      downloadBlob(csvBody, fileName || 'REPORTE_SEGURO.csv', 'text/csv;charset=utf-8;');
+      return;
+    }
+
     const idxList = headers.map((h) => this.displayedColumns.indexOf(h));
     let csv = this.csvData.map((object: any) => idxList.map((i) => (i >= 0 ? object.row[i] : '')).join(delimiter));
     csv.unshift(`data:text/csv;charset=utf-8,${headers.join(delimiter)}`);

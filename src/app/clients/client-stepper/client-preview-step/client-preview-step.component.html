@@ -6,10 +6,16 @@
   <div class="flex-fill">
     <span class="flex-40">{{ 'labels.inputs.name' | translate }}</span>
     <span class="flex-60" *ngIf="client.legalFormId === 2">{{ client.fullname }}</span>
-    <span class="flex-60" *ngIf="client.legalFormId === 1"
-      >{{ client.firstname }}
-      {{ client.middlename ? client.middlename + ' ' + client.lastname : client.lastname }}</span
-    >
+    <span class="flex-60" *ngIf="client.legalFormId === 1">
+      {{ client.firstname }}
+      {{ client.middlename ? client.middlename + ' ' : '' }}{{ client.lastname
+      }}{{ client.secondlastname ? ' ' + client.secondlastname : '' }}
+    </span>
+  </div>
+
+  <div class="flex-fill" *ngIf="client.legalFormId === 1 && client.marriedlastname">
+    <span class="flex-40">{{ 'labels.inputs.Married Last Name' | translate }}</span>
+    <span class="flex-60">{{ client.marriedlastname }}</span>
   </div>
 
   <div class="flex-fill">

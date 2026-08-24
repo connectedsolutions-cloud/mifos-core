@@ -73,6 +73,19 @@
                 <strong>{{ 'labels.commons.required' | translate }}</strong>
               </mat-error>
             </mat-form-field>
+
+            <mat-form-field class="form-field" *ngSwitchCase="'multiselect'">
+              <mat-label>{{ param.label }}</mat-label>
+              <mat-select required multiple [formControlName]="param.name" [compareWith]="compareSelectOptions">
+                <mat-option *ngFor="let option of param.selectOptions" [value]="option">
+                  {{ option.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="reportForm.controls[param.name].hasError('required')">
+                {{ param.label }} {{ 'labels.commons.is' | translate }}
+                <strong>{{ 'labels.commons.required' | translate }}</strong>
+              </mat-error>
+            </mat-form-field>
           </ng-container>
         </ng-container>
 

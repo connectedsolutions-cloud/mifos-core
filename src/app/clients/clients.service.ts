@@ -1,6 +1,7 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
+import { SKIP_ERROR_HANDLER } from 'app/core/http/http-context.tokens';
 
 /** rxjs Imports */
 import { Observable, of, throwError } from 'rxjs';
@@ -96,8 +97,8 @@ export class ClientsService {
 
   getClientDatatable(clientId: string, datatableName: string, options?: { skipErrorHandler?: boolean }) {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
-    const httpClient = options?.skipErrorHandler ? this.http.skipErrorHandler() : this.http;
-    return httpClient.get(`/datatables/${datatableName}/${clientId}`, { params: httpParams });
+    const context = options?.skipErrorHandler ? new HttpContext().set(SKIP_ERROR_HANDLER, true) : undefined;
+    return this.http.get(`/datatables/${datatableName}/${clientId}`, { params: httpParams, context });
   }
 
   addClientDatatableEntry(clientId: string, datatableName: string, data: any) {

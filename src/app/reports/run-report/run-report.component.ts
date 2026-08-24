@@ -30,6 +30,13 @@ import { TableAndSmsComponent } from './table-and-sms/table-and-sms.component';
 import { ChartComponent } from './chart/chart.component';
 import { PentahoComponent } from './pentaho/pentaho.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import {
+  buildReporteSeguroWorkbook,
+  downloadBlob,
+  isReporteSeguro,
+  resolveReportPeriodDates
+} from './reporte-seguro-export';
+import { buildReporteBcrWorkbook, isReporteBcr, resolveReporteBcrMetadata } from './reporte-bcr-export';
 
 /** Predefined calendar date-range preset ids (non-month shortcuts). */
 export type DateRangePresetId = 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'lastYear';
@@ -183,8 +190,22 @@ export class RunReportComponent implements OnInit {
     this.paramData.forEach((param: ReportParameter) => {
       if (!param.parentParameterName) {
         // Non Child Parameter
-        this.reportForm.addControl(param.name, new UntypedFormControl('', Validators.required));
-        if (param.displayType === 'select') {
+        if (param.displayType === 'multiselect') {
+          this.reportForm.addControl(
+            param.name,
+            new UntypedFormControl(
+              [],
+              [
+                (control: AbstractControl) =>
+                  Array.isArray(control.value) && control.value.length > 0 ? null : { required: true }
+
+              ]
+            )
+          );
+        } else {
+          this.reportForm.addControl(param.name, new UntypedFormControl('', Validators.required));
+        }
+        if (param.displayType === 'select' || param.displayType === 'multiselect') {
           this.fetchSelectOptions(param, param.name);
         }
       } else {
@@ -487,21 +508,43 @@ export class RunReportComponent implements OnInit {
   }
 
   /**
-   * Fetches Select Dropdown options for param type "Select".
-   * When the parameter supports "All" (selectAll === 'Y'), that option is added and set as the default.
+   * Fetches Select Dropdown options for param type "Select" / "multiselect".
+   * When the parameter supports "All" (selectAll === 'Y'), that option is added and set as the default
+   * (except loanStatusId multiselect defaults to Active / 300 when available).
    * @param {ReportParameter} param Parameter for which dropdown options are required.
    * @param {string} inputstring url substring for API call.
    */
   fetchSelectOptions(param: ReportParameter, inputstring: string) {
     this.reportsService.getSelectOptions(inputstring).subscribe((options: SelectOption[]) => {
       param.selectOptions = options;
+      const allOption = { id: -1, name: 'All' } as SelectOption;
       if (param.selectAll === 'Y') {
-        const allOption = { id: '-1', name: 'All' };
-        param.selectOptions.push(allOption);
+        param.selectOptions = [
+          allOption,
+          ...param.selectOptions
+        ];
+      }
+
+      if (param.displayType === 'multiselect') {
+        if (param.variable === 'loanStatusId') {
+          const active = param.selectOptions.find((option) => String(option.id) === '300');
+          this.reportForm.get(param.name)?.patchValue(active ? [active] : param.selectAll === 'Y' ? [allOption] : []);
+        } else if (param.selectAll === 'Y') {
+          this.reportForm.get(param.name)?.patchValue([allOption]);
+        }
+      } else if (param.selectAll === 'Y') {
         this.reportForm.get(param.name)?.patchValue(allOption);
       }
     });
   }
+
+  /** Compare mat-select options by id so multiselect patching works after options load. */
+  compareSelectOptions = (a: SelectOption | null, b: SelectOption | null): boolean => {
+    if (a == null || b == null) {
+      return a === b;
+    }
+    return String(a.id) === String(b.id);
+  };
 
   /**
    * Formats user response and readies it for utilization by run report function.
@@ -537,6 +580,17 @@ export class RunReportComponent implements OnInit {
           const id = option != null && option.id != null ? String(option.id) : null;
           // Avoid sending undefined to backend (causes SQL/DataIntegrityViolation). Use -1 for "All" when param supports it and value is empty.
           formattedResponse[newKey] = id ?? (param.selectAll === 'Y' ? '-1' : '');
+          break;
+        }
+        case 'multiselect': {
+          const options = (Array.isArray(value) ? value : []) as { id?: string | number }[];
+          if (options.length === 0) {
+            formattedResponse[newKey] = param.selectAll === 'Y' ? '-1' : '';
+          } else if (options.some((option) => String(option.id) === '-1')) {
+            formattedResponse[newKey] = '-1';
+          } else {
+            formattedResponse[newKey] = options.map((option) => String(option.id)).join(',');
+          }
           break;
         }
         case 'date':
@@ -617,7 +671,7 @@ export class RunReportComponent implements OnInit {
           displayedColumns.push(header.columnName);
         });
 
-        this.exportToXLS(reportName, res.data, displayedColumns);
+        this.exportToXLS(reportName, res.data, displayedColumns, userResponseValues);
       } else {
         this.alertService.alert({ type: 'Report generation', message: `Report: ${reportName} without data generated` });
       }
@@ -625,7 +679,34 @@ export class RunReportComponent implements OnInit {
     });
   }
 
-  async exportToXLS(reportName: string, csvData: any, displayedColumns: string[]): Promise<void> {
+  async exportToXLS(
+    reportName: string,
+    csvData: any,
+    displayedColumns: string[],
+    formData?: Record<string, any>
+  ): Promise<void> {
+    if (isReporteBcr(reportName)) {
+      const buffer = await buildReporteBcrWorkbook({
+        columns: displayedColumns,
+        rows: csvData,
+        metadata: resolveReporteBcrMetadata(this.paramData, this.reportForm.getRawValue())
+      });
+      downloadBlob(buffer, 'REPORTE_BCR.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      return;
+    }
+
+    if (isReporteSeguro(reportName)) {
+      const period = resolveReportPeriodDates(formData);
+      const buffer = await buildReporteSeguroWorkbook({
+        columns: displayedColumns,
+        rows: csvData,
+        startDate: period.startDate,
+        endDate: period.endDate
+      });
+      downloadBlob(buffer, 'REPORTE_SEGURO.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      return;
+    }
+
     const fileName = `${reportName}.xlsx`;
 
     // Format data for ExcelJS
@@ -651,20 +732,6 @@ export class RunReportComponent implements OnInit {
 
     // Write to buffer and trigger download
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
-
-    // Native download logic (no FileSaver)
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 0);
+    downloadBlob(buffer, fileName, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   }
 }

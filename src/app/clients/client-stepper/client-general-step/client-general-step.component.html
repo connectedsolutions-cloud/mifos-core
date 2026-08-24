@@ -43,47 +43,75 @@
     </mat-form-field>
 
     <div
-      class="name-fields-row"
+      class="name-fields-section"
       *ngIf="
         createClientForm.contains('firstname') ||
         createClientForm.contains('middlename') ||
-        createClientForm.contains('lastname')
+        createClientForm.contains('lastname') ||
+        createClientForm.contains('secondlastname') ||
+        createClientForm.contains('marriedlastname')
       "
     >
-      <mat-form-field *ngIf="createClientForm.contains('firstname')" class="name-field first-name">
-        <mat-label>{{ 'labels.inputs.First Name' | translate }}</mat-label>
-        <input matInput required formControlName="firstname" />
-        <mat-error *ngIf="createClientForm.controls.firstname.hasError('required')">
-          {{ 'labels.inputs.Client first name' | translate }} {{ 'labels.commons.is' | translate }}
-          <strong>{{ 'labels.commons.required' | translate }}</strong>
-        </mat-error>
-        <mat-error *ngIf="createClientForm.controls.firstname.hasError('pattern')">
-          {{ 'labels.inputs.Client first name' | translate }} <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
-          {{ 'labels.commons.begin with a special character or number' | translate }}
-        </mat-error>
-      </mat-form-field>
+      <div class="name-fields-row given-names-row">
+        <mat-form-field *ngIf="createClientForm.contains('firstname')" class="name-field first-name">
+          <mat-label>{{ 'labels.inputs.First Name' | translate }}</mat-label>
+          <input matInput required formControlName="firstname" />
+          <mat-error *ngIf="createClientForm.controls.firstname.hasError('required')">
+            {{ 'labels.inputs.Client first name' | translate }} {{ 'labels.commons.is' | translate }}
+            <strong>{{ 'labels.commons.required' | translate }}</strong>
+          </mat-error>
+          <mat-error *ngIf="createClientForm.controls.firstname.hasError('pattern')">
+            {{ 'labels.inputs.Client first name' | translate }}
+            <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
+            {{ 'labels.commons.begin with a special character or number' | translate }}
+          </mat-error>
+        </mat-form-field>
 
-      <mat-form-field *ngIf="createClientForm.contains('middlename')" class="name-field middle-name">
-        <mat-label>{{ 'labels.inputs.Middle Name' | translate }}</mat-label>
-        <input matInput formControlName="middlename" />
-        <mat-error *ngIf="createClientForm.controls.middlename.hasError('pattern')">
-          {{ 'labels.inputs.Client middle name' | translate }} <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
-          {{ 'labels.commons.begin with a special character or number' | translate }}
-        </mat-error>
-      </mat-form-field>
+        <mat-form-field *ngIf="createClientForm.contains('middlename')" class="name-field middle-name">
+          <mat-label>{{ 'labels.inputs.Middle Name' | translate }}</mat-label>
+          <input matInput formControlName="middlename" />
+          <mat-error *ngIf="createClientForm.controls.middlename.hasError('pattern')">
+            {{ 'labels.inputs.Client middle name' | translate }}
+            <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
+            {{ 'labels.commons.begin with a special character or number' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-      <mat-form-field *ngIf="createClientForm.contains('lastname')" class="name-field last-name">
-        <mat-label>{{ 'labels.inputs.Last Name' | translate }}</mat-label>
-        <input matInput required formControlName="lastname" />
-        <mat-error *ngIf="createClientForm.controls.lastname.hasError('required')">
-          {{ 'labels.inputs.Client last name' | translate }} {{ 'labels.commons.is' | translate }}
-          <strong>{{ 'labels.commons.required' | translate }}</strong>
-        </mat-error>
-        <mat-error *ngIf="createClientForm.controls.lastname.hasError('pattern')">
-          {{ 'labels.inputs.Client last name' | translate }} <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
-          {{ 'labels.commons.begin with a special character or number' | translate }}
-        </mat-error>
-      </mat-form-field>
+      <div class="name-fields-row surnames-row">
+        <mat-form-field *ngIf="createClientForm.contains('lastname')" class="name-field last-name">
+          <mat-label>{{ 'labels.inputs.Last Name' | translate }}</mat-label>
+          <input matInput required formControlName="lastname" />
+          <mat-error *ngIf="createClientForm.controls.lastname.hasError('required')">
+            {{ 'labels.inputs.Client last name' | translate }} {{ 'labels.commons.is' | translate }}
+            <strong>{{ 'labels.commons.required' | translate }}</strong>
+          </mat-error>
+          <mat-error *ngIf="createClientForm.controls.lastname.hasError('pattern')">
+            {{ 'labels.inputs.Client last name' | translate }} <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
+            {{ 'labels.commons.begin with a special character or number' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="createClientForm.contains('secondlastname')" class="name-field second-last-name">
+          <mat-label>{{ 'labels.inputs.Second Last Name' | translate }}</mat-label>
+          <input matInput formControlName="secondlastname" />
+          <mat-error *ngIf="createClientForm.controls.secondlastname.hasError('pattern')">
+            {{ 'labels.inputs.Client second last name' | translate }}
+            <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
+            {{ 'labels.commons.begin with a special character or number' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="createClientForm.contains('marriedlastname')" class="name-field married-last-name">
+          <mat-label>{{ 'labels.inputs.Married Last Name' | translate }}</mat-label>
+          <input matInput formControlName="marriedlastname" />
+          <mat-error *ngIf="createClientForm.controls.marriedlastname.hasError('pattern')">
+            {{ 'labels.inputs.Client married last name' | translate }}
+            <strong>{{ 'labels.inputs.cannot' | translate }}</strong>
+            {{ 'labels.commons.begin with a special character or number' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </div>
     </div>
 
     <mat-divider></mat-divider>

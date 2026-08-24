@@ -7,6 +7,37 @@
   max-width: 32%;
 }
 
+.name-fields-section {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.name-fields-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 8px;
+
+  .name-field {
+    flex: 1;
+    min-width: 180px;
+  }
+}
+
+@media (width <= 768px) {
+  .name-fields-row {
+    flex-direction: column;
+    gap: 4px;
+
+    .name-field {
+      width: 100%;
+      min-width: unset;
+      flex: none;
+    }
+  }
+}
+
 .align-center {
   align-items: center;
 }

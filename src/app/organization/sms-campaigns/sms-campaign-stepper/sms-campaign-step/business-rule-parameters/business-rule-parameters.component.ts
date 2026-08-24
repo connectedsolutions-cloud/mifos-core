@@ -149,7 +149,7 @@ export class BusinessRuleParametersComponent implements OnInit, OnChanges {
     this.reportsService.getSelectOptions(inputstring).subscribe((options: SelectOption[]) => {
       param.selectOptions = options;
       if (param.selectAll === 'Y') {
-        param.selectOptions.push({ id: '-1', name: 'All' });
+        param.selectOptions.push({ id: -1, name: 'All' });
       }
     });
   }

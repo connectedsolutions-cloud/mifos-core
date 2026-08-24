@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { SettingsService } from 'app/settings/settings.service';
 
 /** Custom Services */
 import { LoansService } from '../loans.service';
+import { LoanViewRefreshService } from '../loan-view-refresh.service';
 
 /** Custom Buttons Configuration */
 import { LoansAccountButtonConfiguration } from './loan-accounts-button-config';
@@ -107,36 +108,16 @@ export class LoansViewComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public loansService: LoansService,
+    private loanViewRefreshService: LoanViewRefreshService,
     private translateService: TranslateService,
     public dialog: MatDialog,
     private dateUtils: Dates,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.data.subscribe(
       (data: { loanDetailsData: any; loanDatatables: any; loanArrearsDelinquencyConfig: any }) => {
-        this.loanDetailsData = data.loanDetailsData;
-        this.loanDatatables = data.loanDatatables;
-        this.loanDisplayArrearsDelinquency = data.loanArrearsDelinquencyConfig.value || 0;
-        this.loanStatus = this.loanDetailsData.status;
-        this.loanSubStatus = this.loanDetailsData.subStatus === undefined ? null : this.loanDetailsData.subStatus;
-        this.currency = this.loanDetailsData.currency;
-        loansService.saveLoanDisbursementDetailsData(this.loanDetailsData.disbursementDetails);
-        if (this.loanStatus.active) {
-          this.loanDetailsData.transactions.forEach((lt: LoanTransaction) => {
-            if (!lt.manuallyReversed) {
-              if (lt.type.reAge) {
-                this.loanReAged = true;
-              } else if (lt.type.reAmortize) {
-                this.loanReAmortized = true;
-              }
-            }
-          });
-        }
-        this.setConditionalButtons();
-        // Initialize simulation date if loan is in simulation mode
-        if (this.loanDetailsData.isSimulation && this.loanDetailsData.simulatedDate) {
-          this.simulatedDate = new Date(this.loanDetailsData.simulatedDate);
-        }
+        this.applyLoanDetailsData(data.loanDetailsData, data.loanDatatables, data.loanArrearsDelinquencyConfig);
       }
     );
     this.loanId = this.route.snapshot.params['loanId'];
@@ -172,6 +153,59 @@ export class LoansViewComponent implements OnInit {
       this.entityType = 'Center';
     }
     this.loanDelinquencyClassification();
+
+    // Auto-refresh with cache-bust when returning from mutate (see docs/autorefresh_frontend.md).
+    if (this.loanViewRefreshService.consumeShouldRefresh()) {
+      this.refreshLoanDetails();
+    }
+  }
+
+  /**
+   * Refetches loan details with cache-bust and updates view state after a loan action.
+   */
+  private refreshLoanDetails(): void {
+    this.loansService.getLoanAccountAssociationDetails(String(this.loanId), { skipCache: true }).subscribe({
+      next: (data) => {
+        this.applyLoanDetailsData(data, this.loanDatatables, {
+          value: this.loanDisplayArrearsDelinquency
+        });
+        this.status = this.loanDetailsData.status.value;
+        this.setConditionalButtons();
+        this.loanDelinquencyClassification();
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private applyLoanDetailsData(loanDetailsData: any, loanDatatables?: any, loanArrearsDelinquencyConfig?: any): void {
+    this.loanDetailsData = loanDetailsData;
+    if (loanDatatables !== undefined) {
+      this.loanDatatables = loanDatatables;
+    }
+    if (loanArrearsDelinquencyConfig !== undefined) {
+      this.loanDisplayArrearsDelinquency = loanArrearsDelinquencyConfig.value || 0;
+    }
+    this.loanStatus = this.loanDetailsData.status;
+    this.loanSubStatus = this.loanDetailsData.subStatus === undefined ? null : this.loanDetailsData.subStatus;
+    this.currency = this.loanDetailsData.currency;
+    this.loansService.saveLoanDisbursementDetailsData(this.loanDetailsData.disbursementDetails);
+    this.loanReAged = false;
+    this.loanReAmortized = false;
+    if (this.loanStatus.active && this.loanDetailsData.transactions) {
+      this.loanDetailsData.transactions.forEach((lt: LoanTransaction) => {
+        if (!lt.manuallyReversed) {
+          if (lt.type.reAge) {
+            this.loanReAged = true;
+          } else if (lt.type.reAmortize) {
+            this.loanReAmortized = true;
+          }
+        }
+      });
+    }
+    this.setConditionalButtons();
+    if (this.loanDetailsData.isSimulation && this.loanDetailsData.simulatedDate) {
+      this.simulatedDate = new Date(this.loanDetailsData.simulatedDate);
+    }
   }
 
   // Defines the buttons based on the status of the loan account

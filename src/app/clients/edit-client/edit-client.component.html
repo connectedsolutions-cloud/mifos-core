@@ -71,52 +71,81 @@
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
           </mat-form-field>
+        </div>
 
-          <mat-form-field *ngIf="editClientForm.contains('firstname')" class="flex-32">
-            <mat-label>{{ 'labels.inputs.First Name' | translate }}</mat-label>
-            <input
-              matInput
-              required
-              formControlName="firstname"
-              placeholder="First Name"
-              title="First Name"
-              [placeholder]="'labels.inputs.First Name' | translate"
-              [title]="'labels.inputs.First Name' | translate"
-            />
-            <mat-error *ngIf="editClientForm.controls.firstname.hasError('required')">
-              {{ 'labels.inputs.Client first name' | translate }} {{ 'labels.commons.is' | translate }}
-              <strong>{{ 'labels.commons.required' | translate }}</strong>
-            </mat-error>
-          </mat-form-field>
+        <div
+          class="name-fields-section"
+          *ngIf="
+            editClientForm.contains('firstname') ||
+            editClientForm.contains('middlename') ||
+            editClientForm.contains('lastname') ||
+            editClientForm.contains('secondlastname') ||
+            editClientForm.contains('marriedlastname')
+          "
+        >
+          <div class="name-fields-row given-names-row">
+            <mat-form-field *ngIf="editClientForm.contains('firstname')" class="name-field first-name">
+              <mat-label>{{ 'labels.inputs.First Name' | translate }}</mat-label>
+              <input
+                matInput
+                required
+                formControlName="firstname"
+                [placeholder]="'labels.inputs.First Name' | translate"
+                [title]="'labels.inputs.First Name' | translate"
+              />
+              <mat-error *ngIf="editClientForm.controls.firstname.hasError('required')">
+                {{ 'labels.inputs.Client first name' | translate }} {{ 'labels.commons.is' | translate }}
+                <strong>{{ 'labels.commons.required' | translate }}</strong>
+              </mat-error>
+            </mat-form-field>
 
-          <mat-form-field *ngIf="editClientForm.contains('middlename')" class="flex-32">
-            <mat-label>{{ 'labels.inputs.Middle Name' | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="middlename"
-              placeholder="Middle Name"
-              title="Middle Name"
-              [placeholder]="'labels.inputs.Middle Name' | translate"
-              [title]="'labels.inputs.Middle Name' | translate"
-            />
-          </mat-form-field>
+            <mat-form-field *ngIf="editClientForm.contains('middlename')" class="name-field middle-name">
+              <mat-label>{{ 'labels.inputs.Middle Name' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="middlename"
+                [placeholder]="'labels.inputs.Middle Name' | translate"
+                [title]="'labels.inputs.Middle Name' | translate"
+              />
+            </mat-form-field>
+          </div>
 
-          <mat-form-field *ngIf="editClientForm.contains('lastname')" class="flex-32">
-            <mat-label>{{ 'labels.inputs.Last Name' | translate }}</mat-label>
-            <input
-              matInput
-              required
-              formControlName="lastname"
-              placeholder="Last Name"
-              title="Last Name"
-              [placeholder]="'labels.inputs.Last Name' | translate"
-              [title]="'labels.inputs.Last Name' | translate"
-            />
-            <mat-error *ngIf="editClientForm.controls.lastname.hasError('required')">
-              {{ 'labels.inputs.Client last name' | translate }} {{ 'labels.commons.is' | translate }}
-              <strong>{{ 'labels.commons.required' | translate }}</strong>
-            </mat-error>
-          </mat-form-field>
+          <div class="name-fields-row surnames-row">
+            <mat-form-field *ngIf="editClientForm.contains('lastname')" class="name-field last-name">
+              <mat-label>{{ 'labels.inputs.Last Name' | translate }}</mat-label>
+              <input
+                matInput
+                required
+                formControlName="lastname"
+                [placeholder]="'labels.inputs.Last Name' | translate"
+                [title]="'labels.inputs.Last Name' | translate"
+              />
+              <mat-error *ngIf="editClientForm.controls.lastname.hasError('required')">
+                {{ 'labels.inputs.Client last name' | translate }} {{ 'labels.commons.is' | translate }}
+                <strong>{{ 'labels.commons.required' | translate }}</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="editClientForm.contains('secondlastname')" class="name-field second-last-name">
+              <mat-label>{{ 'labels.inputs.Second Last Name' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="secondlastname"
+                [placeholder]="'labels.inputs.Second Last Name' | translate"
+                [title]="'labels.inputs.Second Last Name' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field *ngIf="editClientForm.contains('marriedlastname')" class="name-field married-last-name">
+              <mat-label>{{ 'labels.inputs.Married Last Name' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="marriedlastname"
+                [placeholder]="'labels.inputs.Married Last Name' | translate"
+                [title]="'labels.inputs.Married Last Name' | translate"
+              />
+            </mat-form-field>
+          </div>
         </div>
 
         <mat-divider class="section-divider"></mat-divider>

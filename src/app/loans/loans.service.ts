@@ -183,9 +183,14 @@ export class LoansService {
   /**
    * Get Loans details with httpParams
    * @param loanId Loan ID
+   * @param options.skipCache If true, adds cache-busting query param for refetch-after-mutate
+   *   (see docs/autorefresh_frontend.md)
    */
-  getLoanAccountAssociationDetails(loanId: string) {
-    const httpParams = new HttpParams().set('associations', 'all').set('exclude', 'guarantors,futureSchedule');
+  getLoanAccountAssociationDetails(loanId: string, options?: { skipCache?: boolean }) {
+    let httpParams = new HttpParams().set('associations', 'all').set('exclude', 'guarantors,futureSchedule');
+    if (options?.skipCache) {
+      httpParams = httpParams.set('_', String(Date.now()));
+    }
     return this.http.get(`/loans/${loanId}`, { params: httpParams });
   }
 
