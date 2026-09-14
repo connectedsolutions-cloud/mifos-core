@@ -31,6 +31,14 @@
         </div>
 
         <p>
+          <span>
+            {{ 'labels.inputs.Reference Type' | translate }} :
+            {{
+              (member.isFamilyMember ?? true)
+                ? ('labels.inputs.Family Member' | translate)
+                : ('labels.inputs.Personal Reference' | translate)
+            }}<br />
+          </span>
           <span *ngIf="member.firstName"
             >{{ 'labels.inputs.First Name' | translate }} : {{ member.firstName }}<br
           /></span>

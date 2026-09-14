@@ -63,6 +63,7 @@ export class ClientFamilyMemberDialogComponent implements OnInit {
         qualification: this.data.member.qualification,
         age: this.data.member.age,
         isDependent: this.data.member.isDependent,
+        isFamilyMember: this.data.member.isFamilyMember ?? true,
         relationshipId: this.data.member.relationshipId,
         genderId: this.data.member.genderId,
         professionId: this.data.member.professionId,
@@ -125,6 +126,10 @@ export class ClientFamilyMemberDialogComponent implements OnInit {
       age: [
         { value: '', disabled: true }],
       isDependent: [''],
+      isFamilyMember: [
+        true,
+        Validators.required
+      ],
       relationshipId: [
         '',
         Validators.required

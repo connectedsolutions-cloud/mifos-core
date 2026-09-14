@@ -40,6 +40,14 @@
     >
 
     <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Reference Type' | translate }}</mat-label>
+      <mat-select formControlName="isFamilyMember" required>
+        <mat-option [value]="true">{{ 'labels.inputs.Family Member' | translate }}</mat-option>
+        <mat-option [value]="false">{{ 'labels.inputs.Personal Reference' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="flex-48">
       <mat-label>{{ 'labels.inputs.Relationship' | translate }}</mat-label>
       <mat-select formControlName="relationshipId" required>
         <mat-option *ngFor="let relation of data.options.relationshipIdOptions" [value]="relation.id">

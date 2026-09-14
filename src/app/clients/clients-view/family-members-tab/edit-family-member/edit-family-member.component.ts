@@ -104,6 +104,10 @@ export class EditFamilyMemberComponent implements OnInit {
       age: [
         { value: familyMember.age, disabled: true }],
       isDependent: [familyMember.isDependent],
+      isFamilyMember: [
+        familyMember.isFamilyMember ?? true,
+        Validators.required
+      ],
       relationshipId: [
         familyMember.relationshipId,
         Validators.required

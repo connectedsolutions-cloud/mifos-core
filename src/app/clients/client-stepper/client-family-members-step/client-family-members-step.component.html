@@ -31,6 +31,12 @@
       </div>
 
       <p>
+        {{ 'labels.inputs.Reference Type' | translate }} :
+        {{
+          (member.isFamilyMember ?? true)
+            ? ('labels.inputs.Family Member' | translate)
+            : ('labels.inputs.Personal Reference' | translate)
+        }}<br />
         {{ 'labels.inputs.First Name' | translate }} : {{ member.firstName }}<br />
         {{ 'labels.inputs.Middle Name' | translate }} : {{ member.middleName }}<br />
         {{ 'labels.inputs.Last Name' | translate }} : {{ member.lastName }}<br />

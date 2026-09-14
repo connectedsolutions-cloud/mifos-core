@@ -105,6 +105,10 @@ export class AddFamilyMemberComponent implements OnInit {
       age: [
         { value: '', disabled: true }],
       isDependent: [''],
+      isFamilyMember: [
+        true,
+        Validators.required
+      ],
       relationshipId: [
         '',
         Validators.required
