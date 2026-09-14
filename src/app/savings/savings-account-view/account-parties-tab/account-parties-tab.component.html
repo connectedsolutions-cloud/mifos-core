@@ -1,0 +1,124 @@
+<div class="account-parties" *ngIf="!loading; else loadingState" [formGroup]="form">
+  <section>
+    <div class="section-heading">
+      <div>
+        <h3>Beneficiaries</h3>
+        <p>Allocations for an active beneficiary set must total exactly 100.00.</p>
+      </div>
+      <button
+        mat-stroked-button
+        type="button"
+        *mifosxHasPermission="'UPDATE_SAVINGSACCOUNT'"
+        (click)="addBeneficiary()"
+      >
+        Add beneficiary
+      </button>
+    </div>
+
+    <div formArrayName="beneficiaries">
+      <div
+        class="party-card"
+        *ngFor="let beneficiary of beneficiaries.controls; let index = index"
+        [formGroupName]="index"
+      >
+        <mat-form-field><mat-label>Given name</mat-label><input matInput formControlName="givenName" /></mat-form-field>
+        <mat-form-field><mat-label>Surname</mat-label><input matInput formControlName="surname" /></mat-form-field>
+        <mat-form-field>
+          <mat-label>Allocation %</mat-label>
+          <input matInput type="number" min="0.01" max="100" step="0.01" formControlName="allocationPercentage" />
+        </mat-form-field>
+        <mat-form-field
+          ><mat-label>Date of birth</mat-label><input matInput type="date" formControlName="dateOfBirth"
+        /></mat-form-field>
+        <mat-form-field><mat-label>DUI</mat-label><input matInput formControlName="dui" /></mat-form-field>
+        <mat-form-field
+          ><mat-label>Relationship</mat-label><input matInput formControlName="relationship"
+        /></mat-form-field>
+        <mat-form-field><mat-label>Phone</mat-label><input matInput formControlName="phone" /></mat-form-field>
+        <mat-form-field class="wide"
+          ><mat-label>Address</mat-label><input matInput formControlName="address"
+        /></mat-form-field>
+        <mat-checkbox formControlName="communicateDesignation">Communicate designation</mat-checkbox>
+        <button
+          mat-button
+          color="warn"
+          type="button"
+          *mifosxHasPermission="'UPDATE_SAVINGSACCOUNT'"
+          (click)="removeBeneficiary(index)"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+    <p class="allocation-total" [class.invalid]="beneficiaries.length > 0 && beneficiaryTotal !== 100">
+      Allocation total: {{ beneficiaryTotal | number: '1.2-2' }}%
+    </p>
+  </section>
+
+  <section>
+    <div class="section-heading">
+      <div>
+        <h3>Authorized persons</h3>
+        <p>This records the designation only; it does not grant transaction authority.</p>
+      </div>
+      <button
+        mat-stroked-button
+        type="button"
+        *mifosxHasPermission="'UPDATE_SAVINGSACCOUNT'"
+        (click)="addAuthorizedPerson()"
+      >
+        Add authorized person
+      </button>
+    </div>
+
+    <div formArrayName="authorizedPersons">
+      <div
+        class="party-card"
+        *ngFor="let person of authorizedPersons.controls; let index = index"
+        [formGroupName]="index"
+      >
+        <mat-form-field><mat-label>Given name</mat-label><input matInput formControlName="givenName" /></mat-form-field>
+        <mat-form-field><mat-label>Surname</mat-label><input matInput formControlName="surname" /></mat-form-field>
+        <mat-form-field
+          ><mat-label>Date of birth</mat-label><input matInput type="date" formControlName="dateOfBirth"
+        /></mat-form-field>
+        <mat-form-field><mat-label>DUI</mat-label><input matInput formControlName="dui" /></mat-form-field>
+        <mat-form-field
+          ><mat-label>Relationship</mat-label><input matInput formControlName="relationship"
+        /></mat-form-field>
+        <mat-form-field><mat-label>Phone</mat-label><input matInput formControlName="phone" /></mat-form-field>
+        <mat-form-field class="wide"
+          ><mat-label>Address</mat-label><input matInput formControlName="address"
+        /></mat-form-field>
+        <mat-form-field
+          ><mat-label>Signature reference</mat-label><input matInput formControlName="signatureReference"
+        /></mat-form-field>
+        <mat-checkbox formControlName="printOnContract">Print on contract</mat-checkbox>
+        <mat-checkbox formControlName="printOnPassbook">Print on passbook</mat-checkbox>
+        <button
+          mat-button
+          color="warn"
+          type="button"
+          *mifosxHasPermission="'UPDATE_SAVINGSACCOUNT'"
+          (click)="removeAuthorizedPerson(index)"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <p class="message" *ngIf="message">{{ message }}</p>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    *mifosxHasPermission="'UPDATE_SAVINGSACCOUNT'"
+    [disabled]="saving"
+    (click)="save()"
+  >
+    {{ saving ? 'Saving…' : 'Save account parties' }}
+  </button>
+</div>
+
+<ng-template #loadingState><p>Loading beneficiaries and authorized persons…</p></ng-template>

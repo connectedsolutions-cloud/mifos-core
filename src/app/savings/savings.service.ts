@@ -56,6 +56,22 @@ export class SavingsService {
     return this.http.get(`/savingsaccounts/${accountId}`, { params: httpParams });
   }
 
+  getSavingsBeneficiaries(accountId: string): Observable<any[]> {
+    return this.http.get<any[]>(`/depositaccounts/${accountId}/beneficiaries`);
+  }
+
+  replaceSavingsBeneficiaries(accountId: string, beneficiaries: any[]): Observable<any[]> {
+    return this.http.put<any[]>(`/depositaccounts/${accountId}/beneficiaries`, beneficiaries);
+  }
+
+  getSavingsAuthorizedPersons(accountId: string): Observable<any[]> {
+    return this.http.get<any[]>(`/depositaccounts/${accountId}/authorized-persons`);
+  }
+
+  replaceSavingsAuthorizedPersons(accountId: string, authorizedPersons: any[]): Observable<any[]> {
+    return this.http.put<any[]>(`/depositaccounts/${accountId}/authorized-persons`, authorizedPersons);
+  }
+
   /**
    * @param accountId Savings Account Id of account to get data for.
    * @returns {Observable<any>} Savings account and template.

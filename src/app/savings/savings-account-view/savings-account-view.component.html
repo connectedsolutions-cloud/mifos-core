@@ -143,6 +143,16 @@
       </a>
       <a
         mat-tab-link
+        *mifosxHasPermission="'READ_SAVINGSACCOUNT'"
+        [routerLink]="['./account-parties']"
+        routerLinkActive
+        #accountParties="routerLinkActive"
+        [active]="accountParties.isActive"
+      >
+        Beneficiaries &amp; Authorized Persons
+      </a>
+      <a
+        mat-tab-link
         [routerLink]="['./documents']"
         routerLinkActive
         #savingsDocuments="routerLinkActive"

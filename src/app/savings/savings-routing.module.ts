@@ -43,6 +43,7 @@ import { SavingNotesResolver } from './common-resolvers/saving-notes.resolver';
 import { SavingDocumentsResolver } from './common-resolvers/saving-documents.resolver';
 import { SavingsTransactionGeneralTabComponent } from './savings-account-view/transactions/view-transaction/savings-transaction-general-tab/savings-transaction-general-tab.component';
 import { GeneralTabComponent } from './savings-account-view/general-tab/general-tab.component';
+import { AccountPartiesTabComponent } from './savings-account-view/account-parties-tab/account-parties-tab.component';
 
 /** Savings Routes */
 const routes: Routes = [
@@ -100,6 +101,15 @@ const routes: Routes = [
             path: 'charges',
             component: ChargesTabComponent,
             data: { title: 'Savings Account Charges', breadcrumb: 'Charges', routeParamBreadcrumb: false }
+          },
+          {
+            path: 'account-parties',
+            component: AccountPartiesTabComponent,
+            data: {
+              title: 'Savings Account Parties',
+              breadcrumb: 'Beneficiaries and Authorized Persons',
+              routeParamBreadcrumb: false
+            }
           },
           {
             path: 'standing-instructions',
