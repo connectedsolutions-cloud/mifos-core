@@ -1,0 +1,25 @@
+<div class="visual-report-shell">
+  <div class="visual-report-toolbar">
+    <div>
+      <strong>{{ dataObject?.report?.name }}</strong>
+      <span>{{ 'labels.buttons.Preview' | translate }}</span>
+    </div>
+    <button mat-stroked-button type="button" (click)="load()" [disabled]="loading">
+      {{ 'labels.buttons.Refresh' | translate }}
+    </button>
+    <button mat-raised-button color="primary" type="button" (click)="print()" [disabled]="!result || loading">
+      {{ 'labels.buttons.Print' | translate }}
+    </button>
+  </div>
+
+  <div class="visual-report-message" *ngIf="loading">{{ 'labels.buttons.Loading' | translate }}</div>
+  <div class="visual-report-message visual-report-error" *ngIf="error">{{ error }}</div>
+
+  <div class="visual-report-canvas" *ngIf="result && !loading">
+    <mifosx-comprobante-contable-report
+      *ngIf="rendererKey === 'VisualVoucher'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-comprobante-contable-report>
+  </div>
+</div>

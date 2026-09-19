@@ -33,7 +33,7 @@
           <ng-container class="test" *ngIf="reportForm.contains(param.name)">
             <mat-form-field class="form-field" *ngSwitchCase="'text'">
               <mat-label>{{ param.label }}</mat-label>
-              <input matInput required [formControlName]="param.name" />
+              <input matInput [required]="!isOptionalParameter(param)" [formControlName]="param.name" />
               <mat-error *ngIf="reportForm.controls[param.name].hasError('required')">
                 {{ param.label }} {{ 'labels.commons.is' | translate }}
                 <strong>{{ 'labels.commons.required' | translate }}</strong>
@@ -135,7 +135,7 @@
           {{ 'labels.buttons.Run Report' | translate }}
         </button>
         <button
-          *ngIf="isTableReport()"
+          *ngIf="isTableReport() && !isVisualReport()"
           mat-raised-button
           color="primary"
           [disabled]="!reportForm.valid || isProcessing"
@@ -161,6 +161,7 @@
       <mifosx-table-and-sms *ngIf="!hideTable" [dataObject]="dataObject"></mifosx-table-and-sms>
       <mifosx-chart *ngIf="!hideChart" [dataObject]="dataObject"></mifosx-chart>
       <mifosx-pentaho *ngIf="!hidePentaho" [dataObject]="dataObject"></mifosx-pentaho>
+      <mifosx-visual-report *ngIf="!hideVisual" [dataObject]="dataObject"></mifosx-visual-report>
     </div>
   </mat-card>
 </div>

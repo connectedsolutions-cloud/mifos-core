@@ -74,6 +74,18 @@ export class EditReportComponent implements OnInit {
   };
   /** Report Form. */
   reportForm: UntypedFormGroup;
+
+  get reportSubTypeOptions(): string[] {
+    const reportType = this.reportForm?.get('reportType')?.value ?? this.reportData?.reportType;
+    const allowed = this.reportData?.allowedReportSubTypes ?? [];
+    if (reportType === 'Chart') {
+      return allowed.filter((subType: string) => subType === 'Bar' || subType === 'Pie');
+    }
+    if (reportType === 'Table') {
+      return allowed.filter((subType: string) => subType.startsWith('Visual'));
+    }
+    return [];
+  }
   /** Columns to be displayed in report parameters table. */
   displayedColumns: string[] = [
     'parameterName',
@@ -168,7 +180,10 @@ export class EditReportComponent implements OnInit {
       reportSubType: [
         {
           value: this.reportData.reportSubType ? this.reportData.reportSubType : '',
-          disabled: this.reportData.reportType !== 'Chart' || this.reportData.coreReport
+          disabled: ![
+              'Chart',
+              'Table'
+            ].includes(this.reportData.reportType) || this.reportData.coreReport
         }
       ],
       useReport: [this.reportData.useReport ? this.reportData.useReport : false],
@@ -258,6 +273,10 @@ export class EditReportComponent implements OnInit {
     this.reportForm.get('reportType').valueChanges.subscribe((type) => {
       switch (type) {
         case 'Chart':
+        case 'Table':
+          if (!this.reportSubTypeOptions.includes(this.reportForm.get('reportSubType').value)) {
+            this.reportForm.get('reportSubType').reset('');
+          }
           this.reportForm.get('reportSubType').enable();
           this.reportForm.get('reportSql').enable();
           break;

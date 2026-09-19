@@ -29,7 +29,7 @@
         *matRowDef="let row; columns: displayedColumns"
         class="select-row"
         [routerLink]="['/reports', 'run', row.reportName]"
-        [queryParams]="{ type: row.reportType, id: row.id }"
+        [queryParams]="{ type: row.reportType, subType: row.reportSubType, id: row.id }"
       ></tr>
     </table>
 

@@ -28,10 +28,7 @@
           <mat-form-field class="flex-50">
             <mat-label>{{ 'labels.inputs.Report Sub Type' | translate }}</mat-label>
             <mat-select formControlName="reportSubType">
-              <mat-option
-                *ngFor="let allowedReportSubType of reportData.allowedReportSubTypes"
-                [value]="allowedReportSubType"
-              >
+              <mat-option *ngFor="let allowedReportSubType of reportSubTypeOptions" [value]="allowedReportSubType">
                 {{ allowedReportSubType | translateKey: 'text' }}
               </mat-option>
             </mat-select>

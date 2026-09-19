@@ -77,6 +77,18 @@ export class CreateReportComponent implements OnInit {
     'parameterNamePassed',
     'actions'
   ];
+
+  get reportSubTypeOptions(): string[] {
+    const reportType = this.reportForm?.get('reportType')?.value;
+    const allowed = this.reportTemplateData?.allowedReportSubTypes ?? [];
+    if (reportType === 'Chart') {
+      return allowed.filter((subType: string) => subType === 'Bar' || subType === 'Pie');
+    }
+    if (reportType === 'Table') {
+      return allowed.filter((subType: string) => subType.startsWith('Visual'));
+    }
+    return [];
+  }
   /** Data source for report parameters table. */
   dataSource: MatTableDataSource<any>;
   /** Report Parameters Data. */
@@ -236,6 +248,10 @@ export class CreateReportComponent implements OnInit {
     this.reportForm.get('reportType').valueChanges.subscribe((type) => {
       switch (type) {
         case 'Chart':
+        case 'Table':
+          if (!this.reportSubTypeOptions.includes(this.reportForm.get('reportSubType').value)) {
+            this.reportForm.get('reportSubType').reset('');
+          }
           this.reportForm.get('reportSubType').enable();
           this.reportForm.get('reportSql').enable();
           break;

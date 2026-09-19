@@ -29,6 +29,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TableAndSmsComponent } from './table-and-sms/table-and-sms.component';
 import { ChartComponent } from './chart/chart.component';
 import { PentahoComponent } from './pentaho/pentaho.component';
+import { VisualReportComponent } from './visual-report/visual-report.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import {
   buildReporteSeguroWorkbook,
@@ -56,7 +57,8 @@ export type DateRangePresetId = 'thisQuarter' | 'lastQuarter' | 'thisYear' | 'la
     FaIconComponent,
     TableAndSmsComponent,
     ChartComponent,
-    PentahoComponent
+    PentahoComponent,
+    VisualReportComponent
   ]
 })
 export class RunReportComponent implements OnInit {
@@ -89,6 +91,8 @@ export class RunReportComponent implements OnInit {
   hideChart = true;
   /** Toggles Pentaho output */
   hidePentaho = true;
+  /** Toggles visual report output. */
+  hideVisual = true;
   /** Report uses dates */
   reportUsesDates = false;
   exportToS3Allowed = false;
@@ -138,8 +142,9 @@ export class RunReportComponent implements OnInit {
     private dateUtils: Dates
   ) {
     this.report.name = this.route.snapshot.params['name'];
-    this.route.queryParams.subscribe((queryParams: { type: any; id: any }) => {
+    this.route.queryParams.subscribe((queryParams: { type: any; subType: any; id: any }) => {
       this.report.type = queryParams.type;
+      this.report.subType = queryParams.subType;
       this.report.id = queryParams.id;
     });
     this.route.data.subscribe((data: { reportParameters: ReportParameter[]; configurations: any }) => {
@@ -168,6 +173,10 @@ export class RunReportComponent implements OnInit {
 
   isTableReport(): boolean {
     return this.report.type === 'Table';
+  }
+
+  isVisualReport(): boolean {
+    return this.isTableReport() && String(this.report.subType ?? '').startsWith('Visual');
   }
 
   isPentahoReport(): boolean {
@@ -203,7 +212,10 @@ export class RunReportComponent implements OnInit {
             )
           );
         } else {
-          this.reportForm.addControl(param.name, new UntypedFormControl('', Validators.required));
+          this.reportForm.addControl(
+            param.name,
+            new UntypedFormControl('', this.isOptionalParameter(param) ? [] : [Validators.required])
+          );
         }
         if (param.displayType === 'select' || param.displayType === 'multiselect') {
           this.fetchSelectOptions(param, param.name);
@@ -487,6 +499,13 @@ export class RunReportComponent implements OnInit {
   }
 
   /**
+   * Optional report parameters use the `optional` default marker configured in Fineract.
+   */
+  isOptionalParameter(param: ReportParameter): boolean {
+    return String(param.defaultVal ?? '').toLowerCase() === 'optional';
+  }
+
+  /**
    * Subscribes to changes in parent parameters value, builds child parameter vis-a-vis parent's value.
    */
   setChildControls() {
@@ -614,6 +633,10 @@ export class RunReportComponent implements OnInit {
    */
   run() {
     this.isCollapsed = true;
+    this.hideTable = true;
+    this.hideChart = true;
+    this.hidePentaho = true;
+    this.hideVisual = true;
     const userResponseValues = this.formatUserResponse(this.reportForm.value);
     let formData = {
       ...userResponseValues
@@ -640,7 +663,11 @@ export class RunReportComponent implements OnInit {
     switch (this.report.type) {
       case 'SMS':
       case 'Table':
-        this.hideTable = false;
+        if (this.isVisualReport()) {
+          this.hideVisual = false;
+        } else {
+          this.hideTable = false;
+        }
         break;
       case 'Chart':
         this.hideChart = false;

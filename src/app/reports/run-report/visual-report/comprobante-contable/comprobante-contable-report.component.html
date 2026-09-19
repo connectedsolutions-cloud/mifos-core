@@ -1,0 +1,99 @@
+<div class="voucher-error" *ngIf="error">{{ error }}</div>
+
+<article class="voucher-document" *ngIf="viewModel as document">
+  <header class="voucher-document-header">
+    <div class="voucher-brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="voucher-document-heading">
+      <h1>{{ document.organizationName }}</h1>
+      <h2>{{ document.title }}</h2>
+      <p>{{ document.currencyLabel }}</p>
+    </div>
+    <div class="voucher-emission"><strong>Emisión:</strong> {{ document.generatedOn }}</div>
+  </header>
+
+  <section
+    class="voucher-batch"
+    *ngFor="let batch of document.batches; let lastBatch = last"
+    [class.voucher-batch-last]="lastBatch"
+  >
+    <table class="voucher" *ngFor="let voucher of batch.vouchers">
+      <colgroup>
+        <col class="voucher-account-column" />
+        <col class="voucher-description-column" />
+        <col class="voucher-amount-column" />
+        <col class="voucher-amount-column" />
+      </colgroup>
+      <thead>
+        <tr class="voucher-metadata-row">
+          <th colspan="4">
+            <div class="voucher-metadata">
+              <span><strong>Sucursal:</strong> {{ voucher.officeName }}</span>
+              <span><strong>Fecha:</strong> {{ voucher.entryDate }}</span>
+              <span><strong>Auxiliar:</strong> {{ voucher.auxiliaryName }}</span>
+              <span><strong>Partida:</strong> {{ voucher.number }}</span>
+              <span><strong>Estado:</strong> {{ voucher.statusName }}</span>
+              <span><strong>Fecha Registro:</strong> {{ voucher.registrationDate }}</span>
+            </div>
+          </th>
+        </tr>
+        <tr class="voucher-columns">
+          <th>CUENTAS</th>
+          <th>DESCRIPCIÓN</th>
+          <th>DEBE</th>
+          <th>HABER</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let group of voucher.groups">
+          <tr class="voucher-group">
+            <td>{{ group.code }}</td>
+            <td>{{ group.name }}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="voucher-line" *ngFor="let line of group.lines">
+            <td>{{ line.glCode }}</td>
+            <td>
+              <strong>{{ line.glName }}</strong>
+              <span class="voucher-line-description">
+                {{ line.sourceBranchCode }} {{ line.description }} Monto:
+                {{ line.debit || line.credit | currency: 'USD' : 'symbol' : '1.2-2' }}
+              </span>
+            </td>
+            <td class="voucher-amount">
+              {{ line.debit ? (line.debit | currency: 'USD' : 'symbol' : '1.2-2') : '' }}
+            </td>
+            <td class="voucher-amount">
+              {{ line.credit ? (line.credit | currency: 'USD' : 'symbol' : '1.2-2') : '' }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+      <tfoot>
+        <tr class="voucher-total-row">
+          <td colspan="2" class="voucher-concept">{{ voucher.concept }}</td>
+          <td class="voucher-amount">
+            <strong>{{ voucher.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </td>
+          <td class="voucher-amount">
+            <strong>{{ voucher.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <footer class="voucher-batch-close">
+      <div class="voucher-batch-summary">
+        <span><strong>Sucursal:</strong> {{ batch.officeName }}</span>
+        <span><strong>Total Partidas Contables:</strong> {{ batch.vouchers.length }}</span>
+        <span><strong>Fecha:</strong> {{ batch.entryDate }}</span>
+      </div>
+    </footer>
+  </section>
+
+  <footer class="voucher-document-footer">
+    <span>{{ document.generatedBy }}</span>
+    <span>d_rpt_comprobante_contable</span>
+    <span>{{ document.generatedOn }}</span>
+  </footer>
+</article>
