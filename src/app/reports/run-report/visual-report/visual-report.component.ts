@@ -7,9 +7,11 @@ import { ReportsService } from '../../reports.service';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
 import { ProgressBarService } from 'app/core/progress-bar/progress-bar.service';
 import { ComprobanteContableReportComponent } from './comprobante-contable/comprobante-contable-report.component';
+import { BalanceSaldosDetalladoReportComponent } from './balance-saldos-detallado/balance-saldos-detallado-report.component';
 import { VisualReportResult } from './visual-report-result';
 
 export const VISUAL_VOUCHER_RENDERER = 'VisualVoucher';
+export const VISUAL_DETAILED_BALANCE_RENDERER = 'VisualDetailBalance';
 
 @Component({
   selector: 'mifosx-visual-report',
@@ -18,7 +20,8 @@ export const VISUAL_VOUCHER_RENDERER = 'VisualVoucher';
     CommonModule,
     MatButtonModule,
     TranslateModule,
-    ComprobanteContableReportComponent
+    ComprobanteContableReportComponent,
+    BalanceSaldosDetalladoReportComponent
   ],
   templateUrl: './visual-report.component.html',
   styleUrls: ['./visual-report.component.scss']
@@ -45,7 +48,10 @@ export class VisualReportComponent implements OnChanges {
   }
 
   get isSupportedRenderer(): boolean {
-    return this.rendererKey === VISUAL_VOUCHER_RENDERER;
+    return [
+      VISUAL_VOUCHER_RENDERER,
+      VISUAL_DETAILED_BALANCE_RENDERER
+    ].includes(this.rendererKey);
   }
 
   ngOnChanges(): void {

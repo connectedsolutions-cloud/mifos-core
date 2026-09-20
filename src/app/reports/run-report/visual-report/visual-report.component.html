@@ -21,5 +21,10 @@
       [result]="result"
       [generatedBy]="reportOperator"
     ></mifosx-comprobante-contable-report>
+    <mifosx-balance-saldos-detallado-report
+      *ngIf="rendererKey === 'VisualDetailBalance'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-balance-saldos-detallado-report>
   </div>
 </div>

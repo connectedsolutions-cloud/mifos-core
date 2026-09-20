@@ -1,0 +1,96 @@
+<div class="detailed-balance-error" *ngIf="error">{{ error }}</div>
+
+<article class="detailed-balance-document" *ngIf="viewModel as document">
+  <table class="detailed-balance-table">
+    <colgroup>
+      <col class="account-code-column" />
+      <col class="description-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+    </colgroup>
+    <thead>
+      <tr class="document-heading-row">
+        <th colspan="6">
+          <div class="document-heading">
+            <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div>
+              <h1>{{ document.organizationName }}</h1>
+              <h2>{{ document.title }}</h2>
+              <p>Fecha: {{ document.reportDate }}</p>
+              <p>{{ document.currencyLabel }}</p>
+            </div>
+            <div class="page-number">Pág. <span class="page-current"></span></div>
+          </div>
+        </th>
+      </tr>
+      <tr class="column-heading-row">
+        <th>Cuenta</th>
+        <th>Descripción</th>
+        <th>Saldo Inicial</th>
+        <th>Debe</th>
+        <th>Haber</th>
+        <th>Saldo Final</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let account of document.accounts">
+        <tr class="account-row" [class.top-level-account]="account.level === 0">
+          <td>{{ account.code }}</td>
+          <td [style.padding-left.px]="account.level * 7">{{ account.description }}</td>
+          <td class="amount" [class.negative]="account.openingBalance < 0">{{ money(account.openingBalance) }}</td>
+          <td class="amount">{{ money(account.debitMovement) }}</td>
+          <td class="amount">{{ money(account.creditMovement) }}</td>
+          <td class="amount" [class.negative]="account.endingBalance < 0">{{ money(account.endingBalance) }}</td>
+        </tr>
+
+        <ng-container *ngIf="account.entries.length">
+          <tr class="detail-opening-row">
+            <td></td>
+            <td class="detail-opening-label"><strong>Saldo Inicial:</strong></td>
+            <td class="amount" [class.negative]="(account.detailOpeningBalance || 0) < 0">
+              {{ money(account.detailOpeningBalance) }}
+            </td>
+            <td colspan="3"></td>
+          </tr>
+          <tr class="detail-row" *ngFor="let entry of account.entries">
+            <td>{{ entry.journalNumber }}</td>
+            <td colspan="2" class="detail-description">
+              <span class="detail-date">{{ entry.date }}</span>
+              <span class="detail-branch">{{ entry.branchCode }}</span>
+              <span>{{ entry.description }}</span>
+            </td>
+            <td class="amount">{{ entry.debit ? money(entry.debit) : '' }}</td>
+            <td class="amount">{{ entry.credit ? money(entry.credit) : '' }}</td>
+            <td></td>
+          </tr>
+          <tr class="detail-total-row">
+            <td colspan="3"></td>
+            <td class="amount">{{ money(account.detailDebitTotal) }}</td>
+            <td class="amount">{{ money(account.detailCreditTotal) }}</td>
+            <td></td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+    <tfoot>
+      <tr class="grand-total-row">
+        <td colspan="3"><strong>Totales:</strong></td>
+        <td class="amount">
+          <strong>{{ money(document.debitTotal) }}</strong>
+        </td>
+        <td class="amount">
+          <strong>{{ money(document.creditTotal) }}</strong>
+        </td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <footer class="document-footer">
+    <span>{{ document.generatedBy }}</span>
+    <span>d_rpt_balance_saldos_det</span>
+    <span>{{ document.generatedOn }}</span>
+  </footer>
+</article>
