@@ -21,6 +21,11 @@
       [result]="result"
       [generatedBy]="reportOperator"
     ></mifosx-comprobante-contable-report>
+    <mifosx-comprobante-contable-por-sucursal-report
+      *ngIf="rendererKey === 'VisualBranchVoucher'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-comprobante-contable-por-sucursal-report>
     <mifosx-balance-saldos-detallado-report
       *ngIf="rendererKey === 'VisualDetailBalance'"
       [result]="result"

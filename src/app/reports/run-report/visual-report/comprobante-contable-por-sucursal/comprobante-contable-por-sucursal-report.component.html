@@ -1,0 +1,78 @@
+<div class="branch-voucher-error" *ngIf="error">{{ error }}</div>
+
+<article class="branch-voucher-document" *ngIf="viewModel as document">
+  <header class="branch-voucher-header">
+    <div class="branch-voucher-brand" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="branch-voucher-heading">
+      <h1>{{ document.organizationName }}</h1>
+      <h2>{{ document.title }}</h2>
+      <p>{{ document.currencyLabel }}</p>
+    </div>
+    <div class="branch-voucher-page">Pág. 1 de 1</div>
+    <div class="branch-voucher-emission"><strong>Emisión:</strong> {{ document.generatedOn }}</div>
+  </header>
+
+  <div class="branch-voucher-scope">
+    <span><strong>Fecha:</strong> {{ document.reportDate }}</span>
+    <span><strong>Sucursal:</strong> {{ document.officeName }}</span>
+  </div>
+
+  <table class="branch-voucher-table">
+    <colgroup>
+      <col class="branch-voucher-detail-column" />
+      <col class="branch-voucher-amount-column" />
+      <col class="branch-voucher-amount-column" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>DETALLES</th>
+        <th>DEBE</th>
+        <th>HABER</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let group of document.groups">
+        <tr class="branch-voucher-group">
+          <td>
+            {{ group.code }} <span>{{ group.name }}</span>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="branch-voucher-account" *ngFor="let account of group.accounts">
+          <td>
+            {{ account.code }} <span>{{ account.name }}</span>
+          </td>
+          <td>{{ account.debit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+          <td>{{ account.credit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td></td>
+        <td>{{ document.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+        <td>{{ document.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <section class="branch-voucher-closing">
+    <div class="branch-voucher-words">
+      <span>POR LA SUMA DE</span>
+      <strong>{{ document.totalInWords }}</strong>
+    </div>
+    <div class="branch-voucher-signatures">
+      <div><strong>Hecho por</strong><span>GENERADO</span></div>
+      <div><strong>Revisado por</strong><span></span></div>
+      <div><strong>Autorizado por</strong><span></span></div>
+      <div><strong>Comprobante No.</strong><span></span></div>
+    </div>
+  </section>
+
+  <footer class="branch-voucher-footer">
+    <span>{{ document.generatedBy }}</span>
+    <span>d_rpt_comprobante_contable_sucursal</span>
+    <span>{{ document.generatedOn }}</span>
+  </footer>
+</article>
