@@ -5,3 +5,18 @@ table {
     cursor: pointer;
   }
 }
+
+.report-sections {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  [aria-current='page'] {
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+.empty-saved-reports {
+  padding: 1rem;
+}

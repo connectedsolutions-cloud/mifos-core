@@ -17,6 +17,10 @@ import {
 } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
+import { AuthenticationService } from '../core/authentication/authentication.service';
+import { ReportsService } from './reports.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -40,7 +44,9 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatHeaderRow,
     MatRowDef,
     MatRow,
-    MatPaginator
+    MatPaginator,
+    MatIcon,
+    MatIconButton
   ]
 })
 export class ReportsComponent implements OnInit {
@@ -52,10 +58,18 @@ export class ReportsComponent implements OnInit {
   displayedColumns: string[] = [
     'reportName',
     'reportType',
-    'reportCategory'
+    'reportCategory',
+    'saved'
   ];
   /** Data source for reports table. */
-  dataSource = new MatTableDataSource();
+  dataSource = new MatTableDataSource<any>();
+  savedReportIds = new Set<number>();
+  pendingReportIds = new Set<number>();
+  savedReportsLoading = true;
+  savedReportsError = false;
+  searchTerm = '';
+  private filterVersion = 0;
+  readonly savedSection = 'saved';
 
   /** Paginator for reports table. */
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -71,7 +85,9 @@ export class ReportsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private authenticationService: AuthenticationService,
+    private reportsService: ReportsService
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.route.data.subscribe((data: { reports: any }) => {
@@ -86,6 +102,17 @@ export class ReportsComponent implements OnInit {
   ngOnInit() {
     this.setReports();
     this.filterReportsByCategory();
+    this.reportsService.getSavedReportIds().subscribe({
+      next: (ids) => {
+        this.savedReportIds = new Set(ids);
+        this.savedReportsLoading = false;
+        this.refreshFilter();
+      },
+      error: () => {
+        this.savedReportsLoading = false;
+        this.savedReportsError = true;
+      }
+    });
   }
 
   /**
@@ -93,56 +120,78 @@ export class ReportsComponent implements OnInit {
    * @param {string} filterValue filter string for mat-table.
    */
   applyFilter(filterValue: string) {
-    if (filterValue.length) {
-      this.setCustomFilterPredicate();
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-    } else {
-      this.filterReportsByCategory();
-    }
+    this.searchTerm = filterValue.trim().toLowerCase();
+    this.refreshFilter();
   }
 
   /**
-   * Initializes the data source, paginator and sorter for reports table.
+   * Only list reports the current user can run. The API also enforces this when
+   * a report is saved or run.
    */
   setReports() {
-    this.dataSource = new MatTableDataSource(this.reportsData);
+    const permissions = this.authenticationService.getCredentials()?.permissions ?? [];
+    const canReadAll =
+      permissions.includes('ALL_FUNCTIONS') ||
+      permissions.includes('ALL_FUNCTIONS_READ') ||
+      permissions.includes('REPORTING_SUPER_USER');
+    this.dataSource = new MatTableDataSource(
+      (this.reportsData ?? []).filter(
+        (report: any) => report.useReport === true && (canReadAll || permissions.includes('READ_' + report.reportName))
+      )
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  /**
-   * Filters the data source only for report category passed in route params.
-   */
   filterReportsByCategory() {
-    this.dataSource.filterPredicate = (data: any, filter: string) => {
-      return data.reportCategory === filter;
+    this.searchTerm = '';
+    this.dataSource.filterPredicate = (report: any) => {
+      const matchesSection =
+        !this.filter ||
+        (this.filter === this.savedSection
+          ? this.savedReportIds.has(report.id)
+          : report.reportCategory === this.filter);
+      const matchesSearch =
+        !this.searchTerm ||
+        this.getTranslatedReportName(report.reportName).toLowerCase().includes(this.searchTerm) ||
+        Object.values(report).some((value) => String(value).toLowerCase().includes(this.searchTerm));
+      return matchesSection && matchesSearch;
     };
-    this.dataSource.filter = this.filter;
+    this.refreshFilter();
   }
 
-  /**
-   *  Filters Reports for filter value string and report category.
-   */
-  setCustomFilterPredicate() {
-    this.dataSource.filterPredicate = (data: any, filter: string) => {
-      /** Transform the data into a lowercase string of all property values. */
-      const dataStr = Object.keys(data)
-        .reduce(function (currentTerm: string, key: string) {
-          /** Use an obscure Unicode character to delimit the words in the concatenated string.
-           * This avoids matches where the values of two columns combined will match the user's query
-           */
-          return currentTerm + /** @type {any} */ data[key] + '◬';
-        }, '')
-        .toLowerCase();
-      /** Transform the filter by converting it to lowercase and removing whitespace. */
-      const transformedFilter = filter.trim().toLowerCase();
-      /* Seperates filter for All reports page.*/
-      if (this.filter) {
-        return dataStr.indexOf(transformedFilter) !== -1 && data.reportCategory === this.filter;
-      } else {
-        return dataStr.indexOf(transformedFilter) !== -1;
+  private refreshFilter() {
+    // MatTableDataSource invokes its predicate only for a nonempty filter string.
+    this.dataSource.filter = String(++this.filterVersion);
+    this.dataSource.paginator?.firstPage();
+  }
+
+  toggleSaved(event: Event, report: any) {
+    event.stopPropagation();
+    if (this.pendingReportIds.has(report.id) || this.savedReportsLoading || this.savedReportsError) {
+      return;
+    }
+    this.savedReportsError = false;
+    this.pendingReportIds.add(report.id);
+    const wasSaved = this.savedReportIds.has(report.id);
+    const request = wasSaved
+      ? this.reportsService.removeSavedReport(report.id)
+      : this.reportsService.saveReport(report.id);
+    request.subscribe({
+      next: () => {
+        if (wasSaved) {
+          this.savedReportIds.delete(report.id);
+        } else {
+          this.savedReportIds.add(report.id);
+        }
+        this.pendingReportIds.delete(report.id);
+        this.refreshFilter();
+      },
+      error: () => {
+        this.pendingReportIds.delete(report.id);
+        this.savedReportsError = true;
       }
-    };
+    });
   }
 
   /**

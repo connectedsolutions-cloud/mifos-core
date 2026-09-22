@@ -1,4 +1,14 @@
 {
+  "savedReports": {
+    "navigation": "Report sections",
+    "all": "All reports",
+    "title": "Saved reports",
+    "loading": "Loading saved reports…",
+    "error": "Could not update saved reports. Refresh the page and try again.",
+    "empty": "No saved reports here yet. Star a report to add it.",
+    "add": "Add to saved reports",
+    "remove": "Remove from saved reports"
+  },
   "APP_NAME": "CREDESAL",
   "Logged in as": "Logged in as",
   "Remember me": "Remember me",

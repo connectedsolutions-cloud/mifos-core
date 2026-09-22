@@ -130,6 +130,9 @@
 <!-- Toolbar Menus -->
 <mat-menu #reportsMenu="matMenu" [overlapTrigger]="false">
   <button mat-menu-item [routerLink]="['/reports']" tabindex="0">{{ 'labels.menus.All' | translate }}</button>
+  <button mat-menu-item [routerLink]="['/reports', 'saved']" tabindex="0">
+    {{ 'savedReports.title' | translate }}
+  </button>
   <button mat-menu-item [routerLink]="['/reports', 'Client']" tabindex="0">
     {{ 'labels.menus.Clients' | translate }}
   </button>

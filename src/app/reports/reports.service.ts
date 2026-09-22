@@ -30,6 +30,18 @@ export class ReportsService {
     return this.http.get('/reports');
   }
 
+  getSavedReportIds(): Observable<number[]> {
+    return this.http.get<number[]>('/reports/saved');
+  }
+
+  saveReport(reportId: number): Observable<void> {
+    return this.http.post<void>(`/reports/saved/${reportId}`, {});
+  }
+
+  removeSavedReport(reportId: number): Observable<void> {
+    return this.http.delete<void>(`/reports/saved/${reportId}`);
+  }
+
   /**
    * @param {string} reportName Report name for which parameters are needed.
    * @returns {Observable<ReportParameter[]>}

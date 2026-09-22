@@ -1,4 +1,14 @@
 {
+  "savedReports": {
+    "navigation": "Secciones de reportes",
+    "all": "Todos los reportes",
+    "title": "Reportes guardados",
+    "loading": "Cargando reportes guardados…",
+    "error": "No se pudieron actualizar los reportes guardados. Actualice la página e inténtelo de nuevo.",
+    "empty": "Aún no hay reportes guardados. Marque un reporte con la estrella para agregarlo.",
+    "add": "Agregar a reportes guardados",
+    "remove": "Quitar de reportes guardados"
+  },
   "APP_NAME": "CREDESAL",
   "Logged in as": "Conectado como",
   "Remember me": "Recordar me",
