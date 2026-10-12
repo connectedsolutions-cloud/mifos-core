@@ -90,6 +90,7 @@ export class PendientesService {
     id: number,
     body?: {
       note?: string;
+      treasuryBankAccountId?: number | null;
       nextStep?: {
         responsableUserId?: number;
         dueDate?: string | Date;

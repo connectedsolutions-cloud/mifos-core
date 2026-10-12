@@ -25,6 +25,20 @@ export class UsersService {
   }
 
   /**
+   * Start impersonating the given user. Returns the target profile without a password.
+   */
+  loginAs(userId: number): Observable<any> {
+    return this.http.post(`/users/${userId}?command=loginAs`, {});
+  }
+
+  /**
+   * Close the impersonation audit row for the given user.
+   */
+  stopLoginAs(userId: number): Observable<any> {
+    return this.http.post(`/users/${userId}?command=stopLoginAs`, {});
+  }
+
+  /**
    * @returns {Observable<any>} Users template data
    */
   getUsersTemplate(): Observable<any> {

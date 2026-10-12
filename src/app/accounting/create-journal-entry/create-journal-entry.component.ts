@@ -118,7 +118,6 @@ export class CreateJournalEntryComponent implements OnInit, AfterViewInit {
       ],
       debits: this.formBuilder.array([this.createAffectedGLEntryForm()]),
       credits: this.formBuilder.array([this.createAffectedGLEntryForm()]),
-      referenceNumber: [''],
       transactionDate: [
         '',
         Validators.required

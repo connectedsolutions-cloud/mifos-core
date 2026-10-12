@@ -106,6 +106,8 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
   transactionDateTo = new UntypedFormControl(new Date());
   /** Transaction ID form control. */
   transactionId = new UntypedFormControl();
+  /** Posted journal reference number (Fineract ref_num). */
+  referenceNumber = new UntypedFormControl();
   /** Submitted on date from form control. */
   submittedOnDateFrom = new UntypedFormControl();
   /** Submitted on date to form control. */
@@ -115,6 +117,7 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
     'id',
     'officeName',
     'transactionId',
+    'referenceNumber',
     'transactionDate',
     'glAccountType',
     'createdByUserName',
@@ -143,6 +146,10 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
     },
     {
       type: 'transactionId',
+      value: ''
+    },
+    {
+      type: 'referenceNumber',
       value: ''
     },
     {
@@ -241,6 +248,16 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
         distinctUntilChanged(),
         tap((filterValue) => {
           this.applyFilter(filterValue, 'transactionId');
+        })
+      )
+      .subscribe();
+
+    this.referenceNumber.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        tap((filterValue) => {
+          this.applyFilter(filterValue, 'referenceNumber');
         })
       )
       .subscribe();

@@ -16,6 +16,7 @@ import { InputAmountComponent } from '../../../../shared/input-amount/input-amou
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { TreasuryBankHintComponent } from 'app/treasury/treasury-bank-hint.component';
 
 @Component({
   selector: 'mifosx-fixed-deposits-cash-transaction',
@@ -25,7 +26,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ...STANDALONE_SHARED_IMPORTS,
     InputAmountComponent,
     MatSlideToggle,
-    CdkTextareaAutosize
+    CdkTextareaAutosize,
+    TreasuryBankHintComponent
   ]
 })
 export class FixedDepositsCashTransactionComponent implements OnInit {
@@ -46,6 +48,7 @@ export class FixedDepositsCashTransactionComponent implements OnInit {
   actionName: string;
   /** saving account's Id */
   accountId: string;
+  productId: number | null = null;
   currency: Currency;
 
   /**
@@ -68,6 +71,8 @@ export class FixedDepositsCashTransactionComponent implements OnInit {
     this.route.data.subscribe((data: { fixedDepositsAccountActionData: any }) => {
       this.currency = data.fixedDepositsAccountActionData.currency;
       this.paymentTypeOptions = data.fixedDepositsAccountActionData.paymentTypeOptions;
+      const actionData = data.fixedDepositsAccountActionData;
+      this.productId = actionData.depositProductId || actionData.savingsProductId || actionData.productId || null;
     });
     this.actionName = this.route.snapshot.params['name'];
     const lowerName = this.actionName.toLowerCase();

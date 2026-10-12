@@ -1,0 +1,174 @@
+/* stylelint-disable no-descending-specificity */
+
+:host {
+  display: block;
+}
+
+.loan-arrears-document {
+  box-sizing: border-box;
+  width: 1056px;
+  min-height: 816px;
+  margin: 0 auto;
+  padding: 32px 35px 28px;
+  background: #fff;
+  color: #14211d;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 9px;
+}
+
+.loan-arrears-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.loan-arrears-table th,
+.loan-arrears-table td {
+  padding: 4px 3px;
+}
+
+.loan-arrears-table th:first-child {
+  width: 11%;
+  text-align: left;
+}
+
+.loan-arrears-table td {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-title th {
+  padding-bottom: 15px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.report-title strong,
+.report-title span,
+.report-title small {
+  display: block;
+}
+
+.report-title strong {
+  font-size: 17px;
+}
+
+.report-title span {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+.report-title small {
+  margin-top: 3px;
+  font-size: 10px;
+}
+
+.column-headings {
+  border-bottom: 1px solid #253c33;
+}
+
+.column-headings th {
+  text-align: right;
+  font-size: 8px;
+  vertical-align: bottom;
+}
+
+.group-title th {
+  padding-top: 9px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.term-title th {
+  border-top: 2px solid #254738;
+  color: #164f35;
+  font-size: 11px;
+}
+
+.office-title th {
+  padding-left: 10px;
+}
+
+.product-title th {
+  padding-left: 20px;
+  color: #485a53;
+}
+
+.data-row {
+  break-inside: avoid;
+}
+
+.data-row th {
+  font-weight: 400;
+}
+
+.total_linea,
+.total_sucursal,
+.total_plazo,
+.total_general {
+  border-top: 1px solid #779287;
+  font-weight: 600;
+}
+
+.total_sucursal,
+.total_plazo {
+  background: #f2f6f3;
+}
+
+.total_general {
+  border-top: 2px solid #254738;
+  background: #e3efe7;
+}
+
+.loan-arrears-document footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 22px;
+  padding-top: 8px;
+  border-top: 1px solid #a6b9af;
+  color: #51635a;
+}
+
+.loan-arrears-error {
+  padding: 16px;
+  border: 1px solid #b00020;
+  background: #fff4f4;
+  color: #b00020;
+}
+
+@media print {
+  @page {
+    size: letter landscape;
+    margin: 0;
+  }
+
+  .loan-arrears-document {
+    width: 1056px;
+    min-height: 816px;
+    margin: 0;
+  }
+
+  .loan-arrears-table thead {
+    display: table-header-group;
+  }
+
+  .group-title {
+    break-after: avoid;
+  }
+
+  .data-row {
+    break-inside: avoid;
+  }
+
+  .loan-arrears-document footer {
+    position: fixed;
+    right: 35px;
+    bottom: 16px;
+    left: 35px;
+    background: #fff;
+  }
+
+  .page-number::after {
+    content: counter(page);
+  }
+}

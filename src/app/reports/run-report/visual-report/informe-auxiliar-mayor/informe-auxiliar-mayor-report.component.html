@@ -1,0 +1,87 @@
+<div class="aux-ledger-error" *ngIf="error">{{ error }}</div>
+
+<article class="aux-ledger-document" *ngIf="viewModel as document">
+  <table class="aux-ledger-table">
+    <colgroup>
+      <col class="account-column" />
+      <col class="journal-column" />
+      <col class="check-column" />
+      <col class="office-column" />
+      <col class="date-column" />
+      <col class="description-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+    </colgroup>
+    <thead>
+      <tr class="document-heading-row">
+        <th colspan="10">
+          <div class="document-heading">
+            <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div>
+              <h1>{{ document.organizationName }}</h1>
+              <h2>{{ document.title }}</h2>
+              <p>{{ document.periodLabel }}</p>
+              <p>{{ document.currencyLabel }}</p>
+            </div>
+            <div class="page-number">Pág. <span class="page-current"></span></div>
+          </div>
+        </th>
+      </tr>
+      <tr class="column-heading-row">
+        <th>Código<br />Cuenta</th>
+        <th>Partida</th>
+        <th>No.<br />Cheque</th>
+        <th>Sucursal</th>
+        <th>Fecha</th>
+        <th>Concepto</th>
+        <th>Saldo<br />Inicial</th>
+        <th>Cargos</th>
+        <th>Abonos</th>
+        <th>Saldo<br />Final</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let account of document.accounts">
+        <tr class="account-opening-row" [attr.title]="account.name">
+          <td colspan="6"></td>
+          <td class="amount" [class.negative]="account.openingBalance < 0">{{ money(account.openingBalance) }}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr class="detail-row" *ngFor="let entry of account.entries">
+          <td>{{ account.code }}</td>
+          <td>{{ entry.journalNumber }}</td>
+          <td>{{ entry.checkNumber }}</td>
+          <td>{{ entry.officeName }}</td>
+          <td>{{ entry.date }}</td>
+          <td class="description-cell">{{ entry.description }}</td>
+          <td></td>
+          <td class="amount">{{ entry.debit ? money(entry.debit) : '' }}</td>
+          <td class="amount">{{ entry.credit ? money(entry.credit) : '' }}</td>
+          <td class="amount" [class.negative]="entry.runningBalance < 0">{{ money(entry.runningBalance) }}</td>
+        </tr>
+        <tr class="account-total-row">
+          <td colspan="7"></td>
+          <td class="amount">
+            <strong>{{ money(account.debitTotal) }}</strong>
+          </td>
+          <td class="amount">
+            <strong>{{ money(account.creditTotal) }}</strong>
+          </td>
+          <td class="amount" [class.negative]="account.endingBalance < 0">
+            <strong>{{ money(account.endingBalance) }}</strong>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <footer class="document-footer">
+    <span>{{ document.generatedBy }}</span>
+    <span>d_rpt_inf_aux_mayor</span>
+    <span>{{ document.generatedOn }}</span>
+  </footer>
+</article>

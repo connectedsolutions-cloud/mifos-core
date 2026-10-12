@@ -17,6 +17,9 @@ import { ShareAccountActionsResolver } from './common-resolvers/share-account-ac
 import { SharesAccountTemplateResolver } from './common-resolvers/shares-account-template.resolver';
 import { SharesAccountAndTemplateResolver } from './common-resolvers/share-account-and-template.resolver';
 import { GeneralTabComponent } from './shares-account-view/general-tab/general-tab.component';
+import { YieldTabComponent } from './shares-account-view/yield-tab/yield-tab.component';
+import { CertificatesTabComponent } from './shares-account-view/certificates-tab/certificates-tab.component';
+import { ShareYieldResolver } from './common-resolvers/share-yield.resolver';
 
 /** Shares Routes */
 const routes: Routes = [
@@ -70,6 +73,17 @@ const routes: Routes = [
                 path: 'dividends',
                 component: DividendsTabComponent,
                 data: { title: 'Shares Account Dividends', breadcrumb: 'Dividends', routeParamBreadcrumb: false }
+              },
+              {
+                path: 'certificates',
+                component: CertificatesTabComponent,
+                data: { title: 'Share Certificates', breadcrumb: 'Certificates', routeParamBreadcrumb: false }
+              },
+              {
+                path: 'yield',
+                component: YieldTabComponent,
+                data: { title: 'Share Yield', breadcrumb: 'Share Yield', routeParamBreadcrumb: false },
+                resolve: { shareYieldData: ShareYieldResolver }
               }
             ]
           },
@@ -105,7 +119,8 @@ const routes: Routes = [
     SharesAccountViewResolver,
     SharesAccountTemplateResolver,
     SharesAccountAndTemplateResolver,
-    ShareAccountActionsResolver
+    ShareAccountActionsResolver,
+    ShareYieldResolver
   ]
 })
 export class SharesRoutingModule {}

@@ -1,0 +1,62 @@
+<div class="daily-movement-error" role="alert" *ngIf="error">{{ error }}</div>
+
+<ng-container *ngIf="document as report">
+  <article class="daily-movement-page" *ngFor="let branch of report.branches; let pageIndex = index">
+    <header class="daily-movement-header">
+      <img src="assets/images/credesal-imagotipo.png" alt="Credesal" class="daily-movement-logo" />
+      <div class="daily-movement-heading">
+        <h1>CREDESAL S.C. DE R.L. DE C.V.</h1>
+        <h2>Concentración de Movimientos Diarios</h2>
+        <p>Período {{ report.period }}</p>
+        <p>Cifras en Dólares de los Estados Unidos de Norte América ($)</p>
+      </div>
+      <span class="daily-movement-page-number">Pág {{ pageIndex + 1 }} de {{ report.branches.length }}</span>
+    </header>
+
+    <div class="daily-movement-scope">
+      <p><strong>Fecha:</strong> {{ report.reportDate }}</p>
+      <p><strong>Sucursal:</strong> {{ branch.name }}</p>
+    </div>
+
+    <table class="daily-movement-table">
+      <colgroup>
+        <col class="daily-movement-code" />
+        <col class="daily-movement-description" />
+        <col class="daily-movement-amount" />
+        <col class="daily-movement-amount" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Cuenta</th>
+          <th>Concepto</th>
+          <th>Cargos</th>
+          <th>Abonos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let account of branch.accounts">
+          <td>{{ account.code }}</td>
+          <td>{{ account.description }}</td>
+          <td>{{ account.debit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+          <td>{{ account.credit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+        </tr>
+        <tr class="daily-movement-total">
+          <td colspan="2">Total por Sucursal</td>
+          <td>{{ branch.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+          <td>{{ branch.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+        </tr>
+        <tr class="daily-movement-grand-total" *ngIf="pageIndex === report.branches.length - 1">
+          <td colspan="2">Total General:</td>
+          <td>{{ report.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+          <td>{{ report.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="daily-movement-footer">
+      <span>{{ report.generatedBy }}</span>
+      <span>d_rpt_concentracion_diaria_sucursal</span>
+      <span>{{ report.generatedOn }}</span>
+    </footer>
+  </article>
+</ng-container>

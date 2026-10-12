@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PendientesService } from '../pendientes.service';
@@ -16,8 +16,11 @@ import {
 } from '../complete-step-next-dialog/complete-step-next-dialog.component';
 import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { ComiteOtorgamientoService } from '../../comite-otorgamiento/comite-otorgamiento.service';
-import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { TreasuryService } from '../../treasury/treasury.service';
 import { getBlockComponent } from './step-blocks/block-registry';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /** Step name -> list of detail blocks (key + i18n label key) to show in the step card. */
 const STEP_DETAIL_BLOCKS: Record<string, Array<{ key: string; labelKey: string; amountLabelKey?: string }>> = {
@@ -46,8 +49,10 @@ const STEP_DETAIL_BLOCKS: Record<string, Array<{ key: string; labelKey: string; 
     MatIconModule,
     MatCardModule,
     MatListModule,
-    MatProgressSpinnerModule,
+    LoaderComponent,
     MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })
@@ -58,6 +63,8 @@ export class FlowDetailComponent implements OnInit {
 
   /** When stepId query is present, only this step is shown; otherwise all flow.steps. */
   displaySteps: any[] = [];
+  treasuryBanks: any[] = [];
+  treasuryBankAccountId: number | null = null;
 
   /** Step id -> block key -> { value, loading, error } for step-specific detail blocks. */
   stepBlockData: Record<number, Record<string, { value?: unknown; loading?: boolean; error?: string }>> = {};
@@ -70,10 +77,15 @@ export class FlowDetailComponent implements OnInit {
     private dialog: MatDialog,
     private authenticationService: AuthenticationService,
     private comiteOtorgamientoService: ComiteOtorgamientoService,
+    private treasuryService: TreasuryService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.treasuryService.getBankPicker().subscribe({
+      next: (banks) => (this.treasuryBanks = banks || []),
+      error: () => (this.treasuryBanks = [])
+    });
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.pendientesService.getFlow(+id, true).subscribe({
@@ -99,8 +111,12 @@ export class FlowDetailComponent implements OnInit {
   }
 
   completeStep(step: any): void {
+    const treasury = this.treasuryPayload(step);
+    if (treasury === null) {
+      return;
+    }
     if (this.hasExistingNextStep(this.flow, step)) {
-      this.pendientesService.completeStep(step.id).subscribe({
+      this.pendientesService.completeStep(step.id, treasury).subscribe({
         next: () => this.refreshFlow(),
         error: (err) => {
           this.error =
@@ -113,7 +129,7 @@ export class FlowDetailComponent implements OnInit {
     }
     this.resolveNextStepDetails(step, (nextStepDetails) => {
       if (this.isLastStepInBlueprint(nextStepDetails)) {
-        this.pendientesService.completeStep(step.id).subscribe({
+        this.pendientesService.completeStep(step.id, treasury).subscribe({
           next: () => this.refreshFlow(),
           error: (err) => {
             this.error =
@@ -136,6 +152,21 @@ export class FlowDetailComponent implements OnInit {
       });
       this.subscribeToCompleteDialog(dialogRef, step, officeId);
     });
+  }
+
+  bankLabel(bank: any): string {
+    return this.treasuryService.bankLabel(bank);
+  }
+
+  private treasuryPayload(step: any): { treasuryBankAccountId?: number } | null {
+    if (step?.name !== 'transferencia_cheque_boveda') {
+      return {};
+    }
+    if (this.treasuryBankAccountId == null) {
+      this.error = this.translate.instant('labels.text.treasury.chooseBank');
+      return null;
+    }
+    return { treasuryBankAccountId: this.treasuryBankAccountId };
   }
 
   /** True when there is no next step in the blueprint (current step is the last). */
@@ -202,15 +233,22 @@ export class FlowDetailComponent implements OnInit {
             officeId,
             description: result.description
           };
-        this.pendientesService.completeStep(step.id, { nextStep }).subscribe({
-          next: () => this.refreshFlow(),
-          error: (err) => {
-            this.error =
-              err?.error?.errors?.[0]?.defaultUserMessage ||
-              err.message ||
-              this.translate.instant('labels.text.Error completing step');
-          }
-        });
+        this.pendientesService
+          .completeStep(step.id, {
+            nextStep,
+            ...(step?.name === 'transferencia_cheque_boveda'
+              ? { treasuryBankAccountId: this.treasuryBankAccountId }
+              : {})
+          })
+          .subscribe({
+            next: () => this.refreshFlow(),
+            error: (err) => {
+              this.error =
+                err?.error?.errors?.[0]?.defaultUserMessage ||
+                err.message ||
+                this.translate.instant('labels.text.Error completing step');
+            }
+          });
       });
   }
 

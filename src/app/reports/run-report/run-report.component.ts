@@ -23,6 +23,7 @@ import { GlobalConfiguration } from 'app/system/configurations/global-configurat
 import * as ExcelJS from 'exceljs';
 import moment from 'moment';
 import { AlertService } from 'app/core/alert/alert.service';
+import { TranslateService } from '@ngx-translate/core';
 import { NgIf, NgFor, NgSwitch, NgSwitchCase } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -81,7 +82,7 @@ export class RunReportComponent implements OnInit {
   /** Initializes new form group eportForm */
   reportForm = new UntypedFormGroup({});
   /** Static Form control for decimal places in output */
-  decimalChoice = new UntypedFormControl();
+  decimalChoice = new UntypedFormControl('2');
 
   /** Toggles Report form */
   isCollapsed = false;
@@ -139,7 +140,8 @@ export class RunReportComponent implements OnInit {
     private reportsService: ReportsService,
     private settingsService: SettingsService,
     private alertService: AlertService,
-    private dateUtils: Dates
+    private dateUtils: Dates,
+    private translateService: TranslateService
   ) {
     this.report.name = this.route.snapshot.params['name'];
     this.route.queryParams.subscribe((queryParams: { type: any; subType: any; id: any }) => {
@@ -202,14 +204,7 @@ export class RunReportComponent implements OnInit {
         if (param.displayType === 'multiselect') {
           this.reportForm.addControl(
             param.name,
-            new UntypedFormControl(
-              [],
-              [
-                (control: AbstractControl) =>
-                  Array.isArray(control.value) && control.value.length > 0 ? null : { required: true }
-
-              ]
-            )
+            new UntypedFormControl([], this.isOptionalParameter(param) ? [] : [this.requiredSelectionValidator])
           );
         } else {
           this.reportForm.addControl(
@@ -243,7 +238,7 @@ export class RunReportComponent implements OnInit {
     if (this.exportToS3Allowed) {
       this.reportForm.addControl('exportOutputToS3', new UntypedFormControl(false));
     }
-    this.decimalChoice.patchValue('0');
+    this.decimalChoice.patchValue('2');
     this.setChildControls();
     this.resolveDateRangeParams();
     this.addDateRangeValidator();
@@ -298,7 +293,10 @@ export class RunReportComponent implements OnInit {
     while (!cursor.isAfter(end, 'month')) {
       options.push({
         value: cursor.format('YYYY-MM'),
-        label: cursor.format('MMMM YYYY')
+        label: new Intl.DateTimeFormat(this.settingsService.language?.code || 'es-MX', {
+          month: 'long',
+          year: 'numeric'
+        }).format(cursor.toDate())
       });
       cursor.add(1, 'month');
     }
@@ -488,6 +486,23 @@ export class RunReportComponent implements OnInit {
     };
   }
 
+  /**
+   * Shows a Spanish (or active-language) title for known report parameter labels.
+   * Fineract stores date parameters as `startDate` and `endDate`, which are not translation keys.
+   */
+  parameterLabel(label: string): string {
+    const normalized = (label || '').replace(/\s+/g, '').toLowerCase();
+    const knownKeys: Record<string, string> = {
+      startdate: 'labels.inputs.Start Date',
+      enddate: 'labels.inputs.End Date',
+      fromdate: 'labels.inputs.From Date',
+      todate: 'labels.inputs.To Date'
+    };
+    const key = knownKeys[normalized] ?? `labels.inputs.${label}`;
+    const translated = this.translateService.instant(key);
+    return translated === key ? label : translated;
+  }
+
   isStartDateParam(param: ReportParameter): boolean {
     const identifier = `${param.name}${param.variable}${param.label}`.toLowerCase();
     return identifier.includes('start') || identifier.includes('from');
@@ -506,24 +521,66 @@ export class RunReportComponent implements OnInit {
   }
 
   /**
+   * Requires at least one selected option for mandatory multiselect parameters.
+   */
+  private requiredSelectionValidator(control: AbstractControl) {
+    return Array.isArray(control.value) && control.value.length > 0 ? null : { required: true };
+  }
+
+  /**
    * Subscribes to changes in parent parameters value, builds child parameter vis-a-vis parent's value.
    */
   setChildControls() {
     this.parentParameters.forEach((param: ReportParameter) => {
-      this.reportForm.get(param.name).valueChanges.subscribe((option: any) => {
+      const parentControl = this.reportForm.get(param.name);
+      if (!parentControl) {
+        return;
+      }
+
+      const syncChildren = (option: any) => {
+        const parentValue = this.parentSelectionValue(param, option);
         param.childParameters.forEach((child: ReportParameter) => {
-          if (child.displayType === 'none') {
-            this.reportForm.addControl(child.name, new UntypedFormControl(child.defaultVal));
-          } else {
-            this.reportForm.addControl(child.name, new UntypedFormControl('', Validators.required));
+          if (!this.reportForm.contains(child.name)) {
+            if (child.displayType === 'none') {
+              this.reportForm.addControl(child.name, new UntypedFormControl(child.defaultVal));
+            } else if (child.displayType === 'multiselect') {
+              this.reportForm.addControl(
+                child.name,
+                new UntypedFormControl([], this.isOptionalParameter(child) ? [] : [this.requiredSelectionValidator])
+              );
+            } else {
+              this.reportForm.addControl(
+                child.name,
+                new UntypedFormControl('', this.isOptionalParameter(child) ? [] : [Validators.required])
+              );
+            }
           }
-          if (child.displayType === 'select') {
-            const inputstring = `${child.name}?${param.inputName}=${option.id}`;
+          if (child.displayType === 'select' || child.displayType === 'multiselect') {
+            const inputstring = `${child.name}?${param.inputName}=${encodeURIComponent(parentValue)}`;
             this.fetchSelectOptions(child, inputstring);
           }
         });
-      });
+      };
+
+      syncChildren(parentControl.value);
+      parentControl.valueChanges.subscribe(syncChildren);
     });
+  }
+
+  /**
+   * Serializes a parent parameter value for child-option requests.
+   * Multiselect parents send a comma-separated id list; an empty list means all.
+   */
+  private parentSelectionValue(param: ReportParameter, option: any): string {
+    if (param.displayType === 'multiselect') {
+      const options = Array.isArray(option) ? option : [];
+      return options
+        .map((entry) => (entry != null && entry.id != null ? String(entry.id) : ''))
+        .filter((id) => /^[0-9]+$/.test(id))
+        .join(',');
+    }
+
+    return option != null && option.id != null ? String(option.id) : '';
   }
 
   /**

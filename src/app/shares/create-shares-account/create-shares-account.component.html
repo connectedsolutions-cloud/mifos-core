@@ -44,6 +44,13 @@
       ></mifosx-shares-account-terms-step>
     </mat-step>
 
+    <mat-step [stepControl]="certificateForm">
+      <ng-template matStepLabel>{{ 'labels.inputs.Certificates' | translate }}</ng-template>
+
+      <mifosx-shares-account-certificate-step [sharesAccountTemplate]="sharesAccountTemplate">
+      </mifosx-shares-account-certificate-step>
+    </mat-step>
+
     <mat-step>
       <ng-template matStepLabel>{{ 'labels.inputs.CHARGES' | translate }}</ng-template>
 

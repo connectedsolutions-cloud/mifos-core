@@ -11,6 +11,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TransactionPaymentDetailComponent } from '../../../../shared/transaction-payment-detail/transaction-payment-detail.component';
 import { DateFormatPipe } from '../../../../pipes/date-format.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { TreasuryLinkComponent } from 'app/treasury/treasury-link.component';
 
 /**
  * View Transaction Component.
@@ -25,7 +26,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     NgClass,
     TransactionPaymentDetailComponent,
     CurrencyPipe,
-    DateFormatPipe
+    DateFormatPipe,
+    TreasuryLinkComponent
   ]
 })
 export class ViewTransactionComponent {

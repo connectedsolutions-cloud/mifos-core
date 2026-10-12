@@ -29,6 +29,11 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Account Numbering Code' | translate }}</mat-label>
+      <input matInput formControlName="numberingCode" maxlength="4" />
+    </mat-form-field>
+
     <mat-form-field class="flex-98">
       <mat-label>{{ 'labels.inputs.Description' | translate }}</mat-label>
       <textarea

@@ -1,1 +1,32 @@
 @use '../shared/styles/list-layout' as *;
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    min-width: 160px;
+    flex: 1 1 160px;
+  }
+
+  .clear-filters {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (width <= 768px) {
+  .filter-bar {
+    mat-form-field {
+      min-width: 100%;
+      flex: 1 1 100%;
+    }
+
+    .clear-filters {
+      width: 100%;
+    }
+  }
+}

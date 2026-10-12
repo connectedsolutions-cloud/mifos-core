@@ -1,0 +1,209 @@
+:host {
+  display: block;
+}
+
+.aux-ledger-document {
+  box-sizing: border-box;
+  width: 1056px;
+  min-height: 816px;
+  margin: 0 auto;
+  padding: 28px 36px 42px;
+  background: #fff;
+  color: #111;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 7.5px;
+  line-height: 1.15;
+}
+
+.aux-ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.account-column {
+  width: 9%;
+}
+
+.journal-column {
+  width: 8%;
+}
+
+.check-column {
+  width: 7%;
+}
+
+.office-column {
+  width: 10%;
+}
+
+.date-column {
+  width: 7%;
+}
+
+.description-column {
+  width: 28%;
+}
+
+.amount-column {
+  width: 7.75%;
+}
+
+.document-heading-row th {
+  padding: 0 0 10px;
+  font-weight: 400;
+}
+
+.document-heading {
+  display: grid;
+  grid-template-columns: 96px minmax(0, calc(100% - 192px)) 96px;
+  align-items: start;
+  min-height: 68px;
+  text-align: center;
+}
+
+.document-heading h1,
+.document-heading h2,
+.document-heading p {
+  margin: 0;
+}
+
+.document-heading h1 {
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+.document-heading h2 {
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.document-heading p {
+  margin-top: 3px;
+}
+
+.page-number {
+  padding-top: 4px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto;
+}
+
+.brand-mark span {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #02a6df;
+}
+
+.brand-mark span:nth-child(1) {
+  left: 8px;
+  top: 18px;
+  background: #71ca42;
+}
+
+.brand-mark span:nth-child(2) {
+  left: 25px;
+  top: 18px;
+}
+
+.brand-mark span:nth-child(3) {
+  left: 36px;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  background: #f8ad1b;
+}
+
+.column-heading-row th {
+  border: 1px solid #555;
+  padding: 3px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.account-opening-row,
+.account-total-row,
+.detail-row {
+  break-inside: avoid;
+}
+
+.account-opening-row td {
+  padding: 7px 3px 3px;
+  border-bottom: 1px solid #444;
+}
+
+.detail-row td {
+  padding: 2px 3px;
+  vertical-align: top;
+}
+
+.description-cell {
+  overflow-wrap: anywhere;
+}
+
+.account-total-row td {
+  border-top: 1px solid #222;
+  padding: 4px 3px 7px;
+}
+
+.amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.negative {
+  color: #d00000;
+}
+
+.document-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 4px;
+  border-top: 1px solid #777;
+  font-size: 7px;
+}
+
+.aux-ledger-error {
+  padding: 16px;
+  border: 1px solid #b00020;
+  background: #fff4f4;
+  color: #b00020;
+}
+
+@media print {
+  @page {
+    size: letter landscape;
+    margin: 0;
+  }
+
+  .aux-ledger-document {
+    width: 1056px;
+    min-height: 816px;
+    margin: 0;
+    padding: 28px 36px 42px;
+  }
+
+  .aux-ledger-table thead {
+    display: table-header-group;
+  }
+
+  .document-footer {
+    position: fixed;
+    right: 36px;
+    bottom: 16px;
+    left: 36px;
+  }
+
+  .page-current::after {
+    content: counter(page);
+  }
+}

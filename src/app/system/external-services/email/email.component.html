@@ -1,4 +1,8 @@
 <div class="container m-b-20 layout-row align-end gap-20px">
+  <button mat-raised-button type="button" [disabled]="testingConnection" (click)="testConnection()">
+    <fa-icon icon="link" class="m-r-10"></fa-icon>
+    {{ 'labels.buttons.Test Connection' | translate }}
+  </button>
   <button mat-raised-button color="primary" [routerLink]="['edit']">
     <fa-icon icon="edit" class="m-r-10"></fa-icon>
     {{ 'labels.buttons.Edit' | translate }}

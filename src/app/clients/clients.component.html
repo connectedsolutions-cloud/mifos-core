@@ -3,17 +3,13 @@
     <div class="search-box m-r-30">
       <mat-form-field class="search-box">
         <input
+          #clientSearchInput
           matInput
           placeholder="Search by client name, external Id, mobile"
           class="search-box"
-          (keydown.enter)="search($event.target.value)"
+          (keydown.enter)="search(clientSearchInput.value)"
         />
       </mat-form-field>
-    </div>
-    <div class="filter-box" *ngIf="existsClientsToFilter">
-      <mat-checkbox #showClosedAccounts labelPosition="after" class="m-r-10"
-        >{{ 'labels.inputs.Show Closed Accounts' | translate }}
-      </mat-checkbox>
     </div>
     <div class="action-button gap-25px">
       <button
@@ -30,10 +26,105 @@
     </div>
   </div>
 
+  <div class="filter-bar">
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Branch' | translate }}</mat-label>
+      <mat-select [formControl]="officeIdControl" (selectionChange)="onOfficeChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="officeFilterCtrl"
+            placeholderLabel="{{ 'labels.buttons.Search' | translate }}"
+            noEntriesFoundLabel="{{ 'labels.text.No data found' | translate }}"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let office of filteredOffices" [value]="office.id">
+          {{ office.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Status' | translate }}</mat-label>
+      <mat-select [formControl]="statusControl" (selectionChange)="onFilterChange()">
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+          {{ 'labels.status.' + status.label | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Type' | translate }}</mat-label>
+      <mat-select [formControl]="tagIdControl" (selectionChange)="onFilterChange()">
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let tag of tagOptions" [value]="tag.id">
+          {{ tag.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Promotor' | translate }}</mat-label>
+      <mat-select [formControl]="promoterStaffIdControl" (selectionChange)="onFilterChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="promoterFilterCtrl"
+            placeholderLabel="{{ 'labels.buttons.Search' | translate }}"
+            noEntriesFoundLabel="{{ 'labels.text.No data found' | translate }}"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let staff of filteredPromoters" [value]="staff.id">
+          {{ staff.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Ejecutivo de cuenta' | translate }}</mat-label>
+      <mat-select [formControl]="accountExecutiveStaffIdControl" (selectionChange)="onFilterChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="accountExecutiveFilterCtrl"
+            placeholderLabel="{{ 'labels.buttons.Search' | translate }}"
+            noEntriesFoundLabel="{{ 'labels.text.No data found' | translate }}"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let staff of filteredAccountExecutives" [value]="staff.id">
+          {{ staff.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'labels.inputs.Gestor de cobro' | translate }}</mat-label>
+      <mat-select [formControl]="collectionsManagerStaffIdControl" (selectionChange)="onFilterChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="collectionsManagerFilterCtrl"
+            placeholderLabel="{{ 'labels.buttons.Search' | translate }}"
+            noEntriesFoundLabel="{{ 'labels.text.No data found' | translate }}"
+          ></ngx-mat-select-search>
+        </mat-option>
+        <mat-option [value]="null">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option *ngFor="let staff of filteredCollectionsManagers" [value]="staff.id">
+          {{ staff.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button class="clear-filters" type="button" (click)="clearFilters()">
+      {{ 'labels.buttons.Clear Filters' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="isLoading">
+    <mifosx-loader diameter="80"></mifosx-loader>
+  </div>
+
   <div [hidden]="!existsClientsToFilter" class="client-list">
-    <div *ngIf="isLoading">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </div>
     <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortChanged($event)" class="bordered-table">
       <!-- Name Column -->
       <ng-container matColumnDef="displayName">

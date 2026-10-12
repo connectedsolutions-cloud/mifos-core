@@ -37,7 +37,7 @@ export class SavingsTransactionRecieptResolver {
     return this.reportsService.getPentahoRunReportData(
       'Savings Transaction Receipt',
       data,
-      'default',
+      this.settingsService.tenantIdentifier || 'default',
       this.settingsService.language.code,
       this.settingsService.dateFormat
     );

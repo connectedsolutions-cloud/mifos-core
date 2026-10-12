@@ -1,0 +1,60 @@
+<div class="container">
+  <mat-card>
+    <form [formGroup]="resendConfigurationForm" (ngSubmit)="submit()">
+      <mat-card-content>
+        <div class="layout-column">
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.API Key' | translate }}</mat-label>
+            <input matInput required type="{{ apiKeyInputType }}" formControlName="apiKey" />
+            <button
+              mat-button
+              *ngIf="resendConfigurationForm.controls.apiKey.value"
+              matSuffix
+              mat-icon-button
+              (mousedown)="apiKeyInputType = 'text'"
+              (mouseup)="apiKeyInputType = 'password'"
+            >
+              <fa-icon *ngIf="apiKeyInputType === 'password'" icon="eye"></fa-icon>
+              <fa-icon *ngIf="apiKeyInputType === 'text'" icon="eye-slash"></fa-icon>
+            </button>
+            <mat-error *ngIf="resendConfigurationForm.controls.apiKey.hasError('required')">
+              {{ 'labels.inputs.API Key' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.From Email' | translate }}</mat-label>
+            <input matInput type="email" required formControlName="fromEmail" />
+            <mat-error *ngIf="resendConfigurationForm.controls.fromEmail.hasError('required')">
+              {{ 'labels.inputs.From Email' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.From Name' | translate }}</mat-label>
+            <input matInput required formControlName="fromName" />
+            <mat-error *ngIf="resendConfigurationForm.controls.fromName.hasError('required')">
+              {{ 'labels.inputs.From Name' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="layout-row align-center gap-5px responsive-column">
+        <button type="button" mat-raised-button [routerLink]="['../']">
+          {{ 'labels.buttons.Cancel' | translate }}
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!resendConfigurationForm.valid || resendConfigurationForm.pristine"
+        >
+          {{ 'labels.buttons.Submit' | translate }}
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>

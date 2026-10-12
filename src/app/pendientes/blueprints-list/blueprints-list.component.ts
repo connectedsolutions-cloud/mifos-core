@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { PendientesService } from '../pendientes.service';
 import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
 
@@ -16,7 +16,7 @@ import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
     CommonModule,
     MatButtonModule,
     MatListModule,
-    MatProgressSpinnerModule,
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })

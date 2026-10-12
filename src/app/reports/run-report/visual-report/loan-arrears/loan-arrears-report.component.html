@@ -1,0 +1,74 @@
+<div class="loan-arrears-error" *ngIf="error">{{ error }}</div>
+
+<article class="loan-arrears-document" *ngIf="document as report">
+  <table class="loan-arrears-table">
+    <thead>
+      <tr class="report-title">
+        <th colspan="12">
+          <strong>CREDESAL S.C. DE R.L. DE C.V.</strong>
+          <span>Detalle de Saldos de Préstamos y Morosidad</span>
+          <small>Cifras en Dólares de los Estados Unidos de Norte América ($)</small>
+          <small>Período: {{ report.period }} · Fecha de corte: {{ report.cutoff }}</small>
+        </th>
+      </tr>
+      <tr class="column-headings">
+        <th>CLSF</th>
+        <th>Cantidad<br />Préstamos</th>
+        <th>Préstamos<br />en Mora</th>
+        <th>Monto<br />Desembolsado</th>
+        <th>Saldo<br />Capital</th>
+        <th>Cartera<br />Afectada</th>
+        <th>Capital<br />Vencido</th>
+        <th>Interés<br />Vencido</th>
+        <th>Cartera<br />Vigente</th>
+        <th>Cartera<br />Vencida</th>
+        <th>%<br />Cartera</th>
+        <th>%<br />Vencido</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let row of report.rows">
+        <tr class="group-title term-title" *ngIf="row.showTerm">
+          <th colspan="12">Tipo Plazo: {{ row.term }}</th>
+        </tr>
+        <tr class="group-title office-title" *ngIf="row.showOffice">
+          <th colspan="12">Sucursal: {{ row.office }}</th>
+        </tr>
+        <tr class="group-title product-title" *ngIf="row.showProduct">
+          <th colspan="12">Línea Crédito: {{ row.product }}</th>
+        </tr>
+        <tr [class]="'data-row ' + row.type.toLowerCase()">
+          <th>
+            {{
+              row.type === 'CLASIFICACION'
+                ? row.classification
+                : row.type === 'TOTAL_LINEA'
+                  ? 'Total Línea'
+                  : row.type === 'TOTAL_SUCURSAL'
+                    ? 'Total Sucursal'
+                    : row.type === 'TOTAL_PLAZO'
+                      ? 'Total Plazo'
+                      : 'Total General'
+            }}
+          </th>
+          <td>{{ row.loans }}</td>
+          <td>{{ row.loansInArrears }}</td>
+          <td>{{ money(row.disbursed) }}</td>
+          <td>{{ money(row.principal) }}</td>
+          <td>{{ money(row.affected) }}</td>
+          <td>{{ money(row.overduePrincipal) }}</td>
+          <td>{{ money(row.overdueInterest) }}</td>
+          <td>{{ money(row.currentPortfolio) }}</td>
+          <td>{{ money(row.overduePortfolio) }}</td>
+          <td>{{ percent(row.portfolioPercent) }}</td>
+          <td>{{ percent(row.overduePercent) }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  <footer>
+    <span>{{ report.generatedBy }}</span
+    ><span>Fineract · {{ report.generatedOn }}</span
+    ><span>Pág. <span class="page-number"></span></span>
+  </footer>
+</article>

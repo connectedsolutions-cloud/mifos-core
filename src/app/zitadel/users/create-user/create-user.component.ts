@@ -24,6 +24,7 @@ import { UsersService } from 'app/users/users.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { COUNTRY_CODES } from 'app/zitadel/constants/coutry-codes';
 import { ZITADEL_LANGUAGES } from 'app/zitadel/constants/languages';
+import { USER_DATA_SCOPE_OPTIONS } from 'app/core/utils/data-scope';
 
 /**
  * Create user component.
@@ -50,6 +51,7 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
   countryCodes = COUNTRY_CODES;
   /** Language Codes */
   languageCodes = ZITADEL_LANGUAGES;
+  readonly dataScopeOptions = USER_DATA_SCOPE_OPTIONS;
 
   /* Reference of create user form */
   @ViewChild('userFormRef') userFormRef: ElementRef<any>;
@@ -117,7 +119,7 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
           Validators.required
         ],
         preferredLanguage: [
-          '',
+          'es',
           Validators.required
         ],
         gender: [
@@ -154,7 +156,8 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
           '',
           Validators.required
         ],
-        staffId: ['']
+        staffId: [''],
+        dataScope: ['']
       },
       { validators: confirmPasswordValidator }
     );
@@ -230,6 +233,7 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
     delete user.officeId;
     delete user.staffId;
     delete user.roles;
+    delete user.dataScope;
     delete user.countryCode;
     delete user.phoneNumber;
     delete user.repeatPassword;
@@ -247,7 +251,8 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
           username: user.nickName,
           firstname: user.givenName,
           lastname: user.familyName,
-          roleIds: selectedRoleIds || []
+          roleIds: selectedRoleIds || [],
+          dataScope: fullForm.dataScope || null
         };
 
         this.usersService.createUserBd(body).subscribe(

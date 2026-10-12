@@ -1,0 +1,22 @@
+.container {
+  margin: 20px auto;
+  max-width: 70rem;
+}
+
+.mat-table {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.mat-row,
+.mat-header-row {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.mat-cell,
+.mat-header-cell {
+  flex: 1;
+}

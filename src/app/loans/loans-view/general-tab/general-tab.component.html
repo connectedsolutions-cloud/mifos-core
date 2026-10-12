@@ -1,4 +1,24 @@
 <div class="tab-container mat-typography">
+  <section class="loan-staff-assignment">
+    <h3>{{ 'labels.heading.Loan Staff Assignments' | translate }}</h3>
+    <div class="layout-row-wrap responsive-column gap-16px">
+      <mat-form-field *ngFor="let role of staffAssignmentRoles" class="staff-assignment-field">
+        <mat-label>{{ 'labels.inputs.' + role.labelKey | translate }}</mat-label>
+        <mat-select
+          [value]="staffAssignment[role.controlName]"
+          [disabled]="savingStaffColumn !== null"
+          (selectionChange)="updateStaffAssignment(role, $event.value)"
+        >
+          <mat-option [value]="null">{{ 'labels.inputs.Unassigned' | translate }}</mat-option>
+          <mat-option *ngFor="let staff of staffOptions" [value]="staff.id">
+            {{ staff.displayName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-error *ngIf="staffAssignmentError">{{ staffAssignmentError | translate }}</mat-error>
+  </section>
+
   <ng-container *ngIf="loanDetails.summary">
     <h3>{{ 'labels.heading.Performance History' | translate }}</h3>
     <div class="layout-row gap-32px performance-history-container">

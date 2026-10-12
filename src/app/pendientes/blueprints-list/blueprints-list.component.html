@@ -1,7 +1,7 @@
 <div class="container">
   <button mat-button (click)="back()">{{ 'labels.buttons.Back' | translate }}</button>
   <h2>{{ 'labels.buttons.Blueprints' | translate }}</h2>
-  <div *ngIf="loading"><mat-spinner diameter="40"></mat-spinner></div>
+  <div *ngIf="loading"><mifosx-loader diameter="40"></mifosx-loader></div>
   <mat-nav-list *ngIf="!loading && blueprints?.length">
     <mat-list-item *ngFor="let b of blueprints">
       <span matLine>{{ b.name }}</span>

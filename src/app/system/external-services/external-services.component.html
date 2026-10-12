@@ -73,6 +73,28 @@
             </p>
           </mat-list-item>
 
+          <mat-list-item [routerLink]="['resend']">
+            <mat-icon matListIcon [routerLink]="['resend']">
+              <fa-icon icon="paper-plane" size="sm"></fa-icon>
+            </mat-icon>
+            <h4 matLine [routerLink]="['resend']">{{ 'labels.heading.Resend External Service' | translate }}</h4>
+            <fa-icon
+              (click)="arrowBooleansToggle(4); $event.stopPropagation()"
+              *ngIf="!arrowBooleans[4]"
+              icon="arrow-down"
+              size="md"
+            ></fa-icon>
+            <fa-icon
+              (click)="arrowBooleansToggle(4); $event.stopPropagation()"
+              *ngIf="arrowBooleans[4]"
+              icon="arrow-up"
+              size="md"
+            ></fa-icon>
+            <p matLine [routerLink]="['resend']" *ngIf="arrowBooleans[4]">
+              {{ 'labels.text.Resend Service Configuration' | translate }}
+            </p>
+          </mat-list-item>
+
           <mat-list-item [routerLink]="['notification']">
             <mat-icon matListIcon [routerLink]="['notification']">
               <fa-icon icon="bell" size="sm"></fa-icon>

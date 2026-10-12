@@ -92,7 +92,7 @@ export class AccountingService {
       .set('limit', limit.toString())
       .set('sortOrder', sortOrder)
       .set('orderBy', orderBy);
-    // filterBy: officeId, glAccountId, manualEntriesOnly, fromDate, toDate, transactionId
+    // filterBy: officeId, glAccountId, manualEntriesOnly, fromDate, toDate, transactionId, referenceNumber
     filterBy.forEach(function (filter: any) {
       if (filter.value) {
         httpParams = httpParams.set(filter.type, filter.value);

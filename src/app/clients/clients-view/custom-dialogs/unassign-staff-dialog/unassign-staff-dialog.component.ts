@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Optional } from '@angular/core';
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
@@ -11,8 +11,13 @@ import {
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
+export interface UnassignStaffDialogData {
+  headingKey?: string;
+  textKey?: string;
+}
+
 /**
- * Unassign staff dialog component.
+ * Unassign staff-role dialog component.
  */
 @Component({
   selector: 'mifosx-unassign-staff-dialog',
@@ -28,8 +33,14 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   ]
 })
 export class UnassignStaffDialogComponent {
-  /**
-   * @param {MatDialogRef} dialogRef Component reference to dialog.
-   */
-  constructor(public dialogRef: MatDialogRef<UnassignStaffDialogComponent>) {}
+  headingKey: string;
+  textKey: string;
+
+  constructor(
+    public dialogRef: MatDialogRef<UnassignStaffDialogComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) data: UnassignStaffDialogData | null
+  ) {
+    this.headingKey = data?.headingKey || 'Unassign Staff';
+    this.textKey = data?.textKey || 'Unassign Staff client';
+  }
 }

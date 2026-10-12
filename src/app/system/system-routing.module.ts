@@ -23,6 +23,8 @@ import { EmailComponent } from './external-services/email/email.component';
 import { ExternalServicesComponent } from './external-services/external-services.component';
 import { EditNotificationComponent } from './external-services/notification/edit-notification/edit-notification.component';
 import { NotificationComponent } from './external-services/notification/notification.component';
+import { EditResendComponent } from './external-services/resend/edit-resend/edit-resend.component';
+import { ResendComponent } from './external-services/resend/resend.component';
 import { EditSMSComponent } from './external-services/sms/edit-sms/edit-sms.component';
 import { SMSComponent } from './external-services/sms/sms.component';
 import { CreateDataTableComponent } from './manage-data-tables/create-data-table/create-data-table.component';
@@ -66,6 +68,7 @@ import { EntityToEntityMappingResolver } from './entity-to-entity-mapping/entity
 import { AmazonS3ConfigurationResolver } from './external-services/amazon-s3/amazon-s3.resolver';
 import { EmailConfigurationResolver } from './external-services/email/email.resolver';
 import { NotificationConfigurationResolver } from './external-services/notification/notification.resolver';
+import { ResendConfigurationResolver } from './external-services/resend/resend.resolver';
 import { SMSConfigurationResolver } from './external-services/sms/sms.resolver';
 import { DataTableResolver } from './manage-data-tables/data-table.resolver';
 import { ManageDataTablesResolver } from './manage-data-tables/manage-data-tables.resolver';
@@ -206,6 +209,27 @@ const routes: Routes = [
                   data: { title: 'Edit Email Configuration', breadcrumb: 'Edit' },
                   resolve: {
                     emailConfiguration: EmailConfigurationResolver
+                  }
+                }
+              ]
+            },
+            {
+              path: 'resend',
+              data: { title: 'View Resend Configuration', breadcrumb: 'Resend' },
+              children: [
+                {
+                  path: '',
+                  component: ResendComponent,
+                  resolve: {
+                    resendConfiguration: ResendConfigurationResolver
+                  }
+                },
+                {
+                  path: 'edit',
+                  component: EditResendComponent,
+                  data: { title: 'Edit Resend Configuration', breadcrumb: 'Edit' },
+                  resolve: {
+                    resendConfiguration: ResendConfigurationResolver
                   }
                 }
               ]
@@ -622,6 +646,7 @@ const routes: Routes = [
     EmailConfigurationResolver,
     SMSConfigurationResolver,
     NotificationConfigurationResolver,
+    ResendConfigurationResolver,
     AccountNumberPreferencesResolver,
     AccountNumberPreferencesTemplateResolver,
     AccountNumberPreferenceResolver,

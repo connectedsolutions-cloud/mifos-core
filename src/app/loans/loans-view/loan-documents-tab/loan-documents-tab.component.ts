@@ -59,7 +59,7 @@ export class LoanDocumentsTabComponent implements OnInit {
         '/documents/' +
         ele.id +
         '/attachment?tenantIdentifier=' +
-        environment.fineractPlatformTenantId;
+        (this.settingsService.tenantIdentifier || environment.fineractPlatformTenantId);
       if (ele.fileName) {
         if (
           ele.fileName.toLowerCase().indexOf('.jpg') !== -1 ||

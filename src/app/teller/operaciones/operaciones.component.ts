@@ -310,7 +310,7 @@ export class OperacionesComponent implements OnInit, OnDestroy {
           return;
         }
         const dateFormat = this.settingsService.dateFormat;
-        const locale = this.settingsService.language?.code ?? 'en';
+        const locale = this.settingsService.language?.code ?? 'es';
         const dialogData: CierreCajaDialogData = {
           currencyCode: this.defaultCurrencyCode,
           dateFormat,

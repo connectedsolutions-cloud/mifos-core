@@ -3,12 +3,32 @@
     <form [formGroup]="roleForm" (ngSubmit)="submit()">
       <mat-card-content>
         <div class="layout-column">
+          <div class="layout-row align-start gap-5px m-b-20">
+            <input
+              #roleJsonFile
+              type="file"
+              accept=".json,application/json"
+              hidden
+              (change)="onImportRoleJson($event)"
+            />
+            <button type="button" mat-raised-button (click)="roleJsonFile.click()">
+              <fa-icon icon="upload" class="m-r-10"></fa-icon>
+              {{ 'labels.buttons.Import JSON' | translate }}
+            </button>
+            <span *ngIf="importedPermissionCodes.length" class="permissions-loaded">
+              {{ 'labels.text.Permissions loaded' | translate: { count: importedPermissionCodes.length } }}
+            </span>
+          </div>
+
           <mat-form-field>
             <mat-label>{{ 'labels.inputs.Name' | translate }}</mat-label>
             <input matInput required formControlName="name" />
             <mat-error *ngIf="roleForm.controls.name.hasError('required')">
               {{ 'labels.inputs.Role Name' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+            <mat-error *ngIf="roleForm.controls.name.hasError('duplicate')">
+              {{ 'labels.inputs.Role Name' | translate }} {{ 'labels.commons.already exists' | translate }}
             </mat-error>
           </mat-form-field>
 
@@ -19,6 +39,15 @@
               {{ 'labels.inputs.Role Description' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.Data access' | translate }}</mat-label>
+            <mat-select formControlName="dataScope">
+              <mat-option *ngFor="let option of dataScopeOptions" [value]="option.value">
+                {{ option.labelKey | translate }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
       </mat-card-content>

@@ -27,9 +27,11 @@ import { AmazonS3Component } from './external-services/amazon-s3/amazon-s3.compo
 import { EmailComponent } from './external-services/email/email.component';
 import { SMSComponent } from './external-services/sms/sms.component';
 import { NotificationComponent } from './external-services/notification/notification.component';
+import { ResendComponent } from './external-services/resend/resend.component';
 import { EditAmazonS3Component } from './external-services/amazon-s3/edit-amazon-s3/edit-amazon-s3.component';
 import { EditEmailComponent } from './external-services/email/edit-email/edit-email.component';
 import { EditNotificationComponent } from './external-services/notification/edit-notification/edit-notification.component';
+import { EditResendComponent } from './external-services/resend/edit-resend/edit-resend.component';
 import { EditSMSComponent } from './external-services/sms/edit-sms/edit-sms.component';
 import { ViewCodeComponent } from './codes/view-code/view-code.component';
 import { EditCodeComponent } from './codes/edit-code/edit-code.component';
@@ -105,9 +107,11 @@ import { RunSelectedJobsTableComponent } from './manage-jobs/scheduler-jobs/run-
     EmailComponent,
     SMSComponent,
     NotificationComponent,
+    ResendComponent,
     EditAmazonS3Component,
     EditEmailComponent,
     EditNotificationComponent,
+    EditResendComponent,
     EditSMSComponent,
     AccountNumberPreferencesComponent,
     CreateAccountNumberPreferenceComponent,

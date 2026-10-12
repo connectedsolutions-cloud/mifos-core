@@ -37,7 +37,7 @@ export class GroupsDataSource implements DataSource<any> {
     orderBy: string = '',
     sortOrder: string = '',
     pageIndex: number = 0,
-    limit: number = 10,
+    limit: number = 25,
     groupActive: boolean = true
   ) {
     this.groupsSubject.next([]);

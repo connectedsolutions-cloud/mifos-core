@@ -44,6 +44,19 @@
         <fa-icon class="mr-05" icon="money-bill-alt" size="lg"></fa-icon>
         {{ 'labels.menus.Accounting' | translate }}
       </a>
+      <a class="tab-link vault-link" [routerLink]="['/vault']" tabindex="0" *mifosxHasPermission="'acceso_boveda'">
+        <fa-icon class="mr-05" icon="vault" size="lg"></fa-icon>
+        {{ 'labels.menus.Vault' | translate }}
+      </a>
+      <a
+        class="tab-link treasury-link"
+        [routerLink]="['/treasury']"
+        tabindex="0"
+        *mifosxHasPermission="'READ_TREASURY'"
+      >
+        <fa-icon class="mr-05" icon="landmark" size="lg"></fa-icon>
+        {{ 'labels.menus.Treasury' | translate }}
+      </a>
       <ng-container *mifosxHasPermission="'VIEW_CASHIER_SESSIONS'">
         <a class="tab-link teller-link" href="#" (click)="onCashierButtonClick($event)" tabindex="0">
           <fa-icon class="mr-05" icon="cash-register" size="lg"></fa-icon>
@@ -72,7 +85,8 @@
         <fa-icon class="mr-05" icon="shield-alt" size="lg"></fa-icon>
         {{ 'labels.menus.Admin' | translate }}
       </a>
-      <a #configWizard class="tab-link" (click)="openDialog()" tabindex="0">
+      <!-- Credesal: configuration wizard is unused in production. -->
+      <a #configWizard class="tab-link" (click)="openDialog()" tabindex="0" *ngIf="false">
         <fa-icon class="mr-05" icon="info" size="lg"></fa-icon>
         {{ 'labels.menus.Configuration Wizard' | translate }}
       </a>
@@ -89,41 +103,36 @@
     <mifosx-search-tool tabindex="0"></mifosx-search-tool>
   </div>
 
-  <div #languageSelector class="white-text-language">
-    <mifosx-language-selector class="ml-1 language hide-lt-md" tabindex="0"></mifosx-language-selector>
-  </div>
-
-  <button mat-icon-button class="language-menu-button" [matMenuTriggerFor]="languageMenu" tabindex="0">
-    <mat-icon>language</mat-icon>
-  </button>
-
   <div #notifications>
     <mifosx-notifications-tray #notificationsTray class="hide-lt-md" tabindex="0"></mifosx-notifications-tray>
   </div>
 
-  <div #themeToggle>
-    <mifosx-theme-toggle tabindex="0"></mifosx-theme-toggle>
-  </div>
-
-  <div #appMenu>
+  <div #appMenu #languageSelector>
     <button mat-icon-button class="ml-1 img-button" [matMenuTriggerFor]="applicationMenu" tabindex="0">
       <img src="assets/images/user_placeholder.png" [alt]="'labels.headings.User Profile' | translate" />
     </button>
   </div>
 </mat-toolbar>
 
-<!-- Language selector menu for small screen view -->
-<mat-menu #languageMenu="matMenu">
-  <mifosx-language-selector class="ml-1 language"></mifosx-language-selector>
-</mat-menu>
+<div *ngIf="isImpersonating" class="impersonation-banner">
+  <span> {{ 'labels.text.Viewing as' | translate }} {{ impersonatedUsername }} — {{ currentOfficeName }} </span>
+  <button mat-stroked-button (click)="stopImpersonating()">
+    {{ 'labels.buttons.Stop impersonating' | translate }}
+  </button>
+</div>
 
 <mat-menu #institutionMenu="matMenu" [overlapTrigger]="false">
   <button mat-menu-item routerLink="/clients" tabindex="0">{{ 'labels.menus.Clients' | translate }}</button>
-  <button mat-menu-item [routerLink]="['/vault']" *mifosxHasPermission="'acceso_boveda'" tabindex="0">
-    {{ 'labels.menus.Vault' | translate }}
-  </button>
   <button mat-menu-item [routerLink]="['/comite-otorgamiento']" *mifosxHasPermission="'see_loan_comittee'" tabindex="0">
     Comite - otorgamiento
+  </button>
+  <button
+    mat-menu-item
+    [routerLink]="['/rutas-de-cobro']"
+    *mifosxHasPermission="'READ_MOBILECOLLECTIONROUTE'"
+    tabindex="0"
+  >
+    {{ 'labels.menus.Collection Routes' | translate }}
   </button>
 </mat-menu>
 
@@ -179,6 +188,8 @@
     </mat-icon>
     <span>{{ 'labels.menus.Settings' | translate }}</span>
   </button>
+  <mifosx-language-selector [menuItem]="true"></mifosx-language-selector>
+  <mifosx-theme-toggle [menuItem]="true"></mifosx-theme-toggle>
   <button mat-menu-item (click)="logout()" id="logout" tabindex="0">
     <mat-icon>
       <fa-icon icon="sign-out-alt" size="sm"></fa-icon>
@@ -348,7 +359,7 @@
     >
       {{ 'labels.buttons.Back' | translate }}
     </button>
-    <button mat-raised-button color="primary" (click)="popover.close(); showPopover(templateThemePicker, themeToggle)">
+    <button mat-raised-button color="primary" (click)="popover.close(); showPopover(templateThemePicker, appMenu)">
       {{ 'labels.buttons.Next' | translate }}
     </button>
   </div>
@@ -381,7 +392,7 @@
     <button mat-raised-button color="warn" (click)="popover.close(); configurationWizardService.closeConfigWizard()">
       {{ 'labels.buttons.Close' | translate }}
     </button>
-    <button mat-raised-button color="primary" (click)="popover.close(); showPopover(templateThemePicker, themeToggle)">
+    <button mat-raised-button color="primary" (click)="popover.close(); showPopover(templateThemePicker, appMenu)">
       {{ 'labels.buttons.Back' | translate }}
     </button>
     <button mat-raised-button color="primary" (click)="popover.close(); nextStep()">

@@ -56,6 +56,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 })
 export class LoanTrancheDetailsComponent implements OnInit {
   loanDetails: any;
+  isArisstoImported = false;
   return: any;
   status: any;
   count: number;
@@ -93,6 +94,7 @@ export class LoanTrancheDetailsComponent implements OnInit {
   ) {
     this.route.parent.data.subscribe((data: { loanDetailsData: any }) => {
       this.loanId = data.loanDetailsData.id;
+      this.isArisstoImported = data.loanDetailsData.externalId?.startsWith('ARISSTO:CRD:') ?? false;
       this.loanDetails = data.loanDetailsData;
       this.disallowExpectedDisbursements = this.loanDetails.disallowExpectedDisbursements || false;
       this.currentPrincipalAmount = this.loanDetails.approvedPrincipal;

@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -20,6 +20,16 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatStepperPrevious, MatStepperNext } from '@angular/material/stepper';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {
+  assignmentFromFormValue,
+  buildClientStaffAssignmentPayload,
+  CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE,
+  CREDESAL_CLIENT_HEADER_STAFF_ROLES,
+  hasAnyStaffAssignment
+} from 'app/clients/clients-view/credesal-client-staff-assignment';
 
 /**
  * Create Client Component
@@ -30,6 +40,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   styleUrls: ['./client-general-step.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
+    NgxMatSelectSearchModule,
     MatDivider,
     CdkTextareaAutosize,
     MatCheckbox,
@@ -38,7 +49,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatStepperNext
   ]
 })
-export class ClientGeneralStepComponent implements OnInit, OnChanges {
+export class ClientGeneralStepComponent implements OnInit, OnChanges, OnDestroy {
   @Output() legalFormChangeEvent = new EventEmitter<{ legalForm: number }>();
 
   /** Minimum date allowed. */
@@ -56,9 +67,20 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
   /** Office Options */
   officeOptions: any;
   /** Staff Options */
-  staffOptions: any;
-  /** Gestor Options */
-  gestorOptions: any;
+  staffOptions: any[] = [];
+  filteredStaffByRole: Record<string, any[]> = Object.fromEntries(
+    CREDESAL_CLIENT_HEADER_STAFF_ROLES.map((role): [string, any[]] => [
+      String(role.controlName),
+      []
+    ])
+  );
+  staffFilterCtrls: Record<string, UntypedFormControl> = Object.fromEntries(
+    CREDESAL_CLIENT_HEADER_STAFF_ROLES.map((role): [string, UntypedFormControl] => [
+      String(role.controlName),
+      new UntypedFormControl('')])
+  );
+  staffAssignmentRoles = CREDESAL_CLIENT_HEADER_STAFF_ROLES;
+  private readonly destroy$ = new Subject<void>();
   /** Legal Form Options */
   legalFormOptions: any;
   /** Client Type Options */
@@ -109,9 +131,19 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.maxDate = this.settingsService.businessDate;
+    this.setupStaffSearch();
     this.setOptions();
     this.buildDependencies();
     this.setupPersonalDatatableControls();
+    this.clientService.getActiveStaff().subscribe((staff) => {
+      this.staffOptions = staff || [];
+      this.refreshFilteredStaff();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -156,8 +188,9 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
         '',
         Validators.required
       ],
-      staffId: [''],
-      gestorId: [''],
+      promoterStaffId: [null],
+      accountExecutiveStaffId: [null],
+      collectionsManagerStaffId: [null],
       legalFormId: [
         '',
         Validators.required
@@ -189,8 +222,6 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
    */
   setOptions() {
     this.officeOptions = this.clientTemplate.officeOptions;
-    this.staffOptions = this.clientTemplate.staffOptions;
-    this.gestorOptions = this.clientTemplate.staffOptions;
     this.legalFormOptions = this.clientTemplate.clientLegalFormOptions;
     this.clientTypeOptions = this.clientTemplate.clientTypeOptions;
     this.clientClassificationTypeOptions = this.clientTemplate.clientClassificationOptions;
@@ -273,12 +304,6 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
         this.createClientForm.removeControl('savingsProductId');
       }
     });
-    this.createClientForm.get('officeId').valueChanges.subscribe((officeId: number) => {
-      this.clientService.getClientWithOfficeTemplate(officeId).subscribe((clientTemplate: any) => {
-        this.staffOptions = clientTemplate.staffOptions;
-        this.gestorOptions = clientTemplate.staffOptions;
-      });
-    });
   }
 
   getDateLabel(legalFormId: number, values: string[]): string {
@@ -309,6 +334,37 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
     return this.datatableService.isText(columnType);
   }
 
+  private setupStaffSearch(): void {
+    this.staffAssignmentRoles.forEach((role) => {
+      const controlName = String(role.controlName);
+      this.staffFilterCtrls[controlName].valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.refreshFilteredStaff(controlName);
+      });
+    });
+  }
+
+  private refreshFilteredStaff(controlName?: string): void {
+    const roles = controlName
+      ? this.staffAssignmentRoles.filter((role) => String(role.controlName) === controlName)
+      : this.staffAssignmentRoles;
+    roles.forEach((role) => {
+      const key = String(role.controlName);
+      this.filteredStaffByRole[key] = this.filterStaff(this.staffFilterCtrls[key]?.value);
+    });
+  }
+
+  private filterStaff(search: string | null): any[] {
+    if (!search) {
+      return this.staffOptions.slice();
+    }
+    const term = String(search).toLowerCase();
+    return this.staffOptions.filter((staff) =>
+      String(staff.displayName || '')
+        .toLowerCase()
+        .includes(term)
+    );
+  }
+
   get personalDatatablePayload(): { registeredTableName: string; data: Record<string, unknown> } | null {
     if (!this.personalDetailsDatatable || !this.personalDatatableInputs.length) {
       return null;
@@ -334,6 +390,17 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
     };
   }
 
+  get staffAssignmentPayload(): { registeredTableName: string; data: Record<string, unknown> } | null {
+    const assignment = assignmentFromFormValue(this.createClientForm.value);
+    if (!hasAnyStaffAssignment(assignment)) {
+      return null;
+    }
+    return {
+      registeredTableName: CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE,
+      data: buildClientStaffAssignmentPayload(assignment, this.settingsService.language.code)
+    };
+  }
+
   /**
    * Client General Details
    */
@@ -342,7 +409,16 @@ export class ClientGeneralStepComponent implements OnInit, OnChanges {
     const dateFormat = this.settingsService.dateFormat;
     const locale = this.settingsService.language.code;
     for (const key in generalDetails) {
-      if (generalDetails[key] === '' || key === 'addSavings' || key.startsWith('personalDt_')) {
+      if (
+        generalDetails[key] === '' ||
+        key === 'addSavings' ||
+        key.startsWith('personalDt_') ||
+        key === 'promoterStaffId' ||
+        key === 'accountExecutiveStaffId' ||
+        key === 'collectionsManagerStaffId' ||
+        key === 'staffId' ||
+        key === 'gestorId'
+      ) {
         delete generalDetails[key];
       }
     }

@@ -45,6 +45,12 @@
             </mat-select>
           </mat-form-field>
 
+          <mifosx-treasury-bank-hint
+            [form]="savingAccountTransactionForm"
+            productType="savings"
+            [productId]="savingsProductId"
+          ></mifosx-treasury-bank-hint>
+
           <div class="flex-fill">
             <span class="expandcollapsebutton m-l-10 m-t-40 flex-75" (click)="addPaymentDetails()">
               <mat-slide-toggle>

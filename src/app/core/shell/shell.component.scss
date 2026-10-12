@@ -87,3 +87,12 @@ $color: #e2e4ec;
     width: $bar;
   }
 }
+
+// Remain visible without changing content layout or blocking interactions.
+.shell-loader {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+  z-index: 100;
+  pointer-events: none;
+}

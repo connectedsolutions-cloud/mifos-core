@@ -1,0 +1,36 @@
+<div class="trial-balance-error" *ngIf="error">{{ error }}</div>
+
+<ng-container *ngIf="document as report">
+  <article class="trial-balance-page" *ngFor="let rows of report.pages; let page = index">
+    <header class="trial-balance-heading">
+      <h1>{{ report.organizationName }}</h1>
+      <h2>{{ report.title }}</h2>
+      <p>{{ report.dateLabel }}</p>
+      <p>{{ report.currencyLabel }}</p>
+    </header>
+    <table class="trial-balance-table" aria-label="Balance de Comprobación">
+      <colgroup>
+        <col class="description-column" />
+        <col class="detail-column" />
+        <col class="summary-column" />
+      </colgroup>
+      <tbody>
+        <tr *ngFor="let row of rows" [ngClass]="row.type.toLowerCase()" [class.last-in-group]="row.lastInGroup">
+          <th scope="row" [attr.colspan]="row.type === 'TOTAL_INTERMEDIO' || row.type === 'TOTAL_BALANCE' ? 2 : 1">
+            {{ row.label }}
+          </th>
+          <td
+            *ngIf="row.type !== 'TOTAL_INTERMEDIO' && row.type !== 'TOTAL_BALANCE'"
+            class="amount detail"
+            [class.negative]="row.amount !== null && row.amount < 0"
+          >
+            {{ row.type === 'CUENTA' ? money(row.amount) : '' }}
+          </td>
+          <td class="amount summary" [class.negative]="row.amount !== null && row.amount < 0">
+            {{ row.type !== 'CUENTA' ? money(row.amount) : '' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</ng-container>

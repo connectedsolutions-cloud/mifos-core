@@ -8,6 +8,7 @@ import { UsersService } from '../users.service';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIcon } from '@angular/material/icon';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { USER_DATA_SCOPE_OPTIONS, normalizeUserDataScope } from 'app/core/utils/data-scope';
 
 /**
  * Edit User Component.
@@ -35,6 +36,7 @@ export class EditUserComponent implements OnInit {
   rolesData: any;
   /** Edit User form. */
   editUserForm: UntypedFormGroup;
+  readonly dataScopeOptions = USER_DATA_SCOPE_OPTIONS;
 
   /**
    * Retrieves the offices data from `resolve`.
@@ -125,7 +127,8 @@ export class EditUserComponent implements OnInit {
       roles: [
         this.userData.selectedRoles.map((role: any) => role.id),
         Validators.required
-      ]
+      ],
+      dataScope: [normalizeUserDataScope(this.userData.dataScope)]
     });
 
     // Listen to officeIds changes for staff lookup
@@ -198,6 +201,9 @@ export class EditUserComponent implements OnInit {
     // Convert officeIds array to the format expected by API
     if (editedUser.officeIds && Array.isArray(editedUser.officeIds)) {
       editedUser.officeIds = editedUser.officeIds.map((id: any) => id.toString());
+    }
+    if (!editedUser.dataScope) {
+      editedUser.dataScope = '';
     }
     this.usersService.editUser(this.userData.id, editedUser).subscribe((response: any) => {
       this.router.navigate(

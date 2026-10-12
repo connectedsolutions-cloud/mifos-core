@@ -55,6 +55,18 @@
             </span>
           </div>
         </div>
+
+        <div class="content-row">
+          <div class="label">{{ 'labels.inputs.Data access' | translate }}</div>
+          <div class="value">{{ dataScopeLabelKey(userData.dataScope) | translate }}</div>
+        </div>
+
+        <div class="content-row">
+          <div class="label">{{ 'labels.inputs.Effective data access' | translate }}</div>
+          <div class="value">
+            {{ dataScopeLabelKey(normalizeRoleDataScope(userData.effectiveDataScope)) | translate }}
+          </div>
+        </div>
       </div>
 
       <div class="layout-row layout-align-center gap-2percent column-on-mobile back-button-container">

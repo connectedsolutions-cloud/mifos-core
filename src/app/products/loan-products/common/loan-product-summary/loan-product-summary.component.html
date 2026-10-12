@@ -10,6 +10,11 @@
     <span class="flex-60">{{ loanProduct.shortName }}</span>
   </div>
 
+  <div class="flex-fill layout-row" *ngIf="loanProduct.numberingCode">
+    <span class="flex-40">{{ 'labels.inputs.Account Numbering Code' | translate }}:</span>
+    <span class="flex-60">{{ loanProduct.numberingCode }}</span>
+  </div>
+
   <div class="flex-fill layout-row" *ngIf="loanProduct.externalId">
     <span class="flex-40">{{ 'labels.inputs.External Id' | translate }}:</span>
     <span class="flex-60">{{ loanProduct.externalId }}</span>

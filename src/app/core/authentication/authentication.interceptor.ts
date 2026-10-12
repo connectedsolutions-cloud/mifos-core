@@ -21,6 +21,8 @@ const authorizationHeader = 'Authorization';
 const authorizationTenantHeader = 'Fineract-Platform-TenantId';
 /** Two factor access token header. */
 const twoFactorAccessTokenHeader = 'Fineract-Platform-TFA-Token';
+/** Impersonation header: admin stays on Basic auth, effective user is swapped server-side. */
+const impersonationHeader = 'Fineract-Platform-Impersonate-User';
 
 /**
  * Http Request interceptor to set the request headers.
@@ -36,7 +38,11 @@ export class AuthenticationInterceptor implements HttpInterceptor {
     if (this.settingsService.tenantIdentifier) {
       httpOptions.headers['Fineract-Platform-TenantId'] = this.settingsService.tenantIdentifier;
     }
-    request = request.clone({ setHeaders: httpOptions.headers });
+    const headers = { ...httpOptions.headers };
+    if (request.url.includes('/passwordreset')) {
+      delete headers[authorizationHeader];
+    }
+    request = request.clone({ setHeaders: headers });
     return next.handle(request);
   }
 
@@ -65,6 +71,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
    */
   removeAuthorization() {
     delete httpOptions.headers[authorizationHeader];
+    this.removeImpersonateUser();
   }
 
   /**
@@ -73,6 +80,20 @@ export class AuthenticationInterceptor implements HttpInterceptor {
   removeAuthorizationTenant() {
     delete httpOptions.headers[authorizationHeader];
     delete httpOptions.headers[authorizationTenantHeader];
+  }
+
+  /**
+   * Sets the impersonation header so the API treats subsequent requests as the target user.
+   */
+  setImpersonateUser(userId: number) {
+    httpOptions.headers[impersonationHeader] = String(userId);
+  }
+
+  /**
+   * Removes the impersonation header.
+   */
+  removeImpersonateUser() {
+    delete httpOptions.headers[impersonationHeader];
   }
 
   /**

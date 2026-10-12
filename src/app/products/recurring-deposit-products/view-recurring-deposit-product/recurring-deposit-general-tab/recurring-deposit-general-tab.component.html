@@ -22,6 +22,11 @@
           <span class="flex-60">{{ recurringDepositProduct.shortName }}</span>
         </div>
 
+        <div class="flex-100 layout-row" *ngIf="recurringDepositProduct.numberingCode">
+          <span class="flex-40">{{ 'labels.inputs.Account Numbering Code' | translate }}:</span>
+          <span class="flex-60">{{ recurringDepositProduct.numberingCode }}</span>
+        </div>
+
         <div class="flex-100 layout-row" *ngIf="recurringDepositProduct.description">
           <span class="flex-40">{{ 'labels.inputs.Description' | translate }}:</span>
           <span class="flex-60">{{ recurringDepositProduct.description }}</span>

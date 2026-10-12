@@ -134,25 +134,29 @@
     }}</span>
   </div>
 
-  <div class="flex-fill layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Is Overdraft Allowed' | translate }}:</span>
-    <span class="flex-60">{{ savingsAccount.allowOverdraft | yesNo }}</span>
-  </div>
+  <ng-container *ngIf="savingsAccountProductTemplate?.allowOverdraft">
+    <div class="flex-fill layout-row">
+      <span class="flex-40">{{ 'labels.inputs.Is Overdraft Allowed' | translate }}:</span>
+      <span class="flex-60">{{ savingsAccount.allowOverdraft | yesNo }}</span>
+    </div>
 
-  <div class="flex-fill layout-row" *ngIf="savingsAccount.minOverdraftForInterestCalculation">
-    <span class="flex-40">{{ 'labels.inputs.Minimum Overdraft Required for Interest Calculation' | translate }}:</span>
-    <span class="flex-60">{{ savingsAccount.minOverdraftForInterestCalculation | formatNumber }}</span>
-  </div>
+    <div class="flex-fill layout-row" *ngIf="savingsAccount.minOverdraftForInterestCalculation">
+      <span class="flex-40"
+        >{{ 'labels.inputs.Minimum Overdraft Required for Interest Calculation' | translate }}:</span
+      >
+      <span class="flex-60">{{ savingsAccount.minOverdraftForInterestCalculation | formatNumber }}</span>
+    </div>
 
-  <div class="flex-fill layout-row" *ngIf="savingsAccount.nominalAnnualInterestRateOverdraft">
-    <span class="flex-40">{{ 'labels.inputs.Nominal Annual Interest for Overdraft' | translate }}:</span>
-    <span class="flex-60">{{ savingsAccount.nominalAnnualInterestRateOverdraft | formatNumber }} %</span>
-  </div>
+    <div class="flex-fill layout-row" *ngIf="savingsAccount.nominalAnnualInterestRateOverdraft">
+      <span class="flex-40">{{ 'labels.inputs.Nominal Annual Interest for Overdraft' | translate }}:</span>
+      <span class="flex-60">{{ savingsAccount.nominalAnnualInterestRateOverdraft | formatNumber }} %</span>
+    </div>
 
-  <div class="flex-fill layout-row" *ngIf="savingsAccount.overdraftLimit">
-    <span class="flex-40">{{ 'labels.inputs.Maximum Overdraft Amount Limit' | translate }}:</span>
-    <span class="flex-60">{{ savingsAccount.overdraftLimit | formatNumber }}</span>
-  </div>
+    <div class="flex-fill layout-row" *ngIf="savingsAccount.overdraftLimit">
+      <span class="flex-40">{{ 'labels.inputs.Maximum Overdraft Amount Limit' | translate }}:</span>
+      <span class="flex-60">{{ savingsAccount.overdraftLimit | formatNumber }}</span>
+    </div>
+  </ng-container>
 
   <div class="flex-fill layout-row">
     <span class="flex-40">{{ 'labels.inputs.Enforce Minimum Balance' | translate }}:</span>

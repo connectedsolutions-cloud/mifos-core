@@ -33,7 +33,7 @@
   </div>
 
   <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
+    <mifosx-loader diameter="40"></mifosx-loader>
   </div>
   <div *ngIf="error" class="error-message">{{ error }}</div>
 
@@ -92,7 +92,7 @@
     <!-- Closed view -->
     <ng-container *ngIf="viewMode === 'closed'">
       <div *ngIf="loadingCompleted" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
+        <mifosx-loader diameter="40"></mifosx-loader>
       </div>
       <div *ngIf="!loadingCompleted && completedGroups.length" class="completed-list">
         <div *ngFor="let group of completedGroups" class="date-group">

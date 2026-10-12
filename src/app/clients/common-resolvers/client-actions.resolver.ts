@@ -51,7 +51,9 @@ export class ClientActionsResolver {
       case 'Client Screen Reports':
         return this.clientsService.getClientReportTemplates();
       case 'Assign Staff':
-      case 'Assign Gestor':
+      case 'Assign Promotor':
+      case 'Assign Ejecutivo de cuenta':
+      case 'Assign Gestor de cobro':
       case 'Update Default Savings':
         return this.clientsService.getClientDataAndTemplate(clientId);
       case 'Undo Transfer':

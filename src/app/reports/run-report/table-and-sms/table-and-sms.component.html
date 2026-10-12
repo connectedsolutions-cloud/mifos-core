@@ -46,7 +46,7 @@
           (keydown.enter)="onRowClick(row)"
         ></tr>
       </table>
-      <mat-paginator [pageSizeOptions]="[100, 200, 300]" showFirstLastButtons></mat-paginator>
+      <mat-paginator [pageSize]="100" [pageSizeOptions]="[100, 200, 300]" showFirstLastButtons></mat-paginator>
     </div>
 
     <div class="alert" [hidden]="!notExistsReportData">
@@ -65,7 +65,7 @@
   </div>
 
   <div *ngIf="hideOutput" class="loader">
-    <div class="loading"></div>
+    <mifosx-loader diameter="100"></mifosx-loader>
   </div>
 
   <div class="back-button" *ngIf="!hideOutput">

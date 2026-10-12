@@ -1,4 +1,15 @@
 <mat-card class="account-card">
+  <div
+    class="account-status-ribbon"
+    [ngClass]="
+      savingsAccountData.subStatus.block
+        ? (savingsAccountData.subStatus.value | statusLookup)
+        : (savingsAccountData.status.code | statusLookup)
+    "
+    [matTooltip]="
+      savingsAccountData.subStatus.block ? savingsAccountData.subStatus.value : savingsAccountData.status.value
+    "
+  ></div>
   <mat-card-header class="header layout-column">
     <mat-card-title-group class="header-title-group">
       <div class="profile-image-container">

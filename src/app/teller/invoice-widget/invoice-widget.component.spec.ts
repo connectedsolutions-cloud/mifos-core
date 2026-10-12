@@ -261,6 +261,17 @@ describe('InvoiceWidgetComponent', () => {
     expect(component.readonlyMode).toBe(true);
   });
 
+  it.each([
+    'REJECTED',
+    'VOIDED'
+  ])('keeps terminal %s invoice history read-only', (status) => {
+    const { component } = buildComponent({
+      getInvoiceByTransaction: { id: 5, status }
+    });
+    component.ngOnInit();
+    expect(component.readonlyMode).toBe(true);
+  });
+
   it('printDte refetches invoice and calls pdf service', async () => {
     const invoice = { id: 5, status: 'ACCEPTED', tipoDte: '03', codigoGeneracion: 'uuid' };
     const { component, organizationService, dtePrintPdfService } = buildComponent({

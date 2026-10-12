@@ -84,6 +84,22 @@
             {{ role.name }}
           </span>
         </div>
+
+        <div class="flex-50 mat-body-strong">
+          {{ 'labels.inputs.Data access' | translate }}
+        </div>
+
+        <div class="flex-50">
+          {{ dataScopeLabelKey(userData.dataScope) | translate }}
+        </div>
+
+        <div class="flex-50 mat-body-strong">
+          {{ 'labels.inputs.Effective data access' | translate }}
+        </div>
+
+        <div class="flex-50">
+          {{ dataScopeLabelKey(normalizeRoleDataScope(userData.effectiveDataScope)) | translate }}
+        </div>
       </div>
 
       <div class="layout-row layout-align-center gap-2percent column-on-mobile">

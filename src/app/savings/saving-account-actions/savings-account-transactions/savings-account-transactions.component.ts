@@ -18,6 +18,7 @@ import { InputAmountComponent } from '../../../shared/input-amount/input-amount.
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { TreasuryBankHintComponent } from 'app/treasury/treasury-bank-hint.component';
 
 /**
  * Create savings account transactions component.
@@ -30,7 +31,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ...STANDALONE_SHARED_IMPORTS,
     InputAmountComponent,
     MatSlideToggle,
-    CdkTextareaAutosize
+    CdkTextareaAutosize,
+    TreasuryBankHintComponent
   ]
 })
 export class SavingsAccountTransactionsComponent implements OnInit {
@@ -56,6 +58,7 @@ export class SavingsAccountTransactionsComponent implements OnInit {
   transactionCommand: string;
   /** saving account's Id */
   savingAccountId: string;
+  savingsProductId: number | null = null;
   currency: Currency | null = null;
 
   /**
@@ -80,6 +83,8 @@ export class SavingsAccountTransactionsComponent implements OnInit {
       if (data.savingsAccountActionData.currency) {
         this.currency = data.savingsAccountActionData.currency;
       }
+      this.savingsProductId =
+        data.savingsAccountActionData.savingsProductId || data.savingsAccountActionData.productId || null;
     });
     this.transactionCommand = this.route.snapshot.params['name'].toLowerCase();
     this.transactionType[this.transactionCommand as 'deposit' | 'withdrawal'] = true;

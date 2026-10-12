@@ -1,4 +1,9 @@
 <mat-card class="account-card">
+  <div
+    class="account-status-ribbon"
+    [ngClass]="fixedDepositsAccountData.status.code | statusLookup"
+    [matTooltip]="fixedDepositsAccountData.status.value"
+  ></div>
   <mat-card-header class="header layout-column">
     <mat-card-title-group class="header-title-group">
       <div class="profile-image-container">

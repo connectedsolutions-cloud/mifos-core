@@ -21,6 +21,11 @@
           <span class="flex-60">{{ fixedDepositProductData.shortName }}</span>
         </div>
 
+        <div class="flex-100 layout-row" *ngIf="fixedDepositProductData.numberingCode">
+          <span class="flex-40">{{ 'labels.inputs.Account Numbering Code' | translate }}:</span>
+          <span class="flex-60">{{ fixedDepositProductData.numberingCode }}</span>
+        </div>
+
         <div class="flex-100 layout-row" *ngIf="fixedDepositProductData.description">
           <span class="flex-40">{{ 'labels.inputs.Description' | translate }}:</span>
           <span class="flex-60">{{ fixedDepositProductData.description }}</span>

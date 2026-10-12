@@ -24,6 +24,8 @@
           {{ transactionData.id }}
         </div>
 
+        <mifosx-treasury-link linkType="savings_transaction" [entityId]="transactionData.id"></mifosx-treasury-link>
+
         <div class="flex-50 mat-body-strong">
           {{ 'labels.inputs.Type' | translate }}
         </div>

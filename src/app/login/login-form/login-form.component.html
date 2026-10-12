@@ -33,8 +33,6 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-
     <button
       mat-raised-button
       color="primary"
@@ -42,8 +40,9 @@
       [disabled]="!loginForm.valid"
     >
       {{ 'labels.buttons.Login' | translate }}
-      <mat-spinner [diameter]="20" *ngIf="loading"></mat-spinner>
     </button>
+
+    <a routerLink="/forgot-password" class="forgot-password-link">{{ 'labels.links.Forgot Password?' | translate }}</a>
   </form>
 </div>
 
@@ -51,7 +50,6 @@
   <div *ngIf="!isLoggedIn" class="layout-column align-center-center">
     <button mat-raised-button color="primary" class="login-button-first flex-align-center" (click)="loginOIDC()">
       {{ 'labels.buttons.Login' | translate }}
-      <mat-spinner [diameter]="20" *ngIf="loading"></mat-spinner>
     </button>
   </div>
   <div *ngIf="isLoggedIn">

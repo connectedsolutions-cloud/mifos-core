@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Currency } from 'app/shared/models/general.model';
@@ -13,6 +14,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   templateUrl: './general-tab.component.html',
   styleUrls: ['./general-tab.component.scss'],
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     ExternalIdentifierComponent,
     CurrencyPipe,

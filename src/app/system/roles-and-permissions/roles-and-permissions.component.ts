@@ -27,6 +27,8 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatTooltip } from '@angular/material/tooltip';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { SystemService } from '../system.service';
+import { downloadRolePermissionJson, toRolePermissionJson } from './role-permission-json';
 
 /**
  * Roles and Permissions component.
@@ -92,7 +94,8 @@ export class RolesAndPermissionsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private systemService: SystemService
   ) {
     this.route.data.subscribe((data: { roles: any }) => {
       this.roleData = data.roles;
@@ -120,6 +123,22 @@ export class RolesAndPermissionsComponent implements OnInit, AfterViewInit {
    */
   routeEdit(event: MouseEvent) {
     event.stopPropagation();
+  }
+
+  /**
+   * Downloads the selected role's permission codes as JSON.
+   */
+  exportRole(event: MouseEvent, role: { id: number | string; name?: string; description?: string }): void {
+    event.stopPropagation();
+    this.systemService.getRole(role.id).subscribe((details: any) => {
+      downloadRolePermissionJson(
+        toRolePermissionJson({
+          name: details.name || role.name,
+          description: details.description || role.description,
+          permissionUsageData: details.permissionUsageData
+        })
+      );
+    });
   }
 
   /**

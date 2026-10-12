@@ -18,6 +18,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 })
 export class AccountDetailsComponent {
   loanDetails: any;
+  isArisstoImported = false;
   dataObject: {
     property: string;
     value: string;
@@ -26,6 +27,7 @@ export class AccountDetailsComponent {
   constructor(private route: ActivatedRoute) {
     this.route.parent.data.subscribe((data: { loanDetailsData: any }) => {
       this.loanDetails = data.loanDetailsData;
+      this.isArisstoImported = this.loanDetails.externalId?.startsWith('ARISSTO:CRD:') ?? false;
     });
   }
 }

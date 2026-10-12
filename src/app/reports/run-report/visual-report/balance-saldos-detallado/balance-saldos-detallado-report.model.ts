@@ -135,8 +135,8 @@ export function buildBalanceSaldosDetalladoViewModel(
     }
     const debit = amount(record.detail_debit, 'detail_debit');
     const credit = amount(record.detail_credit, 'detail_credit');
-    if ((debit === 0) === (credit === 0)) {
-      throw new Error(`Account ${code} detail ${record.detail_sequence} must contain exactly one amount side.`);
+    if (debit === 0 && credit === 0) {
+      throw new Error(`Account ${code} detail ${record.detail_sequence} must contain a debit or credit amount.`);
     }
     account.entries.push({
       sequence: requiredNumber(record, 'detail_sequence'),
@@ -167,7 +167,6 @@ export function buildBalanceSaldosDetalladoViewModel(
   }
 
   const orderedAccounts = [...accounts.values()].sort((a, b) => a.displayOrder - b.displayOrder);
-  const rootAccounts = orderedAccounts.filter((account) => !account.parentCode || !accounts.has(account.parentCode));
 
   return {
     organizationName: 'CREDESAL S.C. DE R.L. DE C.V.',
@@ -177,8 +176,8 @@ export function buildBalanceSaldosDetalladoViewModel(
     generatedOn: formatDate(new Date()),
     generatedBy,
     accounts: orderedAccounts,
-    debitTotal: cents(rootAccounts.reduce((total, account) => total + account.debitMovement, 0)),
-    creditTotal: cents(rootAccounts.reduce((total, account) => total + account.creditMovement, 0))
+    debitTotal: cents(orderedAccounts.reduce((total, account) => total + account.debitMovement, 0)),
+    creditTotal: cents(orderedAccounts.reduce((total, account) => total + account.creditMovement, 0))
   };
 }
 

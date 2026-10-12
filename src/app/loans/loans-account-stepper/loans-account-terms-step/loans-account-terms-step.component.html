@@ -385,18 +385,36 @@
       </mat-checkbox>
     </div>
 
-    <ng-container class="flex-48" *ngIf="loansAccountTermsData?.isTopup">
-      <mat-checkbox class="flex-20" formControlName="isTopup">
-        <p>{{ 'labels.inputs.Is Topup Loan' | translate }}?</p>
-      </mat-checkbox>
+    <ng-container *ngIf="loansAccountTermsData?.isTopup">
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Refinancing operation' | translate }}</mat-label>
+        <mat-select formControlName="refinancingMode">
+          <mat-option *ngFor="let mode of refinancingModes" [value]="mode.value">
+            {{ 'labels.inputs.' + mode.label | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <mat-form-field class="flex-fill flex-24" *ngIf="loansAccountTermsForm.controls.isTopup.value">
-        <mat-label>{{ 'labels.inputs.Loan closed with Topup' | translate }}</mat-label>
+      <mat-form-field
+        class="flex-48"
+        *ngIf="loansAccountTermsForm.controls.refinancingMode.value === 'SINGLE_REFINANCE'"
+      >
+        <mat-label>{{ 'labels.inputs.Loan to refinance' | translate }}</mat-label>
         <mat-select formControlName="loanIdToClose">
           <mat-option *ngFor="let clientActiveLoan of clientActiveLoanData" [value]="clientActiveLoan.id">
             {{ clientActiveLoan.accountNo }}
           </mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="flex-48" *ngIf="loansAccountTermsForm.controls.refinancingMode.value === 'CONSOLIDATION'">
+        <mat-label>{{ 'labels.inputs.Loans to consolidate' | translate }}</mat-label>
+        <mat-select formControlName="loanIdsToClose" multiple>
+          <mat-option *ngFor="let clientActiveLoan of clientActiveLoanData" [value]="clientActiveLoan.id">
+            {{ clientActiveLoan.accountNo }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>{{ 'labels.inputs.Select at least two loans' | translate }}</mat-hint>
       </mat-form-field>
     </ng-container>
 

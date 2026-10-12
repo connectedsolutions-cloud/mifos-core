@@ -30,6 +30,19 @@
     </mat-form-field>
 
     <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Account Numbering Code' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="numberingCode"
+        maxlength="4"
+        matTooltip="{{
+          'tooltips.Account numbering code is stored on the product and used when generating account numbers'
+            | translate
+        }}"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="flex-48">
       <mat-label>{{ 'labels.inputs.External Id' | translate }}</mat-label>
       <input
         matInput

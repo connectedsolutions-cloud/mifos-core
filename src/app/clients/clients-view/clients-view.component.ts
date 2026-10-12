@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 /** Custom Dialogs */
 import { UnassignStaffDialogComponent } from './custom-dialogs/unassign-staff-dialog/unassign-staff-dialog.component';
-import { UnassignGestorDialogComponent } from './custom-dialogs/unassign-gestor-dialog/unassign-gestor-dialog.component';
 import { UploadSignatureDialogComponent } from './custom-dialogs/upload-signature-dialog/upload-signature-dialog.component';
 import { ViewSignatureDialogComponent } from './custom-dialogs/view-signature-dialog/view-signature-dialog.component';
 import { DeleteSignatureDialogComponent } from './custom-dialogs/delete-signature-dialog/delete-signature-dialog.component';
@@ -16,17 +15,9 @@ import { CaptureImageDialogComponent } from './custom-dialogs/capture-image-dial
 
 /** Custom Services */
 import { ClientViewRefreshService } from '../client-view-refresh.service';
-import { ClientsService } from '../clients.service';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
-import {
-  MatCard,
-  MatCardHeader,
-  MatCardTitleGroup,
-  MatCardMdImage,
-  MatCardTitle,
-  MatCardSubtitle,
-  MatCardContent
-} from '@angular/material/card';
+import { ClientsService } from '../clients.service';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgClass, NgIf, NgFor } from '@angular/common';
@@ -45,8 +36,18 @@ import {
   CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
   CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
   CREDESAL_CLIENT_DATA_DATATABLE_NAMES,
+  CREDESAL_HIDDEN_CLIENT_DATATABLE_NAMES,
   CREDESAL_WORK_BUSINESS_DATATABLE_NAME
 } from './credesal-client-data-datatables';
+import { ClientStaffAssignmentService } from '../client-staff-assignment.service';
+import {
+  ClientStaffAssignment,
+  ClientStaffAssignmentRole,
+  CREDESAL_CLIENT_HEADER_STAFF_ROLES,
+  EMPTY_CLIENT_STAFF_ASSIGNMENT,
+  staffAssignmentRoleByAssignAction,
+  staffAssignmentRoleByUnassignAction
+} from './credesal-client-staff-assignment';
 
 @Component({
   selector: 'mifosx-clients-view',
@@ -55,17 +56,14 @@ import {
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     MatCardHeader,
-    MatCardTitleGroup,
-    MatCardMdImage,
+    MatCardContent,
     MatTooltip,
-    MatCardTitle,
     NgClass,
     EntityNameComponent,
     MatIconButton,
     MatMenuTrigger,
     MatIcon,
     FaIconComponent,
-    MatCardSubtitle,
     AccountNumberComponent,
     ExternalIdentifierComponent,
     MatMenu,
@@ -86,6 +84,9 @@ export class ClientsViewComponent implements OnInit {
   clientImage: any;
   clientTemplateData: any;
   personalDetails: { estadoCivil?: string; conocidoPor?: string } = {};
+  staffAssignment: ClientStaffAssignment = { ...EMPTY_CLIENT_STAFF_ASSIGNMENT };
+  staffAssignmentNames: Record<string, string> = {};
+  staffAssignmentRoles = CREDESAL_CLIENT_HEADER_STAFF_ROLES;
   private readonly workBusinessDatatableName = CREDESAL_WORK_BUSINESS_DATATABLE_NAME;
   private readonly allowedClientTypeTagNames = CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES;
   private readonly allowedShareholderTagNames = CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES;
@@ -95,6 +96,7 @@ export class ClientsViewComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private clientsService: ClientsService,
+    private clientStaffAssignmentService: ClientStaffAssignmentService,
     private authenticationService: AuthenticationService,
     private clientViewRefreshService: ClientViewRefreshService,
     private cdr: ChangeDetectorRef,
@@ -133,6 +135,25 @@ export class ClientsViewComponent implements OnInit {
       });
     }
     this.loadPersonalDetailsDatatable();
+    this.loadStaffAssignment();
+  }
+
+  private loadStaffAssignment() {
+    this.clientStaffAssignmentService.load(this.clientViewData.id).subscribe({
+      next: (result) => {
+        this.staffAssignment = result.assignment;
+        this.staffAssignmentNames = result.names;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.staffAssignment = { ...EMPTY_CLIENT_STAFF_ASSIGNMENT };
+        this.staffAssignmentNames = {};
+      }
+    });
+  }
+
+  isStaffRoleAssigned(controlName: keyof ClientStaffAssignment): boolean {
+    return this.staffAssignment[controlName] != null;
   }
 
   private loadPersonalDetailsDatatable() {
@@ -228,6 +249,9 @@ export class ClientsViewComponent implements OnInit {
   }
 
   private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (CREDESAL_HIDDEN_CLIENT_DATATABLE_NAMES.has(registeredTableName)) {
+      return false;
+    }
     if (registeredTableName === this.workBusinessDatatableName) {
       return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
     }
@@ -265,9 +289,25 @@ export class ClientsViewComponent implements OnInit {
    * @param {string} name action name.
    */
   doAction(name: string) {
+    if (name === 'Assign Staff') {
+      this.router.navigate([`actions/${name}`], { relativeTo: this.route });
+      return;
+    }
+    if (name === 'Unassign Staff') {
+      this.unassignStaff();
+      return;
+    }
+    const assignRole = staffAssignmentRoleByAssignAction(name);
+    if (assignRole) {
+      this.router.navigate([`actions/${name}`], { relativeTo: this.route });
+      return;
+    }
+    const unassignRole = staffAssignmentRoleByUnassignAction(name);
+    if (unassignRole) {
+      this.unassignStaffRole(unassignRole);
+      return;
+    }
     switch (name) {
-      case 'Assign Staff':
-      case 'Assign Gestor':
       case 'Close':
       case 'Survey':
       case 'Reject':
@@ -284,12 +324,6 @@ export class ClientsViewComponent implements OnInit {
       case 'Create Collateral':
       case 'Client Screen Reports':
         this.router.navigate([`actions/${name}`], { relativeTo: this.route });
-        break;
-      case 'Unassign Staff':
-        this.unassignStaff();
-        break;
-      case 'Unassign Gestor':
-        this.unassignGestor();
         break;
       case 'Delete':
         this.deleteClient();
@@ -361,7 +395,7 @@ export class ClientsViewComponent implements OnInit {
   }
 
   /**
-   * Unassign's the client's staff.
+   * Unassign's the client's native staff.
    */
   private unassignStaff() {
     const unAssignStaffDialogRef = this.dialog.open(UnassignStaffDialogComponent);
@@ -377,17 +411,20 @@ export class ClientsViewComponent implements OnInit {
   }
 
   /**
-   * Unassign's the client's gestor.
+   * Unassign a staff role stored on credesal_client_staff_assignment.
    */
-  private unassignGestor() {
-    const unAssignGestorDialogRef = this.dialog.open(UnassignGestorDialogComponent);
-    unAssignGestorDialogRef.afterClosed().subscribe((response: { confirm: any }) => {
-      if (response.confirm) {
-        this.clientsService
-          .executeClientCommand(this.clientViewData.id, 'unassignGestor', { gestorId: this.clientViewData.gestorId })
-          .subscribe(() => {
-            this.reload();
-          });
+  private unassignStaffRole(role: ClientStaffAssignmentRole) {
+    const dialogRef = this.dialog.open(UnassignStaffDialogComponent, {
+      data: {
+        headingKey: role.unassignHeadingKey,
+        textKey: role.unassignTextKey
+      }
+    });
+    dialogRef.afterClosed().subscribe((response: { confirm: any }) => {
+      if (response?.confirm) {
+        this.clientStaffAssignmentService.upsertColumn(this.clientViewData.id, role.column, null).subscribe(() => {
+          this.reload();
+        });
       }
     });
   }

@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -19,13 +19,21 @@ import { MatDivider } from '@angular/material/divider';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
-import { catchError, forkJoin, of, switchMap } from 'rxjs';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { catchError, forkJoin, of, Subject, switchMap } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
   CREDESAL_ALLOWED_CLIENT_TYPE_TAG_NAMES,
   CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
   CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
   CREDESAL_WORK_BUSINESS_DATATABLE_NAME
 } from '../clients-view/credesal-client-data-datatables';
+import {
+  assignmentFromFormValue,
+  CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE,
+  CREDESAL_CLIENT_HEADER_STAFF_ROLES,
+  hasAnyStaffAssignment
+} from '../clients-view/credesal-client-staff-assignment';
 
 /**
  * Edit Client Component
@@ -36,12 +44,13 @@ import {
   styleUrls: ['./edit-client.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
+    NgxMatSelectSearchModule,
     MatDivider,
     CdkTextareaAutosize,
     MatCheckbox
   ]
 })
-export class EditClientComponent implements OnInit {
+export class EditClientComponent implements OnInit, OnDestroy {
   private readonly personalDatatableName = 'credesal_client_datos_personales';
   private readonly workBusinessDatatableName = CREDESAL_WORK_BUSINESS_DATATABLE_NAME;
   private readonly clientTypeRestrictedDatatableNames = CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES;
@@ -60,9 +69,21 @@ export class EditClientComponent implements OnInit {
   /** Office Options */
   officeOptions: any;
   /** Staff Options */
-  staffOptions: any;
-  /** Gestor Options */
-  gestorOptions: any;
+  staffOptions: any[] = [];
+  filteredStaffByRole: Record<string, any[]> = Object.fromEntries(
+    CREDESAL_CLIENT_HEADER_STAFF_ROLES.map((role): [string, any[]] => [
+      String(role.controlName),
+      []
+    ])
+  );
+  staffFilterCtrls: Record<string, UntypedFormControl> = Object.fromEntries(
+    CREDESAL_CLIENT_HEADER_STAFF_ROLES.map((role): [string, UntypedFormControl] => [
+      String(role.controlName),
+      new UntypedFormControl('')])
+  );
+  staffAssignmentRoles = CREDESAL_CLIENT_HEADER_STAFF_ROLES;
+  private readonly destroy$ = new Subject<void>();
+  private hasExistingStaffAssignmentRow = false;
   /** Legal Form Options */
   legalFormOptions: any;
   /** Client Type Options */
@@ -109,6 +130,7 @@ export class EditClientComponent implements OnInit {
 
   ngOnInit() {
     this.maxDate = this.settingsService.businessDate;
+    this.setupStaffSearch();
     this.createEditClientForm();
     this.setOptions();
     this.buildDependencies();
@@ -141,8 +163,6 @@ export class EditClientComponent implements OnInit {
 
     this.editClientForm.patchValue({
       officeId: this.clientDataAndTemplate.officeId,
-      staffId: this.clientDataAndTemplate.staffId,
-      gestorId: this.clientDataAndTemplate.gestorId,
       legalFormId: this.clientDataAndTemplate.legalForm && this.clientDataAndTemplate.legalForm.id,
       accountNo: this.clientDataAndTemplate.accountNo,
       externalId: this.clientDataAndTemplate.externalId,
@@ -167,6 +187,12 @@ export class EditClientComponent implements OnInit {
       this.legalFormId = this.clientDataAndTemplate.legalForm.id;
     }
     this.loadExistingDatatableValues();
+    this.loadStaffAssignment();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -175,8 +201,9 @@ export class EditClientComponent implements OnInit {
   createEditClientForm() {
     this.editClientForm = this.formBuilder.group({
       officeId: [{ value: '', disabled: true }],
-      staffId: [''],
-      gestorId: [''],
+      promoterStaffId: [null],
+      accountExecutiveStaffId: [null],
+      collectionsManagerStaffId: [null],
       legalFormId: [{ value: '', disabled: true }],
       isStaff: [false],
       active: [false],
@@ -205,8 +232,8 @@ export class EditClientComponent implements OnInit {
    */
   setOptions() {
     this.officeOptions = this.clientDataAndTemplate.officeOptions;
-    this.staffOptions = this.clientDataAndTemplate.staffOptions;
-    this.gestorOptions = this.clientDataAndTemplate.staffOptions;
+    this.staffOptions = [];
+    this.refreshFilteredStaff();
     this.legalFormOptions = this.clientDataAndTemplate.clientLegalFormOptions;
     this.clientTypeOptions = this.clientDataAndTemplate.clientTypeOptions;
     this.clientClassificationTypeOptions = this.clientDataAndTemplate.clientClassificationOptions;
@@ -299,7 +326,15 @@ export class EditClientComponent implements OnInit {
     const dateFormat = this.settingsService.dateFormat;
     const editClientFormValue: any = this.editClientForm.getRawValue();
     Object.keys(editClientFormValue).forEach((key) => {
-      if (key.startsWith('personalDt_') || key.startsWith('dt_')) {
+      if (
+        key.startsWith('personalDt_') ||
+        key.startsWith('dt_') ||
+        key === 'promoterStaffId' ||
+        key === 'accountExecutiveStaffId' ||
+        key === 'collectionsManagerStaffId' ||
+        key === 'staffId' ||
+        key === 'gestorId'
+      ) {
         delete editClientFormValue[key];
       }
     });
@@ -328,12 +363,41 @@ export class EditClientComponent implements OnInit {
       clientData.clientNonPersonDetails = {};
     }
     const datatablesPayload = this.getDatatablesPayload();
+    const staffAssignment = assignmentFromFormValue(this.editClientForm.getRawValue());
     this.clientsService
       .updateClient(this.clientDataAndTemplate.id, clientData)
-      .pipe(switchMap(() => this.saveDatatables(this.clientDataAndTemplate.id, datatablesPayload)))
+      .pipe(
+        switchMap(() => this.saveDatatables(this.clientDataAndTemplate.id, datatablesPayload)),
+        switchMap(() => this.saveStaffAssignment(this.clientDataAndTemplate.id, staffAssignment))
+      )
       .subscribe(() => {
         this.router.navigate(['../'], { relativeTo: this.route });
       });
+  }
+
+  private loadStaffAssignment(): void {
+    this.clientsService.getActiveStaff().subscribe((staff) => {
+      this.staffOptions = staff || [];
+      this.refreshFilteredStaff();
+    });
+    this.clientsService
+      .getClientStaffAssignment(this.clientDataAndTemplate.id)
+      .subscribe(({ assignment, hasExistingRow }) => {
+        this.hasExistingStaffAssignmentRow = hasExistingRow;
+        this.editClientForm.patchValue(assignment);
+      });
+  }
+
+  private saveStaffAssignment(clientId: string, assignment: ReturnType<typeof assignmentFromFormValue>) {
+    if (!this.hasExistingStaffAssignmentRow && !hasAnyStaffAssignment(assignment)) {
+      return of(null);
+    }
+    return this.clientsService.saveClientStaffAssignment(
+      clientId,
+      assignment,
+      this.settingsService.language.code,
+      this.hasExistingStaffAssignmentRow
+    );
   }
 
   private saveDatatables(clientId: string, datatablesPayload: any[]) {
@@ -405,6 +469,9 @@ export class EditClientComponent implements OnInit {
   }
 
   private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (registeredTableName === CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE) {
+      return false;
+    }
     if (registeredTableName === this.workBusinessDatatableName) {
       return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
     }
@@ -599,6 +666,37 @@ export class EditClientComponent implements OnInit {
 
   isText(columnType: string) {
     return this.datatableService.isText(columnType);
+  }
+
+  private setupStaffSearch(): void {
+    this.staffAssignmentRoles.forEach((role) => {
+      const controlName = String(role.controlName);
+      this.staffFilterCtrls[controlName].valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.refreshFilteredStaff(controlName);
+      });
+    });
+  }
+
+  private refreshFilteredStaff(controlName?: string): void {
+    const roles = controlName
+      ? this.staffAssignmentRoles.filter((role) => String(role.controlName) === controlName)
+      : this.staffAssignmentRoles;
+    roles.forEach((role) => {
+      const key = String(role.controlName);
+      this.filteredStaffByRole[key] = this.filterStaff(this.staffFilterCtrls[key]?.value);
+    });
+  }
+
+  private filterStaff(search: string | null): any[] {
+    if (!search) {
+      return this.staffOptions.slice();
+    }
+    const term = String(search).toLowerCase();
+    return this.staffOptions.filter((staff) =>
+      String(staff.displayName || '')
+        .toLowerCase()
+        .includes(term)
+    );
   }
 
   private debugDatatablePayload(context: string): void {

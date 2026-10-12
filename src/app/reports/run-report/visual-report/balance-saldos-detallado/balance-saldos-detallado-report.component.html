@@ -54,6 +54,17 @@
             </td>
             <td colspan="3"></td>
           </tr>
+          <tr class="detail-heading-row">
+            <th scope="col">Partida</th>
+            <th scope="col" colspan="2">
+              <span class="detail-date">Fecha</span>
+              <span class="detail-branch">Sucursal</span>
+              <span>Concepto</span>
+            </th>
+            <th scope="col" class="amount">Debe</th>
+            <th scope="col" class="amount">Haber</th>
+            <th></th>
+          </tr>
           <tr class="detail-row" *ngFor="let entry of account.entries">
             <td>{{ entry.journalNumber }}</td>
             <td colspan="2" class="detail-description">

@@ -38,6 +38,7 @@ import { DateFormatPipe } from '../../pipes/date-format.pipe';
 import { FormatNumberPipe } from '../../pipes/format-number.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { LoanProducts } from 'app/products/loan-products/loan-products';
+import { CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE } from './credesal-loan-staff-assignment';
 
 @Component({
   selector: 'mifosx-loans-view',
@@ -180,7 +181,9 @@ export class LoansViewComponent implements OnInit {
   private applyLoanDetailsData(loanDetailsData: any, loanDatatables?: any, loanArrearsDelinquencyConfig?: any): void {
     this.loanDetailsData = loanDetailsData;
     if (loanDatatables !== undefined) {
-      this.loanDatatables = loanDatatables;
+      this.loanDatatables = (loanDatatables || []).filter(
+        (datatable: any) => datatable.registeredTableName !== CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE
+      );
     }
     if (loanArrearsDelinquencyConfig !== undefined) {
       this.loanDisplayArrearsDelinquency = loanArrearsDelinquencyConfig.value || 0;

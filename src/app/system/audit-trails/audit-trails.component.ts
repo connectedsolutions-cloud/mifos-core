@@ -19,7 +19,7 @@ import { Dates } from 'app/core/utils/dates';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgFor, NgIf, AsyncPipe } from '@angular/common';
 import { MatOption, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
-import { MatProgressBar } from '@angular/material/progress-bar';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import {
   MatTable,
   MatColumnDef,
@@ -47,7 +47,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     FaIconComponent,
     MatAutocompleteTrigger,
     MatAutocomplete,
-    MatProgressBar,
+    LoaderComponent,
     MatTable,
     MatSort,
     MatColumnDef,

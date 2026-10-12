@@ -2,3 +2,54 @@
   pointer-events: none; // Prevent clicks
   opacity: 0.5; // Greyed out effect
 }
+
+mat-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.system-menu-grid {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-items: flex-start;
+
+  > .flex-50 {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    margin-bottom: 0;
+  }
+}
+
+mat-nav-list {
+  min-width: 0;
+  width: 100%;
+}
+
+mat-list-item {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.menu-list-item-content {
+  min-width: 0;
+}
+
+.menu-left-section {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.menu-right-section {
+  flex-shrink: 0;
+  margin-right: 0;
+}
+
+@media (width <= 768px) {
+  .system-menu-grid > .flex-50 {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}

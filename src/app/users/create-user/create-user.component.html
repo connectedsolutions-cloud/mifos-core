@@ -146,6 +146,15 @@
               <strong>{{ 'labels.commons.must be selected' | translate }}</strong>
             </mat-error>
           </mat-form-field>
+
+          <mat-form-field class="flex-48">
+            <mat-label>{{ 'labels.inputs.Data access' | translate }}</mat-label>
+            <mat-select formControlName="dataScope">
+              <mat-option *ngFor="let option of dataScopeOptions" [value]="option.value">
+                {{ option.labelKey | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </mat-card-content>
 

@@ -115,6 +115,11 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
   interestCalculationPeriodTypeData: any;
   /** Client Active Loan Data */
   clientActiveLoanData: any;
+  readonly refinancingModes = [
+    { value: 'NONE', label: 'Standard loan' },
+    { value: 'SINGLE_REFINANCE', label: 'Refinance one loan' },
+    { value: 'CONSOLIDATION', label: 'Consolidate multiple loans' }
+  ];
   /** Multi Disbursement Data */
   disbursementDataSource: DisbursementData[] = [];
   /** Loan repayment strategies */
@@ -227,6 +232,19 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
           this.loansAccountTermsData.interestRecognitionOnDisbursementDate || false,
         disbursalMethodPaymentTypeId: this.loansAccountTermsData.disbursalMethodPaymentTypeId || ''
       });
+      const predecessorIds =
+        this.loansAccountTermsData.loanIdsToClose ||
+        this.loansAccountTermsData.refinancingSettlements?.map((settlement: any) => settlement.loanId) ||
+        (this.loansAccountTermsData.closureLoanId ? [this.loansAccountTermsData.closureLoanId] : []);
+      const refinancingMode =
+        predecessorIds.length > 1 ? 'CONSOLIDATION' : this.loansAccountTermsData.isTopup ? 'SINGLE_REFINANCE' : 'NONE';
+      this.loansAccountTermsForm.patchValue({
+        refinancingMode,
+        isTopup: refinancingMode !== 'NONE',
+        loanIdToClose: predecessorIds.length === 1 ? predecessorIds[0] : '',
+        loanIdsToClose: predecessorIds
+      });
+      this.configureRefinancingMode(refinancingMode);
 
       this.setDefaultDisbursalMethodIfEmpty();
       this.setAdvancedPaymentStrategyControls();
@@ -527,6 +545,8 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
       graceOnInterestPayment: [''],
       graceOnArrearsAgeing: [''],
       loanIdToClose: [''],
+      loanIdsToClose: [[]],
+      refinancingMode: ['NONE'],
       fixedEmiAmount: [''],
       isTopup: [''],
       maxOutstandingLoanBalance: [''],
@@ -542,6 +562,31 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
       allowFullTermForTranche: [false],
       disbursalMethodPaymentTypeId: ['']
     });
+    this.loansAccountTermsForm.get('refinancingMode').valueChanges.subscribe((mode: string) => {
+      this.configureRefinancingMode(mode);
+    });
+  }
+
+  private configureRefinancingMode(mode: string): void {
+    const singleLoan = this.loansAccountTermsForm.get('loanIdToClose');
+    const multipleLoans = this.loansAccountTermsForm.get('loanIdsToClose');
+    singleLoan.clearValidators();
+    multipleLoans.clearValidators();
+    if (mode === 'SINGLE_REFINANCE') {
+      singleLoan.setValidators(Validators.required);
+      multipleLoans.setValue([]);
+    } else if (mode === 'CONSOLIDATION') {
+      multipleLoans.setValidators([
+        Validators.required,
+        Validators.minLength(2)]);
+      singleLoan.setValue('');
+    } else {
+      singleLoan.setValue('');
+      multipleLoans.setValue([]);
+    }
+    this.loansAccountTermsForm.get('isTopup').setValue(mode !== 'NONE', { emitEvent: false });
+    singleLoan.updateValueAndValidity({ emitEvent: false });
+    multipleLoans.updateValueAndValidity({ emitEvent: false });
   }
 
   calculateLoanTerm(numberOfRepayments: number, repaymentEvery: number): void {
@@ -732,7 +777,17 @@ export class LoansAccountTermsStepComponent implements OnInit, OnChanges {
    * Returns loans account terms form value.
    */
   get loansAccountTerms() {
-    return this.loansAccountTermsForm.getRawValue();
+    const { refinancingMode, ...terms } = this.loansAccountTermsForm.getRawValue();
+    if (refinancingMode === 'SINGLE_REFINANCE') {
+      terms.loanIdsToClose = [terms.loanIdToClose];
+    } else if (refinancingMode === 'CONSOLIDATION') {
+      delete terms.loanIdToClose;
+    } else {
+      delete terms.loanIdToClose;
+      delete terms.loanIdsToClose;
+      terms.isTopup = false;
+    }
+    return terms;
   }
 
   get loanCollateral() {

@@ -174,6 +174,7 @@ export class WebAppComponent implements OnInit, OnDestroy {
 
     // Setup translations
     this.translateService.addLangs(environment.supportedLanguages.split(','));
+    this.translateService.setDefaultLang(environment.defaultLanguage);
     if (this.settingsService.language) {
       this.translateService.use(this.settingsService.languageCode);
     } else {
@@ -258,7 +259,12 @@ export class WebAppComponent implements OnInit, OnDestroy {
     if (!localStorage.getItem('mifosXTenantIdentifier')) {
       this.settingsService.setTenantIdentifier(environment.fineractPlatformTenantId || 'default');
     }
-    this.settingsService.setTenantIdentifiers(environment.fineractPlatformTenantIds.split(','));
+    this.settingsService.setTenantIdentifiers(
+      environment.fineractPlatformTenantIds
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id)
+    );
 
     // Subscribe to session timeout If IdleTimeout is higher than 0 (zero)
     const configuredTimeout = environment.session.timeout.idleTimeout;

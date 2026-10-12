@@ -107,7 +107,6 @@ export class FrequentPostingsComponent implements OnInit {
       ],
       debits: this.formBuilder.array([]),
       credits: this.formBuilder.array([]),
-      referenceNumber: [''],
       transactionDate: [
         '',
         Validators.required

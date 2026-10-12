@@ -42,15 +42,20 @@
     <!-- Form Section -->
     <div class="layout-column align-center-center">
       <!-- Tenant Identifier Name -->
-      <mifosx-tenant-selector *ngIf="displayTenantSelector()" style="display: none !important"></mifosx-tenant-selector>
+      <mifosx-tenant-selector *ngIf="displayTenantSelector() && !isCompletePasswordReset"></mifosx-tenant-selector>
 
       <!--
         Type of Form:
           Login
+          Forgot password
           Reset Password
           Two Factor Authentication
       -->
-      <mifosx-login-form *ngIf="!resetPassword && !twoFactorAuthenticationRequired"></mifosx-login-form>
+      <mifosx-login-form
+        *ngIf="!resetPassword && !twoFactorAuthenticationRequired && !isForgotPassword && !isCompletePasswordReset"
+      ></mifosx-login-form>
+      <mifosx-forgot-password-request *ngIf="isForgotPassword"></mifosx-forgot-password-request>
+      <mifosx-forgot-password-complete *ngIf="isCompletePasswordReset"></mifosx-forgot-password-complete>
 
       <div class="layout-row">
         <mifosx-reset-password *ngIf="resetPassword"></mifosx-reset-password>

@@ -18,61 +18,130 @@
 
 .account-card {
   .header {
-    // Override global theme: set custom background color for client view header only
-    background-color: #dbe9f2 !important;
-    padding: 1%;
+    display: block;
+    background-color: #e4eef6 !important;
+    padding: 16px 20px;
+
+    .client-profile {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      width: 100%;
+    }
 
     .profile-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 112px;
+      flex-shrink: 0;
+      margin: 0;
+
+      .profile-image {
+        width: 64px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 2px;
+      }
+
+      .client-image-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
       .client-image-button {
         min-width: 26px;
-        padding: 0 6px;
-        margin: 4px;
-        line-height: 25px;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        margin: 0;
+        line-height: 26px;
       }
 
       .signature {
-        color: #505050;
-        background-color: #dbe9f2 !important;
+        color: #1074b9;
+        background-color: transparent !important;
         text-align: center;
         margin: 0;
-        padding: 2%;
+        padding: 0;
+        font-size: 12px;
+        line-height: 16px;
 
         &:hover {
           cursor: pointer;
-          background-color: #c8dde8 !important;
+          text-decoration: underline;
         }
       }
     }
 
-    // Override text colors in header for better contrast with light background
-    .header-title-group {
-      // Target text elements specifically, excluding interactive elements
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6,
-      p,
-      span,
-      td,
-      th,
-      div,
-      mifosx-entity-name,
-      mifosx-account-number,
-      mifosx-external-identifier {
-        color: #505050 !important;
-      }
+    .client-profile-identity {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
 
-      .account-card-title {
-        color: #505050 !important;
-        width: 90%;
-      }
+    .client-profile-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
-      // Ensure mat-card-subtitle text is also #505050
-      mat-card-subtitle {
-        color: #505050 !important;
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 24px;
+        color: rgb(0 0 0 / 87%);
       }
+    }
+
+    .client-status {
+      font-size: 13px;
+      line-height: 16px;
+      color: #5f6368;
+    }
+
+    .client-profile-spacer {
+      flex: 1;
+    }
+
+    .client-profile-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 28px;
+    }
+
+    .client-profile-facts-secondary {
+      padding-top: 12px;
+      border-top: 1px solid rgb(16 116 185 / 18%);
+    }
+
+    .client-fact {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 140px;
+    }
+
+    .client-fact-label {
+      font-size: 12px;
+      line-height: 16px;
+      color: #5f6368;
+    }
+
+    .client-fact-value {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      color: rgb(0 0 0 / 87%);
+    }
+
+    .client-fact.is-empty .client-fact-value {
+      font-weight: 400;
+      color: #5f6368;
     }
   }
 }

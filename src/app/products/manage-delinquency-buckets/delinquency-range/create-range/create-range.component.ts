@@ -42,7 +42,7 @@ export class CreateRangeComponent implements OnInit {
         0,
         [
           Validators.required,
-          Validators.pattern('^(0*[1-9][0-9]*?)$'),
+          Validators.pattern('^(0|[1-9][0-9]*)$'),
           Validators.max(1000)]
       ],
       maximumAgeDays: [

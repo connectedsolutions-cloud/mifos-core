@@ -20,6 +20,8 @@ import { ServerSelectorComponent } from '../shared/server-selector/server-select
 import { TenantSelectorComponent } from '../shared/tenant-selector/tenant-selector.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { ForgotPasswordRequestComponent } from './forgot-password/forgot-password-request.component';
+import { ForgotPasswordCompleteComponent } from './forgot-password/forgot-password-complete.component';
 import { TwoFactorAuthenticationComponent } from './two-factor-authentication/two-factor-authentication.component';
 import { MatList, MatListItem } from '@angular/material/list';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
@@ -42,6 +44,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     TenantSelectorComponent,
     LoginFormComponent,
     ResetPasswordComponent,
+    ForgotPasswordRequestComponent,
+    ForgotPasswordCompleteComponent,
     TwoFactorAuthenticationComponent,
     MatList,
     MatListItem,
@@ -76,6 +80,10 @@ export class LoginComponent implements OnInit, OnDestroy {
    * Subscribes to alert event of alert service.
    */
   ngOnInit() {
+    if (environment.OIDC.oidcServerEnabled && (this.isForgotPassword || this.isCompletePasswordReset)) {
+      this.router.navigate(['/login'], { replaceUrl: true });
+      return;
+    }
     this.alert$ = this.alertService.alertEvent.subscribe((alertEvent: Alert) => {
       const alertType = alertEvent.type;
       if (alertType === 'Password Expired') {
@@ -96,19 +104,33 @@ export class LoginComponent implements OnInit, OnDestroy {
    * Unsubscribes from alerts.
    */
   ngOnDestroy() {
-    this.alert$.unsubscribe();
+    this.alert$?.unsubscribe();
   }
 
   reloadSettings(): void {
-    this.settingsService.setTenantIdentifier('');
-    this.settingsService.setTenantIdentifier(environment.fineractPlatformTenantId || 'default');
-    this.settingsService.setTenantIdentifiers(environment.fineractPlatformTenantIds.split(','));
+    const tenantIds = environment.fineractPlatformTenantIds
+      .split(',')
+      .map((id) => id.trim())
+      .filter((id) => id);
+    this.settingsService.setTenantIdentifiers(tenantIds);
+    const currentTenant = this.settingsService.tenantIdentifier;
+    if (!currentTenant || !tenantIds.includes(currentTenant)) {
+      this.settingsService.setTenantIdentifier(environment.fineractPlatformTenantId || 'default');
+    }
     this.settingsService.setServers(environment.baseApiUrls.split(','));
     window.location.reload();
   }
 
   displayTenantSelector(): boolean {
     return environment.displayTenantSelector === 'false' ? false : true;
+  }
+
+  get isForgotPassword(): boolean {
+    return this.router.url.startsWith('/forgot-password');
+  }
+
+  get isCompletePasswordReset(): boolean {
+    return this.router.url.startsWith('/reset-password');
   }
 
   allowServerSwitch(): boolean {

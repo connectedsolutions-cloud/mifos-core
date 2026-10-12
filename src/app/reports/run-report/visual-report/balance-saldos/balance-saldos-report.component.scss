@@ -1,0 +1,134 @@
+:host {
+  display: block;
+}
+
+.balance-saldos-document {
+  box-sizing: border-box;
+  width: 816px;
+  min-height: 1056px;
+  margin: 0 auto;
+  padding: 44px 52px 48px;
+  background: #fff;
+  color: #111;
+  font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.balance-saldos-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.code-column {
+  width: 20%;
+}
+
+.description-column {
+  width: 56%;
+}
+
+.amount-column {
+  width: 24%;
+}
+
+.document-heading {
+  padding-bottom: 14px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.document-heading h1,
+.document-heading h2,
+.document-heading p {
+  margin: 2px 0;
+}
+
+.document-heading h1 {
+  font-size: 14px;
+}
+
+.document-heading h2 {
+  font-size: 13px;
+}
+
+.column-heading th {
+  padding: 5px 4px;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  text-align: left;
+}
+
+.column-heading th:last-child {
+  text-align: right;
+}
+
+.account-row {
+  break-inside: avoid;
+}
+
+.account-row td {
+  padding: 3px 4px;
+  vertical-align: top;
+}
+
+.root-row {
+  font-weight: 700;
+}
+
+.amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.negative {
+  color: #d32f2f;
+  print-color-adjust: exact;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 5px;
+  border-top: 1px solid #777;
+  font-size: 8px;
+}
+
+.balance-saldos-error {
+  padding: 16px;
+  border: 1px solid #b00020;
+  background: #fff4f4;
+  color: #b00020;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  .balance-saldos-document {
+    width: 816px;
+    min-height: 0;
+    margin: 0;
+    padding: 44px 52px 48px;
+  }
+
+  .balance-saldos-table thead {
+    display: table-header-group;
+  }
+
+  footer {
+    position: fixed;
+    right: 52px;
+    bottom: 22px;
+    left: 52px;
+    margin-top: 0;
+  }
+
+  .page-current::after {
+    content: counter(page);
+  }
+}

@@ -18,6 +18,18 @@ import { ExternalIdentifierComponent } from '../../../shared/external-identifier
 import { DateFormatPipe } from '../../../pipes/date-format.pipe';
 import { FormatNumberPipe } from '../../../pipes/format-number.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
+import { LoansService } from '../../loans.service';
+import { SettingsService } from '../../../settings/settings.service';
+import {
+  CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE,
+  CREDESAL_LOAN_STAFF_ASSIGNMENT_ROLES,
+  EMPTY_LOAN_STAFF_ASSIGNMENT,
+  LoanStaffAssignment,
+  LoanStaffAssignmentRole,
+  parseLoanStaffAssignment
+} from '../credesal-loan-staff-assignment';
 
 @Component({
   selector: 'mifosx-general-tab',
@@ -77,8 +89,20 @@ export class GeneralTabComponent implements OnInit {
   /** Data source for loans summary table. */
   dataSource: MatTableDataSource<any>;
   detailsDataSource: MatTableDataSource<any>;
+  readonly staffAssignmentRoles = CREDESAL_LOAN_STAFF_ASSIGNMENT_ROLES;
+  staffAssignment: LoanStaffAssignment = { ...EMPTY_LOAN_STAFF_ASSIGNMENT };
+  staffOptions: any[] = [];
+  staffAssignmentHasRow = false;
+  savingStaffColumn: string | null = null;
+  staffAssignmentError = '';
+  loanId: string;
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private loansService: LoansService,
+    private settingsService: SettingsService
+  ) {
+    this.loanId = this.route.parent?.snapshot.paramMap.get('loanId') || '';
     this.route.parent.data.subscribe((data: { loanDetailsData: any }) => {
       this.loanDetails = data.loanDetailsData;
       this.currencyCode = this.loanDetails.currency.code;
@@ -110,6 +134,50 @@ export class GeneralTabComponent implements OnInit {
     } else {
       this.setloanNonDetailsTableData();
     }
+    this.loadStaffAssignment();
+  }
+
+  loadStaffAssignment() {
+    forkJoin({
+      datatable: this.loansService
+        .getLoanDatatable(this.loanId, CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE, { skipErrorHandler: true })
+        .pipe(catchError(() => of(null))),
+      staff: this.loansService.getStaffForAssignment().pipe(catchError(() => of([])))
+    }).subscribe(({ datatable, staff }) => {
+      const parsed = parseLoanStaffAssignment(datatable);
+      this.staffAssignment = parsed.assignment;
+      this.staffAssignmentHasRow = parsed.hasRow;
+      this.staffOptions = staff || [];
+    });
+  }
+
+  updateStaffAssignment(role: LoanStaffAssignmentRole, value: number | null) {
+    if (!this.loanId || this.savingStaffColumn) {
+      return;
+    }
+    const previous = this.staffAssignment[role.controlName];
+    this.staffAssignment = { ...this.staffAssignment, [role.controlName]: value };
+    if (!this.staffAssignmentHasRow && value == null) {
+      return;
+    }
+    this.savingStaffColumn = role.column;
+    this.staffAssignmentError = '';
+    const payload = {
+      locale: this.settingsService.language?.code || 'en',
+      dateFormat: this.settingsService.dateFormat || 'dd MMMM yyyy',
+      client_id: this.loanDetails.clientId,
+      [role.column]: value == null ? '' : value
+    };
+    const request = this.staffAssignmentHasRow
+      ? this.loansService.editLoanDatatableEntry(this.loanId, CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE, payload)
+      : this.loansService.addLoanDatatableEntry(this.loanId, CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE, payload);
+    request.pipe(finalize(() => (this.savingStaffColumn = null))).subscribe({
+      next: () => (this.staffAssignmentHasRow = true),
+      error: () => {
+        this.staffAssignment = { ...this.staffAssignment, [role.controlName]: previous };
+        this.staffAssignmentError = 'labels.text.Unable to save staff assignment';
+      }
+    });
   }
 
   setloanSummaryTableData() {

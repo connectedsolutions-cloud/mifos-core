@@ -133,5 +133,5 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns" class="select-row" [routerLink]="[row.id]"></tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[50, 100, 200]" showFirstLastButtons></mat-paginator>
+  <mat-paginator [pageSize]="50" [pageSizeOptions]="[50, 100, 200]" showFirstLastButtons></mat-paginator>
 </div>

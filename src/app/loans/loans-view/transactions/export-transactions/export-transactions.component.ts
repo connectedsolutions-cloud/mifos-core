@@ -92,7 +92,13 @@ export class ExportTransactionsComponent implements OnInit {
       R_selectLoan: this.loansAccountId
     };
     this.reportsService
-      .getPentahoRunReportData('Client Loan Account Schedule', data, 'default', 'en', dateFormat)
+      .getPentahoRunReportData(
+        'Client Loan Account Schedule',
+        data,
+        this.settingsService.tenantIdentifier || 'default',
+        'en',
+        dateFormat
+      )
       .subscribe((res: any) => {
         const contentType = res.headers.get('Content-Type');
         const file = new Blob([res.body], { type: contentType });

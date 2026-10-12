@@ -33,7 +33,9 @@ export class CacheInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (request.method !== 'GET') {
+    // Saved reports change per user and must reflect a star click immediately.
+    // The list is loaded again when the saved tab opens, so a cached GET hides new saves.
+    if (request.method !== 'GET' || request.url.includes('/reports/saved')) {
       return next.handle(request);
     }
 

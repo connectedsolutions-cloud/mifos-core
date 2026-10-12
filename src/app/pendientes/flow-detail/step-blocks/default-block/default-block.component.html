@@ -1,5 +1,5 @@
 <span *ngIf="blockData?.loading" class="step-detail-block-loading">
-  <mat-spinner diameter="20"></mat-spinner>
+  <mifosx-loader diameter="20"></mifosx-loader>
 </span>
 <span *ngIf="!blockData?.loading">
   <span *ngIf="blockData?.error" class="step-detail-block-error">{{ blockData.error }}</span>

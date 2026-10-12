@@ -35,6 +35,22 @@
           </div>
 
           <div class="flex-25 header">
+            {{ 'labels.inputs.Journal Number' | translate }}
+          </div>
+
+          <div class="flex-25">
+            {{ dataSource.data[0].referenceNumber }}
+          </div>
+
+          <div class="flex-25 header">
+            {{ 'labels.inputs.Transaction ID' | translate }}
+          </div>
+
+          <div class="flex-25">
+            {{ dataSource.data[0].transactionId }}
+          </div>
+
+          <div class="flex-25 header">
             {{ 'labels.inputs.Created By' | translate }}
           </div>
 

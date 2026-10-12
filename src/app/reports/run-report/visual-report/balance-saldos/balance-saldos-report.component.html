@@ -1,0 +1,38 @@
+<div class="balance-saldos-error" *ngIf="error">{{ error }}</div>
+
+<article class="balance-saldos-document" *ngIf="viewModel as document">
+  <table class="balance-saldos-table">
+    <colgroup>
+      <col class="code-column" />
+      <col class="description-column" />
+      <col class="amount-column" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th colspan="3" class="document-heading">
+          <h1>{{ document.organizationName }}</h1>
+          <h2>{{ document.title }}</h2>
+          <p>Fecha: {{ document.reportDate }}</p>
+          <p>Dólares de los Estados Unidos de Norte América ($)</p>
+        </th>
+      </tr>
+      <tr class="column-heading">
+        <th>Cuenta</th>
+        <th>Descripción</th>
+        <th>Saldo Final</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let account of document.accounts" [class.root-row]="account.level === 0" class="account-row">
+        <td>{{ account.code }}</td>
+        <td [style.padding-left.px]="account.level * 12 + 4">{{ account.description }}</td>
+        <td class="amount" [class.negative]="account.balance < 0">{{ money(account.balance) }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <footer>
+    <span>{{ document.generatedBy }}</span
+    ><span>d_rpt_balance_saldos</span><span>Pág. <span class="page-current"></span></span
+    ><span>{{ document.generatedOn }}</span>
+  </footer>
+</article>

@@ -1,0 +1,207 @@
+<div class="container">
+  <mat-card>
+    <mat-card-title>{{ 'labels.menus.Treasury' | translate }}</mat-card-title>
+    <mat-card-content *ngIf="error">{{ error | translate }}</mat-card-content>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>{{ 'labels.text.treasury.bank' | translate }}</mat-label>
+        <mat-select [value]="selectedBank?.id" (selectionChange)="selectBankById($event.value)">
+          <mat-option *ngFor="let bank of banks" [value]="bank.id">{{ bankLabel(bank) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <p *ngIf="selectedBank">
+        {{ 'labels.text.treasury.balance' | translate }}: {{ selectedBank.balance }} {{ selectedBank.currencyCode }}
+        <span *ngIf="selectedBank.externalAccountReference"> · {{ selectedBank.externalAccountReference }}</span>
+        <span *ngIf="selectedBank.alias"> · {{ selectedBank.alias }}</span>
+        <span *ngIf="selectedBank.glCode"> · {{ selectedBank.glCode }}</span>
+      </p>
+      <button mat-raised-button color="primary" *ngIf="canCreateMovement" (click)="openMovement()">
+        {{ 'labels.text.treasury.newMovement' | translate }}
+      </button>
+      <button mat-button *ngIf="canManageBank" (click)="openBank()">
+        {{ 'labels.text.treasury.registerBank' | translate }}
+      </button>
+      <div class="layout-row">
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.type' | translate }}</mat-label>
+          <input matInput [(ngModel)]="filterType" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.payee' | translate }}</mat-label>
+          <input matInput [(ngModel)]="filterPayee" />
+        </mat-form-field>
+        <button mat-button (click)="loadMovements()">{{ 'labels.buttons.Search' | translate }}</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <table mat-table [dataSource]="movements" class="mat-elevation-z1">
+    <ng-container matColumnDef="businessDate">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.date' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.businessDate }}</td>
+    </ng-container>
+    <ng-container matColumnDef="valueDate">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.valueDate' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.valueDate }}</td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.type' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.type }}</td>
+    </ng-container>
+    <ng-container matColumnDef="debit">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.debit' | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        {{ lineForBank(row).direction === 'debit' ? lineForBank(row).amount : '' }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="credit">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.credit' | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        {{ lineForBank(row).direction === 'credit' ? lineForBank(row).amount : '' }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="payeeName">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.payee' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.payeeName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="bankReference">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.bankReference' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.bankReference }}</td>
+    </ng-container>
+    <ng-container matColumnDef="balanceAfter">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.runningBalance' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ lineForBank(row).balanceAfter }}</td>
+    </ng-container>
+    <ng-container matColumnDef="refNum">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.journalNumber' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.refNum }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.status' | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.status }}
+        <button
+          mat-button
+          *ngIf="canReverse && row.status === 'posted' && row.journalOwner === 'treasury'"
+          (click)="reverse(row)"
+        >
+          {{ 'labels.text.treasury.reverse' | translate }}
+        </button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="links">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.linked' | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        <span *ngFor="let link of row.links">{{ link.linkType }} {{ link.entityId }} </span>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+
+  <mat-card>
+    <mat-card-title>{{ 'labels.text.treasury.historicalCheques' | translate }}</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="chequeError">{{ chequeError | translate }}</p>
+      <div class="layout-row">
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.chequeNumber' | translate }}</mat-label>
+          <input matInput [(ngModel)]="chequeFilters.number" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.numberMatch' | translate }}</mat-label>
+          <mat-select [(ngModel)]="chequeFilters.exact">
+            <mat-option value="">{{ 'labels.text.treasury.partial' | translate }}</mat-option>
+            <mat-option value="true">{{ 'labels.text.treasury.exact' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.bank' | translate }}</mat-label>
+          <input matInput [(ngModel)]="chequeFilters.bank" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.direction' | translate }}</mat-label>
+          <mat-select [(ngModel)]="chequeFilters.kind">
+            <mat-option value="">{{ 'labels.text.treasury.all' | translate }}</mat-option>
+            <mat-option value="issued">{{ 'labels.text.treasury.issued' | translate }}</mat-option>
+            <mat-option value="received">{{ 'labels.text.treasury.received' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.amount' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="chequeFilters.amount" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.fromDate' | translate }}</mat-label>
+          <input matInput type="date" [(ngModel)]="chequeFilters.fromDate" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.toDate' | translate }}</mat-label>
+          <input matInput type="date" [(ngModel)]="chequeFilters.toDate" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.sort' | translate }}</mat-label>
+          <mat-select [(ngModel)]="chequeFilters.sort">
+            <mat-option value="date">{{ 'labels.text.treasury.date' | translate }}</mat-option>
+            <mat-option value="number">{{ 'labels.text.treasury.chequeNumber' | translate }}</mat-option>
+            <mat-option value="bank">{{ 'labels.text.treasury.bank' | translate }}</mat-option>
+            <mat-option value="amount">{{ 'labels.text.treasury.amount' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>{{ 'labels.text.treasury.order' | translate }}</mat-label>
+          <mat-select [(ngModel)]="chequeFilters.order">
+            <mat-option value="desc">{{ 'labels.text.treasury.descending' | translate }}</mat-option>
+            <mat-option value="asc">{{ 'labels.text.treasury.ascending' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-button (click)="loadHistoricalCheques()">{{ 'labels.buttons.Search' | translate }}</button>
+        <button mat-button (click)="exportHistoricalCheques()">{{ 'labels.text.treasury.export' | translate }}</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <table mat-table [dataSource]="historicalCheques" class="mat-elevation-z1">
+    <ng-container matColumnDef="kind">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.direction' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ 'labels.text.treasury.' + row.kind | translate }}</td>
+    </ng-container>
+    <ng-container matColumnDef="chequeNumber">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.chequeNumber' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.chequeNumber }}</td>
+    </ng-container>
+    <ng-container matColumnDef="bank">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.bank' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.bank }}</td>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.amount' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.amount }}</td>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.date' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.date }}</td>
+    </ng-container>
+    <ng-container matColumnDef="cancelled">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.cancelled' | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.cancelled ? ('labels.text.treasury.cancelled' | translate) : '' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="relationships">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.text.treasury.linked' | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        <details *ngIf="row.links?.length">
+          <summary>{{ row.links.length }} {{ 'labels.text.treasury.relationships' | translate }}</summary>
+          <span *ngFor="let link of row.links">
+            <a *ngIf="linkRoute(link) as route; else sourceOnly" [routerLink]="route">{{
+              relationshipLabel(link.relationship) | translate
+            }}</a>
+            <ng-template #sourceOnly>{{ relationshipLabel(link.relationship) | translate }}</ng-template>
+            <br />
+          </span>
+        </details>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="chequeColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: chequeColumns"></tr>
+  </table>
+</div>

@@ -33,8 +33,11 @@ $foo: $bar * 8;
 $color: #e2e4ec;
 
 .loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   margin-bottom: 39px;
-  overflow: auto;
 }
 
 .sidenav {

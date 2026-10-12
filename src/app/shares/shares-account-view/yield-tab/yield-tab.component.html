@@ -1,0 +1,57 @@
+<div class="tab-container mat-typography">
+  <h3>{{ 'labels.inputs.Share Yield' | translate }}</h3>
+
+  <div class="summary layout-row responsive-column">
+    <div>
+      <strong>{{ 'labels.inputs.Accrued Yield' | translate }}:</strong>
+      {{ yieldData?.accrued | currency: shareAccountData?.currency?.code : 'symbol-narrow' : '1.2-2' }}
+    </div>
+    <div>
+      <strong>{{ 'labels.inputs.Settled Yield' | translate }}:</strong>
+      {{ yieldData?.settled | currency: shareAccountData?.currency?.code : 'symbol-narrow' : '1.2-2' }}
+    </div>
+    <div>
+      <strong>{{ 'labels.inputs.Outstanding' | translate }}:</strong>
+      {{ yieldData?.outstanding | currency: shareAccountData?.currency?.code : 'symbol-narrow' : '1.2-2' }}
+    </div>
+  </div>
+
+  <div class="mat-elevation-z1">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="date"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Date' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.date | dateFormat }}</td></ng-container
+      >
+      <ng-container matColumnDef="entryType"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Type' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.entryType }}</td></ng-container
+      >
+      <ng-container matColumnDef="baseAmount"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Base Amount' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.baseAmount | currency: shareAccountData?.currency?.code : 'symbol-narrow' : '1.2-2' }}
+        </td></ng-container
+      >
+      <ng-container matColumnDef="annualRate"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Annual Rate' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.annualRate }}%</td></ng-container
+      >
+      <ng-container matColumnDef="accruedAmount"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Exact Accrual' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.accruedAmount }}</td></ng-container
+      >
+      <ng-container matColumnDef="bookedAmount"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Booked Amount' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.bookedAmount | currency: shareAccountData?.currency?.code : 'symbol-narrow' : '1.2-2' }}
+        </td></ng-container
+      >
+      <ng-container matColumnDef="sourceReference"
+        ><th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Source Reference' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.sourceReference }}</td></ng-container
+      >
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</div>

@@ -21,6 +21,7 @@ import { ConfigurationWizardService } from 'app/configuration-wizard/configurati
 import { ContinueSetupDialogComponent } from 'app/configuration-wizard/continue-setup-dialog/continue-setup-dialog.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { USER_DATA_SCOPE_OPTIONS } from 'app/core/utils/data-scope';
 
 /**
  * Create user component.
@@ -43,6 +44,7 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
   rolesData: any;
   /** Staff data. */
   staffData: any;
+  readonly dataScopeOptions = USER_DATA_SCOPE_OPTIONS;
 
   /* Reference of create user form */
   @ViewChild('userFormRef') userFormRef: ElementRef<any>;
@@ -122,7 +124,8 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
         roles: [
           '',
           Validators.required
-        ]
+        ],
+        dataScope: ['']
       },
       { validator: confirmPasswordValidator }
     );
@@ -181,6 +184,9 @@ export class CreateUserComponent implements OnInit, AfterViewInit {
     }
     if (this.userForm.value.staffId == null || this.userForm.value.staffId === '') {
       delete user.staffId;
+    }
+    if (!user.dataScope) {
+      delete user.dataScope;
     }
     this.usersService.createUser(user).subscribe((response: any) => {
       if (this.configurationWizardService.showUsersForm === true) {

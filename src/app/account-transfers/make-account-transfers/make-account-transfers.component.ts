@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 /** Angular Imports */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,6 +34,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   templateUrl: './make-account-transfers.component.html',
   styleUrls: ['./make-account-transfers.component.scss'],
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     MatDivider,
     FormsModule,

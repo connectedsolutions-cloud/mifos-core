@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { TranslateModule } from '@ngx-translate/core';
 import type { BlockConfig, BlockData } from '../block.interface';
 
@@ -15,7 +15,7 @@ export interface VaultTransferInfoValue {
   standalone: true,
   imports: [
     CommonModule,
-    MatProgressSpinnerModule,
+    LoaderComponent,
     TranslateModule
   ],
   templateUrl: './vault-transfer-info-block.component.html',

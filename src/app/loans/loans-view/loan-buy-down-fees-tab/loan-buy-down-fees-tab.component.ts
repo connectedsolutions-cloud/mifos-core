@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { Component, OnInit } from '@angular/core';
 import {
   MatCell,
@@ -23,6 +24,7 @@ import { DateFormatPipe } from '@pipes/date-format.pipe';
   templateUrl: './loan-buy-down-fees-tab.component.html',
   styleUrl: './loan-buy-down-fees-tab.component.scss',
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     MatTable,
     MatColumnDef,

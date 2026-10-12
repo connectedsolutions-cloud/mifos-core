@@ -42,9 +42,12 @@ import { ProfileModule } from './profile/profile.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigurationWizardModule } from './configuration-wizard/configuration-wizard.module';
 import { ComiteOtorgamientoModule } from './comite-otorgamiento/comite-otorgamiento.module';
+import { RutasDeCobroModule } from './rutas-de-cobro/rutas-de-cobro.module';
 import { PendientesModule } from './pendientes/pendientes.module';
 import { VaultModule } from './vault/vault.module';
+import { TreasuryModule } from './treasury/treasury.module';
 import { PortalModule } from '@angular/cdk/portal';
+import { MAT_PAGINATOR_DEFAULT_OPTIONS } from '@angular/material/paginator';
 
 /** Main Routing Module */
 import { AppRoutingModule } from './app-routing.module';
@@ -85,6 +88,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   bootstrap: [WebAppComponent],
   imports: [
     TranslateModule.forRoot({
+      defaultLanguage: environment.defaultLanguage,
       loader: {
         provide: TranslateLoader,
         useFactory: (httpBackend: HttpBackend, locationStrategy: LocationStrategy) => {
@@ -124,8 +128,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasksModule,
     ConfigurationWizardModule,
     ComiteOtorgamientoModule,
+    RutasDeCobroModule,
     PendientesModule,
     VaultModule,
+    TreasuryModule,
     AppRoutingModule,
     NotFoundComponent,
     CallbackComponent
@@ -133,6 +139,10 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   providers: [
     DatePipe,
+    {
+      provide: MAT_PAGINATOR_DEFAULT_OPTIONS,
+      useValue: { pageSize: 25 }
+    },
     AuthService,
     {
       provide: HTTP_INTERCEPTORS,

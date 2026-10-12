@@ -31,8 +31,12 @@ export class ShareProductDetailsStepComponent implements OnInit {
       this.shareProductDetailsForm.patchValue({
         name: this.shareProductsTemplate.name,
         shortName: this.shareProductsTemplate.shortName,
+        numberingCode: this.shareProductsTemplate.numberingCode,
         description: this.shareProductsTemplate.description
       });
+      if (this.shareProductsTemplate.numberingCode) {
+        this.shareProductDetailsForm.get('numberingCode')?.disable();
+      }
     }
   }
 
@@ -46,6 +50,7 @@ export class ShareProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
+      numberingCode: [''],
       description: [
         '',
         Validators.required
@@ -54,6 +59,10 @@ export class ShareProductDetailsStepComponent implements OnInit {
   }
 
   get shareProductDetails() {
-    return this.shareProductDetailsForm.value;
+    const details = this.shareProductDetailsForm.getRawValue();
+    if (!details.numberingCode) {
+      delete details.numberingCode;
+    }
+    return details;
   }
 }

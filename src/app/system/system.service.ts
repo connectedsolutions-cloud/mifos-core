@@ -472,6 +472,27 @@ export class SystemService {
   }
 
   /**
+   * Tests saved credentials for an external service (SMTP or RESEND).
+   * @returns {Observable<{ connected: boolean; errorMessage?: string }>}
+   */
+  testExternalServiceConnection(
+    externalConfigurationName: string
+  ): Observable<{ connected: boolean; errorMessage?: string }> {
+    return this.http.post<{ connected: boolean; errorMessage?: string }>(
+      `/externalservice/${externalConfigurationName}/testconnection`,
+      {}
+    );
+  }
+
+  /**
+   * Tests the saved SMTP credentials (connect + AUTH, no email sent).
+   * @returns {Observable<{ connected: boolean; errorMessage?: string }>}
+   */
+  testSmtpConnection(): Observable<{ connected: boolean; errorMessage?: string }> {
+    return this.testExternalServiceConnection('SMTP');
+  }
+
+  /**
    * @returns {Observable<any>} Account number preferences.
    */
   getAccountNumberPreferences(): Observable<any> {

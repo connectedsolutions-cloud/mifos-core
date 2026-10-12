@@ -9,6 +9,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 /** Custom Services */
 import { PopoverService } from '../../configuration-wizard/popover/popover.service';
 import { ConfigurationWizardService } from '../../configuration-wizard/configuration-wizard.service';
+import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -37,7 +38,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     'firstname',
     'lastname',
     'email',
-    'officeName'
+    'officeName',
+    'actions'
   ];
 
   /** DataSources */
@@ -61,7 +63,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     public configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private authenticationService: AuthenticationService
   ) {}
 
   ngOnInit() {
@@ -88,6 +91,19 @@ export class UsersComponent implements OnInit, AfterViewInit {
     const filter = filterValue.trim().toLowerCase();
     this.dataSource.filter = filter;
     this.dataSourceZitadel.filter = filter;
+  }
+
+  get currentUserId(): number | null {
+    return this.authenticationService.getCredentials()?.userId ?? null;
+  }
+
+  get isImpersonating(): boolean {
+    return this.authenticationService.isImpersonating();
+  }
+
+  loginAs(event: Event, user: any): void {
+    event.stopPropagation();
+    this.authenticationService.loginAsUser(user.id).subscribe();
   }
 
   /** Show popover */

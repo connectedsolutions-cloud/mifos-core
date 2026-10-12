@@ -15,7 +15,6 @@ import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatPrefix, MatLabel, MatSuffix, MatError } from '@angular/material/form-field';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -30,8 +29,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatDivider,
     MatPrefix,
     FaIconComponent,
-    MatIconButton,
-    MatProgressSpinner
+    MatIconButton
   ]
 })
 export class ResetPasswordComponent implements OnInit {

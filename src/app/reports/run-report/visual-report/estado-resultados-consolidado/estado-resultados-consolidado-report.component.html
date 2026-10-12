@@ -1,0 +1,69 @@
+<div class="income-statement-error" *ngIf="error">{{ error }}</div>
+
+<article class="income-statement-document" *ngIf="viewModel as document">
+  <table class="income-statement-table">
+    <colgroup>
+      <col class="description-column" />
+      <col class="amount-column" />
+      <col class="amount-column" />
+    </colgroup>
+    <thead>
+      <tr class="document-heading-row">
+        <th colspan="3">
+          <div class="document-heading">
+            <h1>{{ document.organizationName }}</h1>
+            <h2>{{ document.title }}</h2>
+            <p>{{ document.periodLabel }}</p>
+            <p class="currency-label">{{ document.currencyLabel }}</p>
+          </div>
+        </th>
+      </tr>
+      <tr class="amount-heading-row">
+        <td></td>
+        <th>MENSUAL</th>
+        <th>ACUMULADO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let section of document.sections">
+        <tr class="amount-heading-row" *ngIf="section.name === 'GASTOS'">
+          <td></td>
+          <th>MENSUAL</th>
+          <th>ACUMULADO</th>
+        </tr>
+        <tr class="section-row">
+          <th>{{ section.name }}</th>
+          <td class="amount">{{ money(section.monthlyAmount) }}</td>
+          <td class="amount">{{ money(section.accumulatedAmount) }}</td>
+        </tr>
+        <ng-container *ngFor="let group of section.groups">
+          <tr class="group-row">
+            <th>{{ group.name }}</th>
+            <td class="amount">{{ money(group.monthlyAmount) }}</td>
+            <td class="amount">{{ money(group.accumulatedAmount) }}</td>
+          </tr>
+          <tr class="account-row" *ngFor="let account of group.accounts">
+            <td>
+              <span class="account-code">{{ account.code }}</span
+              >{{ account.name }}
+            </td>
+            <td class="amount">{{ money(account.monthlyAmount) }}</td>
+            <td class="amount">{{ money(account.accumulatedAmount) }}</td>
+          </tr>
+        </ng-container>
+      </ng-container>
+      <tr class="result-row">
+        <th>{{ document.resultLabel }}<span class="result-leader"></span></th>
+        <td class="amount">{{ money(document.monthlyResult) }}</td>
+        <td class="amount">{{ money(document.accumulatedResult) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="document-footer">
+    <span>{{ document.generatedBy }}</span>
+    <span>d_rpt_estado_resultados</span>
+    <span>Pág. <span class="page-current"></span></span>
+    <span>{{ document.generatedOn }}</span>
+  </footer>
+</article>

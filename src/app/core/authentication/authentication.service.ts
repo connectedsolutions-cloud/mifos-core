@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 
 /** rxjs Imports */
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 /** Custom Services */
@@ -53,6 +53,10 @@ export class AuthenticationService {
   private oAuthTokenDetailsStorageKey = 'mifosXOAuthTokenDetails';
   /** Key to store two factor authentication token in storage. */
   private twoFactorAuthenticationTokenStorageKey = 'mifosXTwoFactorAuthenticationToken';
+  /** Snapshot of the real admin credentials while impersonating. */
+  private originalCredentialsStorageKey = 'mifosXOriginalCredentials';
+  /** Impersonation metadata (target user). */
+  private impersonationStorageKey = 'mifosXImpersonation';
 
   /**
    * Initializes the type of storage and authorization headers depending on whether
@@ -88,6 +92,10 @@ export class AuthenticationService {
       }
       if (twoFactorAccessToken) {
         authenticationInterceptor.setTwoFactorAccessToken(twoFactorAccessToken.token);
+      }
+      const impersonation = this.getImpersonationState();
+      if (impersonation?.targetUserId) {
+        authenticationInterceptor.setImpersonateUser(impersonation.targetUserId);
       }
       // Emit the correct initial state
       this.userLoggedIn = true;
@@ -274,6 +282,7 @@ export class AuthenticationService {
       this.logoutAuthSession();
     }
     this.authenticationInterceptor.removeAuthorization();
+    this.clearImpersonationState();
     this.setCredentials();
     this.resetDialog();
     this.userLoggedIn = false;
@@ -339,6 +348,7 @@ export class AuthenticationService {
       sessionStorage.removeItem(this.oAuthTokenDetailsStorageKey);
       localStorage.removeItem(this.twoFactorAuthenticationTokenStorageKey);
       sessionStorage.removeItem(this.twoFactorAuthenticationTokenStorageKey);
+      this.clearImpersonationState();
     }
   }
 
@@ -442,6 +452,151 @@ export class AuthenticationService {
         this.login(loginContext).subscribe();
       })
     );
+  }
+
+  /**
+   * Requests a password-reset email. Unauthenticated; tenant header is set by the interceptor.
+   */
+  requestPasswordReset(username: string) {
+    return this.http.post('/passwordreset/request', { username });
+  }
+
+  /**
+   * Completes a password reset with a magic-link token. Does not sign the user in.
+   */
+  completePasswordReset(token: string, password: string, repeatPassword: string) {
+    return this.http.post('/passwordreset/complete', { token, password, repeatPassword });
+  }
+
+  /**
+   * True when the UI is showing another user's session.
+   */
+  isImpersonating(): boolean {
+    return !!this.getImpersonationState();
+  }
+
+  /**
+   * Username of the user currently being viewed, if impersonating.
+   */
+  getImpersonatedUsername(): string | null {
+    return this.getImpersonationState()?.targetUsername ?? null;
+  }
+
+  /**
+   * Switch the effective session to the given user. Keeps the admin Basic auth key.
+   */
+  loginAsUser(userId: number): Observable<boolean> {
+    if (this.isImpersonating()) {
+      return throwError(() => new Error('Already impersonating another user'));
+    }
+    const actor = this.getCredentials();
+    if (!actor) {
+      return throwError(() => new Error('Not authenticated'));
+    }
+    return this.http.post(`/users/${userId}?command=loginAs`, {}).pipe(
+      map((profile: Credentials) => {
+        this.storeOriginalCredentials(actor);
+        this.storeImpersonationState({
+          targetUserId: userId,
+          targetUsername: profile.username,
+          actorUsername: actor.username
+        });
+        const switched: Credentials = {
+          ...profile,
+          authenticated: true,
+          base64EncodedAuthenticationKey: actor.base64EncodedAuthenticationKey,
+          accessToken: actor.accessToken,
+          rememberMe: actor.rememberMe
+        };
+        this.setCredentials(switched);
+        this.authenticationInterceptor.setImpersonateUser(userId);
+        this.clearSessionBoundState();
+        this.reloadHome();
+        return true;
+      })
+    );
+  }
+
+  /**
+   * Restore the original admin session.
+   */
+  stopImpersonating(): Observable<boolean> {
+    const impersonation = this.getImpersonationState();
+    const original = this.getOriginalCredentials();
+    this.authenticationInterceptor.removeImpersonateUser();
+    if (impersonation?.targetUserId) {
+      this.http.post(`/users/${impersonation.targetUserId}?command=stopLoginAs`, {}).subscribe();
+    }
+    this.clearImpersonationState();
+    this.clearSessionBoundState();
+    if (original) {
+      this.rememberMe = !!original.rememberMe;
+      this.setCredentials(original);
+      if (environment.oauth.enabled && original.accessToken) {
+        this.authenticationInterceptor.setAuthorizationToken(original.accessToken);
+      } else if (original.base64EncodedAuthenticationKey) {
+        this.authenticationInterceptor.setAuthorizationToken(original.base64EncodedAuthenticationKey);
+      }
+    }
+    this.reloadHome();
+    return of(true);
+  }
+
+  private storeOriginalCredentials(credentials: Credentials): void {
+    const payload = JSON.stringify(credentials);
+    sessionStorage.setItem(this.originalCredentialsStorageKey, payload);
+    if (this.rememberMe) {
+      localStorage.setItem(this.originalCredentialsStorageKey, payload);
+    }
+  }
+
+  private getOriginalCredentials(): Credentials | null {
+    const raw =
+      sessionStorage.getItem(this.originalCredentialsStorageKey) ||
+      localStorage.getItem(this.originalCredentialsStorageKey);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  private storeImpersonationState(state: {
+    targetUserId: number;
+    targetUsername: string;
+    actorUsername: string;
+  }): void {
+    const payload = JSON.stringify(state);
+    sessionStorage.setItem(this.impersonationStorageKey, payload);
+    if (this.rememberMe) {
+      localStorage.setItem(this.impersonationStorageKey, payload);
+    }
+  }
+
+  private getImpersonationState(): { targetUserId: number; targetUsername: string; actorUsername: string } | null {
+    const raw =
+      sessionStorage.getItem(this.impersonationStorageKey) || localStorage.getItem(this.impersonationStorageKey);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  private clearImpersonationState(): void {
+    sessionStorage.removeItem(this.originalCredentialsStorageKey);
+    localStorage.removeItem(this.originalCredentialsStorageKey);
+    sessionStorage.removeItem(this.impersonationStorageKey);
+    localStorage.removeItem(this.impersonationStorageKey);
+    this.authenticationInterceptor.removeImpersonateUser();
+  }
+
+  private clearSessionBoundState(): void {
+    [
+      'mifosXLocation',
+      'disbursementData',
+      'Success'
+    ].forEach((key) => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+  }
+
+  private reloadHome(): void {
+    window.location.replace(`${window.location.pathname}${window.location.search}#/home`);
+    window.location.reload();
   }
 
   /*

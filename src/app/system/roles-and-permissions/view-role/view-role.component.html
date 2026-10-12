@@ -1,4 +1,18 @@
 <div class="layout-row align-end gap-2px responsive-column container m-b-20">
+  <input #roleJsonFile type="file" accept=".json,application/json" hidden (change)="onImportRoleJson($event)" />
+  <button mat-raised-button color="primary" (click)="exportRoleJson()">
+    <fa-icon icon="download" class="m-r-10"></fa-icon>
+    {{ 'labels.buttons.Export' | translate }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="roleJsonFile.click()"
+    [disabled]="rolePermissionService.name === 'Super user'"
+  >
+    <fa-icon icon="upload" class="m-r-10"></fa-icon>
+    {{ 'labels.buttons.Import JSON' | translate }}
+  </button>
   <button
     mat-raised-button
     color="primary"
@@ -61,6 +75,20 @@
         <div class="flex-60 flex-lt-md-50">
           {{ rolePermissionService.description }}
         </div>
+
+        <div class="flex-40 flex-lt-md-50 header">
+          <b>{{ 'labels.inputs.Data access' | translate }}:</b>
+        </div>
+
+        <div class="flex-60 flex-lt-md-50">
+          {{ dataScopeLabelKey(normalizeRoleDataScope(rolePermissionService.dataScope)) | translate }}
+        </div>
+
+        <div class="flex-40 flex-lt-md-50 header">
+          <b>{{ 'labels.inputs.Enabled Permissions' | translate }}:</b>
+        </div>
+
+        <div class="flex-60 flex-lt-md-50">{{ enabledPermissionCount }} / {{ totalPermissionCount }}</div>
       </div>
     </mat-card-content>
   </mat-card>
@@ -94,14 +122,14 @@
         </mat-autocomplete>
       </div>
 
-      <div class="permission-selected layout-row">
-        <div class="flex-75" style="margin-left: 16px; margin-right: 16px">
+      <div class="permission-selected layout-row align-items-center">
+        <div class="permission-title">
           <h3>
             {{ 'labels.buttons.Permissions' | translate }}: <strong>{{ formatName(previousGrouping) }}</strong>
           </h3>
         </div>
 
-        <div class="flex-25 layout-row layout-xs-column layout-align-end gap-5px select-deselect" *ngIf="!isDisabled">
+        <div class="layout-row layout-xs-column layout-align-end gap-5px select-deselect" *ngIf="!isDisabled">
           <button mat-raised-button color="primary" (click)="selectAll()">
             {{ 'labels.buttons.Select All' | translate }}
           </button>

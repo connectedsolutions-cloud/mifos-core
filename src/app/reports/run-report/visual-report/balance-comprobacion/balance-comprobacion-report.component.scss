@@ -1,0 +1,141 @@
+:host {
+  display: block;
+}
+
+.trial-balance-page {
+  box-sizing: border-box;
+  width: 816px;
+  min-height: 1056px;
+  margin: 0 auto 16px;
+  padding: 52px 54px 40px;
+  background: #fff;
+  color: #111;
+  font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.trial-balance-heading {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.trial-balance-heading h1,
+.trial-balance-heading h2,
+.trial-balance-heading p {
+  margin: 0;
+}
+
+.trial-balance-heading h1,
+.trial-balance-heading h2 {
+  font-size: 14px;
+}
+
+.trial-balance-heading p {
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.trial-balance-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.description-column {
+  width: 56%;
+}
+
+.detail-column {
+  width: 22%;
+}
+
+.summary-column {
+  width: 22%;
+}
+
+.trial-balance-table tr {
+  break-inside: avoid;
+}
+
+.trial-balance-table th,
+.trial-balance-table td {
+  padding: 3px 3px 2px;
+  vertical-align: top;
+}
+
+.trial-balance-table th {
+  text-align: left;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.trial-balance-table .amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.trial-balance-table .negative {
+  color: #d22;
+}
+
+.trial-balance-table .seccion th {
+  font-weight: 700;
+}
+
+.trial-balance-table .grupo th {
+  padding-left: 18px;
+  font-weight: 700;
+}
+
+.trial-balance-table .cuenta th {
+  padding-left: 42px;
+  color: #555;
+}
+
+.trial-balance-table .cuenta.last-in-group .detail {
+  border-bottom: 1px solid #333;
+}
+
+.trial-balance-table .total_seccion th {
+  padding-left: 96px;
+  font-weight: 700;
+}
+
+.trial-balance-table .total_intermedio th,
+.trial-balance-table .total_balance th {
+  text-align: right;
+  font-weight: 700;
+}
+
+.trial-balance-table .total_seccion .summary,
+.trial-balance-table .total_intermedio .summary,
+.trial-balance-table .total_balance .summary {
+  border-bottom: 3px double #111;
+}
+
+.trial-balance-error {
+  padding: 16px;
+  border: 1px solid #b00020;
+  background: #fff4f4;
+  color: #b00020;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  .trial-balance-page {
+    width: 816px;
+    height: 1056px;
+    min-height: 0;
+    margin: 0;
+    break-after: page;
+  }
+
+  .trial-balance-page:last-child {
+    break-after: auto;
+  }
+}

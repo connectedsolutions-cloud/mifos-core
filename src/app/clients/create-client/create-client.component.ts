@@ -23,6 +23,7 @@ import {
   CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
   CREDESAL_WORK_BUSINESS_DATATABLE_NAME
 } from '../clients-view/credesal-client-data-datatables';
+import { CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE } from '../clients-view/credesal-client-staff-assignment';
 
 /**
  * Create Client Component.
@@ -170,6 +171,9 @@ export class CreateClientComponent implements AfterViewInit {
     if (this.clientGeneralStep.personalDatatablePayload) {
       datatables.push(this.clientGeneralStep.personalDatatablePayload);
     }
+    if (this.clientGeneralStep.staffAssignmentPayload) {
+      datatables.push(this.clientGeneralStep.staffAssignmentPayload);
+    }
     if (this.clientTemplate.datatables && this.clientTemplate.datatables.length > 0) {
       this.clientDatatables.forEach((clientDatatable: ClientDatatableStepComponent) => {
         datatables.push(clientDatatable.payload);
@@ -216,6 +220,9 @@ export class CreateClientComponent implements AfterViewInit {
   }
 
   private shouldDisplayDatatable(registeredTableName: string): boolean {
+    if (registeredTableName === CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE) {
+      return false;
+    }
     if (registeredTableName === this.workBusinessDatatableName) {
       return this.isAnyAllowedTypeSelected(this.allowedShareholderTagNames);
     }

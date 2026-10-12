@@ -4,18 +4,25 @@ import { Observable, throwError, from } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
+import { SettingsService } from 'app/settings/settings.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   public environment = environment;
-  FINERACT_PLATFORM_TENANT_IDENTIFIER = environment.fineractPlatformTenantId;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private settingsService: SettingsService
+  ) {}
+
+  private tenantId(): string {
+    return this.settingsService.tenantIdentifier || environment.fineractPlatformTenantId || 'default';
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.authService.getAccessToken();
     let headersConfig: { [key: string]: string } = {
-      'Fineract-Platform-TenantId': this.FINERACT_PLATFORM_TENANT_IDENTIFIER,
+      'Fineract-Platform-TenantId': this.tenantId(),
       'Content-Type': req.headers.get('Content-Type') || 'application/json'
     };
     const publicEndpoints = [
@@ -48,7 +55,7 @@ export class TokenInterceptor implements HttpInterceptor {
         const retriedReq = request.clone({
           setHeaders: {
             Authorization: `Bearer ${newToken}`,
-            'Fineract-Platform-TenantId': this.FINERACT_PLATFORM_TENANT_IDENTIFIER,
+            'Fineract-Platform-TenantId': this.tenantId(),
             'Content-Type': request.headers.get('Content-Type') || 'application/json'
           }
         });

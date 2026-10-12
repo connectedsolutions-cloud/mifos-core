@@ -10,6 +10,11 @@
     <span class="flex-60">{{ savingProduct.shortName }}</span>
   </div>
 
+  <div class="flex-100 layout-row" *ngIf="savingProduct.numberingCode">
+    <span class="flex-40">{{ 'labels.inputs.Account Numbering Code' | translate }}:</span>
+    <span class="flex-60">{{ savingProduct.numberingCode }}</span>
+  </div>
+
   <div class="flex-100 layout-row" *ngIf="savingProduct.description">
     <span class="flex-40">{{ 'labels.inputs.Description' | translate }}:</span>
     <span class="flex-60">{{ savingProduct.description }}</span>

@@ -145,6 +145,18 @@ export class ToolbarComponent implements OnInit, AfterViewInit, AfterContentChec
     }
   }
 
+  get isImpersonating(): boolean {
+    return this.authenticationService.isImpersonating();
+  }
+
+  get impersonatedUsername(): string | null {
+    return this.authenticationService.getImpersonatedUsername();
+  }
+
+  stopImpersonating(): void {
+    this.authenticationService.stopImpersonating().subscribe();
+  }
+
   ngAfterContentChecked(): void {
     this.changeDetector.detectChanges();
   }

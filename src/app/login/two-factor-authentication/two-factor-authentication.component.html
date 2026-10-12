@@ -33,7 +33,6 @@
     [disabled]="!twoFactorAuthenticationDeliveryMethodForm.valid"
   >
     {{ 'labels.buttons.Request OTP' | translate }}
-    <mat-spinner [diameter]="20" *ngIf="loading"></mat-spinner>
   </button>
 </form>
 
@@ -73,7 +72,6 @@
     [disabled]="!twoFactorAuthenticationForm.valid"
   >
     {{ 'labels.buttons.Validate OTP' | translate }}
-    <mat-spinner [diameter]="20" *ngIf="loading"></mat-spinner>
   </button>
 
   <button
@@ -84,6 +82,5 @@
     [disabled]="loading || resendOTPLoading"
   >
     {{ 'labels.buttons.Resend OTP' | translate }}
-    <mat-spinner [diameter]="20" *ngIf="resendOTPLoading"></mat-spinner>
   </button>
 </form>

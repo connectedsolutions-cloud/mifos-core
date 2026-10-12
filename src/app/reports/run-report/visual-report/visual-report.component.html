@@ -7,6 +7,12 @@
     <button mat-stroked-button type="button" (click)="load()" [disabled]="loading">
       {{ 'labels.buttons.Refresh' | translate }}
     </button>
+    <button mat-stroked-button type="button" (click)="downloadCsv()" [disabled]="!result || loading">
+      Descargar CSV
+    </button>
+    <button mat-stroked-button type="button" (click)="downloadPdf()" [disabled]="!result || loading || pdfGenerating">
+      Descargar PDF
+    </button>
     <button mat-raised-button color="primary" type="button" (click)="print()" [disabled]="!result || loading">
       {{ 'labels.buttons.Print' | translate }}
     </button>
@@ -15,7 +21,7 @@
   <div class="visual-report-message" *ngIf="loading">{{ 'labels.buttons.Loading' | translate }}</div>
   <div class="visual-report-message visual-report-error" *ngIf="error">{{ error }}</div>
 
-  <div class="visual-report-canvas" *ngIf="result && !loading">
+  <div class="visual-report-canvas" #reportCanvas *ngIf="result && !loading">
     <mifosx-comprobante-contable-report
       *ngIf="rendererKey === 'VisualVoucher'"
       [result]="result"
@@ -31,5 +37,35 @@
       [result]="result"
       [generatedBy]="reportOperator"
     ></mifosx-balance-saldos-detallado-report>
+    <mifosx-balance-saldos-report
+      *ngIf="rendererKey === 'VisualBalanceSaldos'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-balance-saldos-report>
+    <mifosx-estado-resultados-consolidado-report
+      *ngIf="rendererKey === 'VisualIncomeStmt'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-estado-resultados-consolidado-report>
+    <mifosx-informe-auxiliar-mayor-report
+      *ngIf="rendererKey === 'VisualAuxLedger'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-informe-auxiliar-mayor-report>
+    <mifosx-balance-comprobacion-report
+      *ngIf="rendererKey === 'VisualTrialBalance'"
+      [result]="result"
+      [cutoff]="trialBalanceCutoff"
+    ></mifosx-balance-comprobacion-report>
+    <mifosx-concentracion-movimientos-report
+      *ngIf="rendererKey === 'VisualDailyMovement'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-concentracion-movimientos-report>
+    <mifosx-loan-arrears-report
+      *ngIf="rendererKey === 'VisualLoanArrears'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+    ></mifosx-loan-arrears-report>
   </div>
 </div>

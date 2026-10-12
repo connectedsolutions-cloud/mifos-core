@@ -10,7 +10,7 @@
   padding: 28px 36px 44px;
   background: #fff;
   color: #111;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 9px;
   line-height: 1.2;
 }
@@ -106,6 +106,21 @@
   background: #f8ad1b;
 }
 
+.detail-heading-row th,
+.detail-opening-row td,
+.detail-row td,
+.detail-total-row td {
+  color: #6a6a6a;
+}
+
+.detail-heading-row th {
+  border-bottom: 1px solid #b5b5b5;
+  padding: 5px 4px 3px;
+  font-weight: 700;
+  text-align: left;
+  vertical-align: bottom;
+}
+
 .column-heading-row th {
   border-bottom: 1px solid #111;
   padding: 3px 4px 5px;
@@ -136,7 +151,7 @@
 }
 
 .detail-opening-row td {
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid #b5b5b5;
   padding: 3px 4px;
 }
 
@@ -146,6 +161,7 @@
 
 .detail-row,
 .detail-opening-row,
+.detail-heading-row,
 .detail-total-row,
 .account-row {
   break-inside: avoid;
@@ -156,6 +172,11 @@
   vertical-align: top;
 }
 
+.detail-row td.negative,
+.detail-opening-row td.negative {
+  color: #b00020;
+}
+
 .detail-description {
   overflow-wrap: anywhere;
 }
@@ -163,12 +184,20 @@
 .detail-date,
 .detail-branch {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 8px;
   white-space: nowrap;
 }
 
+.detail-date {
+  width: 64px;
+}
+
+.detail-branch {
+  width: 52px;
+}
+
 .detail-total-row td {
-  border-top: 1px solid #222;
+  border-top: 1px solid #b5b5b5;
   padding: 3px 4px 5px;
 }
 

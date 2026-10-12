@@ -22,7 +22,12 @@
 
   <table mat-table [dataSource]="disbursementDataSource" *ngIf="disbursementDataSource.length > 0">
     <ng-container matColumnDef="expected disbursement on">
-      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Expected Disbursement On' | translate }}</th>
+      <th mat-header-cell *matHeaderCellDef>
+        {{
+          (isArisstoImported ? 'labels.inputs.Contractual start (Arissto)' : 'labels.inputs.Expected Disbursement On')
+            | translate
+        }}
+      </th>
       <td mat-cell *matCellDef="let ele">{{ ele.expectedDisbursementDate | dateFormat }}</td>
     </ng-container>
 

@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormControl, ReactiveFormsModule } from '@angular/forms';
@@ -38,6 +39,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
   ],
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     FaIconComponent,
     MatAccordion,

@@ -186,6 +186,11 @@
       <span class="flex-50"> {{ loanDetails.timeline.approvedOnDate | dateFormat }} </span>
     </div>
 
+    <div class="flex-fill layout-row" *ngIf="isArisstoImported && loanDetails.timeline.expectedDisbursementDate">
+      <span class="flex-50"> {{ 'labels.inputs.Contractual start (Arissto)' | translate }}</span>
+      <span class="flex-50"> {{ loanDetails.timeline.expectedDisbursementDate | dateFormat }} </span>
+    </div>
+
     <div class="flex-fill layout-row">
       <span class="flex-50"> {{ 'labels.inputs.Disbursed on' | translate }}</span>
       <span class="flex-50"> {{ loanDetails.timeline.actualDisbursementDate | dateFormat }} </span>
@@ -202,19 +207,53 @@
     </div>
 
     <div class="flex-fill layout-row" *ngIf="loanDetails.isTopup">
-      <span class="flex-50"> {{ 'labels.inputs.Is Topup Loan' | translate }}?</span>
-      <span class="flex-50"> {{ loanDetails.isTopup | yesNo }} </span>
-    </div>
-
-    <div class="flex-fill layout-row" *ngIf="loanDetails.isTopup">
-      <span class="flex-50"> {{ 'labels.inputs.Loan closed with Topup' | translate }} </span>
+      <span class="flex-50"> {{ 'labels.inputs.Refinancing operation' | translate }}</span>
       <span class="flex-50">
-        <a href="#">{{ loanDetails.closureLoanAccountNo }}</a>
+        {{
+          'labels.inputs.' +
+            (loanDetails.refinancingOperationType === 'CONSOLIDATION'
+              ? 'Loan consolidation'
+              : 'Single-loan refinancing') | translate
+        }}
       </span>
     </div>
 
+    <div class="flex-fill layout-row" *ngFor="let settlement of loanDetails.refinancingSettlements">
+      <span class="flex-50">
+        {{
+          'labels.inputs.' +
+            (settlement.settlementType === 'PARTIAL_PAYDOWN'
+              ? 'Partially paid predecessor loan'
+              : 'Settled predecessor loan') | translate
+        }}
+      </span>
+      <span class="flex-50">{{ settlement.accountNo }} — {{ settlement.amount | formatNumber }}</span>
+    </div>
+
+    <ng-container *ngFor="let settlement of loanDetails.refinancingSettlements">
+      <ng-container *ngIf="settlement.legacyCrossClient">
+        <div class="flex-fill layout-row">
+          <span class="flex-50"> {{ 'labels.inputs.Legacy cross-client settlement' | translate }} </span>
+          <span class="flex-50">{{ settlement.accountNo }}</span>
+        </div>
+        <div class="flex-fill layout-row">
+          <span class="flex-50"> {{ 'labels.inputs.Source liquidation and payoff' | translate }} </span>
+          <span class="flex-50"
+            >{{ settlement.sourceSystem }} {{ settlement.sourceLiquidationId }} —
+            {{ settlement.sourcePayoffMovementId }}</span
+          >
+        </div>
+        <div class="flex-fill layout-row">
+          <span class="flex-50"> {{ 'labels.inputs.Source authorization evidence' | translate }} </span>
+          <span class="flex-50">
+            {{ settlement.sourceOperatorId }} — {{ settlement.sourcePayoffDate | dateFormat }}
+          </span>
+        </div>
+      </ng-container>
+    </ng-container>
+
     <div class="flex-fill layout-row" *ngIf="loanDetails.isTopup">
-      <span class="flex-50"> {{ 'labels.inputs.Topup closure amount' | translate }}</span>
+      <span class="flex-50"> {{ 'labels.inputs.Total refinancing settlement' | translate }}</span>
       <span class="flex-50"> {{ loanDetails.topupAmount | formatNumber }} </span>
     </div>
 

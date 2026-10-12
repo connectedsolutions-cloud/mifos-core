@@ -64,6 +64,7 @@ export class LoanProductDetailsStepComponent implements OnInit {
     this.loanProductDetailsForm.patchValue({
       name: this.loanProductsTemplate.name,
       shortName: this.loanProductsTemplate.shortName,
+      numberingCode: this.loanProductsTemplate.numberingCode,
       description: this.loanProductsTemplate.description,
       externalId: this.loanProductsTemplate.externalId,
       fundId: this.loanProductsTemplate.fundId,
@@ -75,6 +76,10 @@ export class LoanProductDetailsStepComponent implements OnInit {
     });
 
     this.filterSluOptions(idTipoLinea);
+
+    if (this.loanProductsTemplate.numberingCode) {
+      this.loanProductDetailsForm.get('numberingCode')?.disable();
+    }
 
     this.loanProductDetailsForm.get('idTipoLinea')?.valueChanges.subscribe((tipoLineaId: string) => {
       this.filterSluOptions(tipoLineaId);
@@ -97,6 +102,7 @@ export class LoanProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
+      numberingCode: [''],
       description: [''],
       externalId: [''],
       fundId: [''],
@@ -149,6 +155,12 @@ export class LoanProductDetailsStepComponent implements OnInit {
     }
     if (!loanProductDetailsFormData.idSlus) {
       loanProductDetailsFormData.idSlus = [];
+    }
+    const numberingCode = this.loanProductDetailsForm.getRawValue().numberingCode;
+    if (numberingCode) {
+      loanProductDetailsFormData.numberingCode = numberingCode;
+    } else {
+      delete loanProductDetailsFormData.numberingCode;
     }
     return loanProductDetailsFormData;
   }

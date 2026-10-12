@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SharesAccountDetailsStepComponent } from '../shares-account-stepper/shares-account-details-step/shares-account-details-step.component';
 import { SharesAccountTermsStepComponent } from '../shares-account-stepper/shares-account-terms-step/shares-account-terms-step.component';
 import { SharesAccountChargesStepComponent } from '../shares-account-stepper/shares-account-charges-step/shares-account-charges-step.component';
+import { SharesAccountCertificateStepComponent } from '../shares-account-stepper/shares-account-certificate-step/shares-account-certificate-step.component';
 
 /** Custom Services */
 import { SharesService } from '../shares.service';
@@ -33,6 +34,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     SharesAccountDetailsStepComponent,
     SharesAccountTermsStepComponent,
     SharesAccountChargesStepComponent,
+    SharesAccountCertificateStepComponent,
     SharesAccountPreviewStepComponent
   ]
 })
@@ -50,6 +52,8 @@ export class CreateSharesAccountComponent {
   /** Shares Account Charges Step */
   @ViewChild(SharesAccountChargesStepComponent, { static: true })
   sharesAccountChargesStep: SharesAccountChargesStepComponent;
+  @ViewChild(SharesAccountCertificateStepComponent, { static: true })
+  sharesAccountCertificateStep: SharesAccountCertificateStepComponent;
 
   /**
    * Fetches shares account template from `resolve`
@@ -96,8 +100,12 @@ export class CreateSharesAccountComponent {
   /**
    * Checks validity of overall shares account form.
    */
+  get certificateForm() {
+    return this.sharesAccountCertificateStep.certificateForm;
+  }
+
   get sharesAccountFormValid() {
-    return this.sharesAccountDetailsForm.valid && this.sharesAccountTermsForm.valid;
+    return this.sharesAccountDetailsForm.valid && this.sharesAccountTermsForm.valid && this.certificateForm.valid;
   }
 
   /**
@@ -107,7 +115,8 @@ export class CreateSharesAccountComponent {
     return {
       ...this.sharesAccountDetailsStep.sharesAccountDetails,
       ...this.sharesAccountTermsStep.sharesAccountTerms,
-      ...this.sharesAccountChargesStep.sharesAccountCharges
+      ...this.sharesAccountChargesStep.sharesAccountCharges,
+      shareCertificate: this.sharesAccountCertificateStep.shareCertificate
     };
   }
 
@@ -118,8 +127,20 @@ export class CreateSharesAccountComponent {
     // TODO: Update once language and date settings are setup
     const locale = this.settingsService.language.code;
     const dateFormat = this.settingsService.dateFormat;
+    const shareCertificate = {
+      ...this.sharesAccount.shareCertificate,
+      dateFormat,
+      locale,
+      beneficiaries: (this.sharesAccount.shareCertificate.beneficiaries || []).map((beneficiary: any) => ({
+        ...beneficiary,
+        dateOfBirth: beneficiary.dateOfBirth
+          ? this.dateUtils.formatDate(beneficiary.dateOfBirth, dateFormat)
+          : undefined
+      }))
+    };
     const sharesAccount = {
       ...this.sharesAccount,
+      shareCertificate,
       clientId: this.sharesAccountTemplate.clientId,
       charges: this.sharesAccount.charges.map((charge: any) => ({ chargeId: charge.id, amount: charge.amount })),
       applicationDate: this.dateUtils.formatDate(this.sharesAccount.applicationDate, dateFormat),

@@ -1,4 +1,9 @@
 <mat-card class="account-card">
+  <div
+    class="account-status-ribbon"
+    [ngClass]="sharesAccountData.status.code | statusLookup"
+    [matTooltip]="sharesAccountData.status.value"
+  ></div>
   <mat-card-header class="header layout-column">
     <mat-card-title-group class="header-title-group">
       <div class="profile-image-container">
@@ -141,6 +146,26 @@
         *mifosxHasPermission="'READ_SHAREACCOUNTDIVIDENDS'"
       >
         {{ 'labels.inputs.Dividends' | translate }}
+      </a>
+      <a
+        mat-tab-link
+        [routerLink]="['./certificates']"
+        routerLinkActive
+        #certificates="routerLinkActive"
+        [active]="certificates.isActive"
+        *mifosxHasPermission="'READ_SHAREACCOUNTPURCHASE'"
+      >
+        {{ 'labels.inputs.Certificates' | translate }}
+      </a>
+      <a
+        mat-tab-link
+        [routerLink]="['./yield']"
+        routerLinkActive
+        #yield="routerLinkActive"
+        [active]="yield.isActive"
+        *mifosxHasPermission="'READ_SHAREACCOUNTPURCHASE'"
+      >
+        {{ 'labels.inputs.Share Yield' | translate }}
       </a>
     </nav>
 

@@ -1,6 +1,8 @@
 /** Angular Imports */
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UntypedFormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 
 /** Custom Services */
 import { TranslateService } from '@ngx-translate/core';
@@ -17,11 +19,21 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   selector: 'mifosx-language-selector',
   templateUrl: './language-selector.component.html',
   styleUrls: ['./language-selector.component.scss'],
+  host: {
+    '[class.menu-item]': 'menuItem'
+  },
   imports: [
-    ...STANDALONE_SHARED_IMPORTS
+    ...STANDALONE_SHARED_IMPORTS,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger
   ]
 })
 export class LanguageSelectorComponent {
+  /** Renders as a profile-menu row instead of a toolbar dropdown. */
+  @Input() menuItem = false;
+
   /** Language selector form control. */
   languageSelector = new UntypedFormControl();
 
@@ -41,8 +53,17 @@ export class LanguageSelectorComponent {
    * @param {string} language New language.
    */
   setLanguage() {
-    this.translateService.use(this.languageSelector.value);
-    this.settingsService.setLanguage({ name: '', code: this.languageSelector.value.substring(0, 2) });
+    this.applyLanguage(this.languageSelector.value);
+  }
+
+  selectLanguage(language: string) {
+    this.languageSelector.setValue(language);
+    this.applyLanguage(language);
+  }
+
+  private applyLanguage(language: string) {
+    this.translateService.use(language);
+    this.settingsService.setLanguage({ name: '', code: language.substring(0, 2) });
   }
 
   /**

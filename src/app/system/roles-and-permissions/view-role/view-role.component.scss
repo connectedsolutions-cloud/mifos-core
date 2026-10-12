@@ -27,8 +27,34 @@ mat-list-item {
 }
 
 .permission-selected {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   margin-top: 10px;
-  height: 40px;
+  min-height: 40px;
+  padding: 0 20px;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  overflow: hidden;
+
+  .permission-title {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    h3 {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .select-deselect {
+    flex: 0 1 auto;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
 }
 
 .inactive {

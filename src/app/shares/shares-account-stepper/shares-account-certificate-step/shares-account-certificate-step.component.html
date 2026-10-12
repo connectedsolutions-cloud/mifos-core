@@ -1,0 +1,81 @@
+<form [formGroup]="certificateForm">
+  <div class="layout-row-wrap gap-2percent">
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Promoter' | translate }}</mat-label>
+      <input matInput type="number" formControlName="promoterStaffId" />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Folio' | translate }}</mat-label>
+      <input matInput type="number" formControlName="folio" required />
+      <mat-error>{{ 'labels.inputs.Folio' | translate }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Line' | translate }}</mat-label>
+      <input matInput type="number" formControlName="lineNumber" required />
+      <mat-error>{{ 'labels.inputs.Line' | translate }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <h4>{{ 'labels.inputs.Beneficiaries' | translate }}</h4>
+  <div formArrayName="beneficiaries">
+    <div
+      *ngFor="let row of beneficiaries.controls; let i = index"
+      [formGroupName]="i"
+      class="layout-row-wrap gap-2percent"
+    >
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.First Name' | translate }}</mat-label>
+        <input matInput formControlName="firstNames" />
+      </mat-form-field>
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.Last Name' | translate }}</mat-label>
+        <input matInput formControlName="lastNames" />
+      </mat-form-field>
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.Relationship' | translate }}</mat-label>
+        <input matInput formControlName="relationship" />
+      </mat-form-field>
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.Percentage' | translate }}</mat-label>
+        <input matInput type="number" formControlName="percentage" />
+      </mat-form-field>
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Address' | translate }}</mat-label>
+        <input matInput formControlName="address" />
+      </mat-form-field>
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.Phone' | translate }}</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+      <mat-form-field class="flex-23">
+        <mat-label>{{ 'labels.inputs.Date of Birth' | translate }}</mat-label>
+        <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
+        <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dobPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-checkbox formControlName="notifyDesignation">
+        {{ 'labels.inputs.Notify Designation' | translate }}
+      </mat-checkbox>
+      <button mat-button type="button" color="warn" (click)="removeBeneficiary(i)">
+        {{ 'labels.buttons.Delete' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <button mat-stroked-button type="button" (click)="addBeneficiary()">
+    {{ 'labels.inputs.Add Beneficiary' | translate }}
+  </button>
+
+  <div class="layout-row align-end gap-5px responsive-column m-t-20">
+    <button mat-raised-button matStepperPrevious>
+      <fa-icon icon="arrow-left" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Previous' | translate }}
+    </button>
+    <button mat-raised-button matStepperNext color="primary" [disabled]="certificateForm.invalid">
+      {{ 'labels.buttons.Next' | translate }}
+      <fa-icon icon="arrow-right" class="m-l-10"></fa-icon>
+    </button>
+  </div>
+</form>

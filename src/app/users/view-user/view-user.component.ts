@@ -12,6 +12,7 @@ import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.co
 import { ChangePasswordDialogComponent } from 'app/shared/change-password-dialog/change-password-dialog.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { dataScopeLabelKey, normalizeRoleDataScope } from 'app/core/utils/data-scope';
 
 /**
  * View user component.
@@ -31,6 +32,8 @@ export class ViewUserComponent {
   userData: any;
   /** Office Names Array */
   officeNames: string[] = [];
+  readonly dataScopeLabelKey = dataScopeLabelKey;
+  readonly normalizeRoleDataScope = normalizeRoleDataScope;
 
   /**
    * Retrieves the user data from `resolve`.

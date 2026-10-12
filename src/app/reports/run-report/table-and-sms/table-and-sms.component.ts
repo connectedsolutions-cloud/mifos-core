@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 /** Angular Imports */
 import { Component, Input, ViewChild, OnChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -46,6 +47,7 @@ import {
   templateUrl: './table-and-sms.component.html',
   styleUrls: ['./table-and-sms.component.scss'],
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     MatTable,
     MatColumnDef,

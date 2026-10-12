@@ -1,8 +1,10 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 @Component({
+  imports: [LoaderComponent],
   selector: 'mifosx-callback',
   templateUrl: './callback.component.html'
 })

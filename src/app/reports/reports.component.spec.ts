@@ -9,10 +9,12 @@ describe('ReportsComponent saved reports', () => {
     { id: 4, reportName: 'Another', reportCategory: 'Loan', useReport: true }
   ];
 
-  function createComponent(filter: string) {
+  function createComponent(filter: string, confirm = true) {
     const route = { data: of({ reports }), snapshot: { params: { filter } } } as any;
     const router = { routeReuseStrategy: { shouldReuseRoute: () => true } } as any;
-    const translate = { instant: (key: string) => key } as any;
+    const translate = {
+      instant: (key: string, params?: { name?: string }) => (params?.name ? `${key}:${params.name}` : key)
+    } as any;
     const authentication = {
       getCredentials: () => ({ permissions: [
           'READ_Allowed',
@@ -24,9 +26,12 @@ describe('ReportsComponent saved reports', () => {
       saveReport: jest.fn(() => of(undefined)),
       removeSavedReport: jest.fn(() => of(undefined))
     } as any;
-    const component = new ReportsComponent(route, router, translate, authentication, reportService);
+    const dialog = {
+      open: jest.fn(() => ({ afterClosed: () => of(confirm ? { confirm: true } : undefined) }))
+    } as any;
+    const component = new ReportsComponent(route, router, translate, authentication, reportService, dialog);
     component.ngOnInit();
-    return { component, reportService };
+    return { component, reportService, dialog };
   }
 
   it('shows only authorized, active reports in their category', () => {
@@ -45,16 +50,34 @@ describe('ReportsComponent saved reports', () => {
     expect(component.dataSource.filteredData).toEqual([]);
   });
 
-  it('shows the current user’s saved reports and removes them with the star', () => {
-    const { component, reportService } = createComponent('saved');
+  it('shows the current user’s saved reports and removes them after confirmation', () => {
+    const { component, reportService, dialog } = createComponent('saved');
     const event = { stopPropagation: jest.fn() } as any;
 
     expect(component.dataSource.filteredData.map((report) => report.id)).toEqual([1]);
     component.toggleSaved(event, reports[0]);
 
     expect(event.stopPropagation).toHaveBeenCalled();
+    expect(dialog.open).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        data: expect.objectContaining({
+          heading: 'savedReports.removeHeading',
+          dialogContext: 'savedReports.removeConfirm:Allowed'
+        })
+      })
+    );
     expect(reportService.removeSavedReport).toHaveBeenCalledWith(1);
     expect(component.dataSource.filteredData).toEqual([]);
+  });
+
+  it('keeps a saved report when removal is cancelled', () => {
+    const { component, reportService } = createComponent('saved', false);
+
+    component.toggleSaved({ stopPropagation: jest.fn() } as any, reports[0]);
+
+    expect(reportService.removeSavedReport).not.toHaveBeenCalled();
+    expect(component.dataSource.filteredData.map((report) => report.id)).toEqual([1]);
   });
 
   it('saves a visible report without moving it from its original category', () => {

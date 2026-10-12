@@ -4,6 +4,7 @@ import { of, BehaviorSubject } from 'rxjs';
 import { CreateClientComponent } from './create-client.component';
 import { ClientsService } from '../clients.service';
 import { SettingsService } from '../../settings/settings.service';
+import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -66,7 +67,8 @@ describe('CreateClientComponent - Integration Tests', () => {
     });
 
     mockClientsService = {
-      createClient: jest.fn(() => of({ resourceId: 123, clientId: 123 }))
+      createClient: jest.fn(() => of({ resourceId: 123, clientId: 123 })),
+      getActiveStaff: jest.fn(() => of([]))
     } as unknown as jest.Mocked<ClientsService>;
 
     mockSettingsService = {
@@ -90,6 +92,10 @@ describe('CreateClientComponent - Integration Tests', () => {
         },
         { provide: ClientsService, useValue: mockClientsService },
         { provide: SettingsService, useValue: mockSettingsService },
+        {
+          provide: AuthenticationService,
+          useValue: { getCredentials: () => ({ permissions: [] as string[] }) }
+        },
         DatePipe,
         DecimalPipe,
         provideNativeDateAdapter(),

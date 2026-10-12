@@ -118,6 +118,28 @@ describe('buildBalanceSaldosDetalladoViewModel', () => {
     expect(viewModel.accounts[0].detailCreditTotal).toBe(1733.88);
   });
 
+  it('accepts a partida with debit and credit movement on the same account', () => {
+    const viewModel = buildBalanceSaldosDetalladoViewModel(
+      result([
+        accountRow(),
+        detailRow(2, 1, 1733.88, 1733.88)])
+    );
+
+    expect(viewModel.accounts[0].entries).toHaveLength(1);
+    expect(viewModel.accounts[0].entries[0].debit).toBe(1733.88);
+    expect(viewModel.accounts[0].entries[0].credit).toBe(1733.88);
+  });
+
+  it('rejects a detail with no movement on either side', () => {
+    expect(() =>
+      buildBalanceSaldosDetalladoViewModel(
+        result([
+          accountRow(),
+          detailRow(2, 1, 0, 0)])
+      )
+    ).toThrow(/must contain a debit or credit amount/);
+  });
+
   it('rejects a missing contract column', () => {
     const incomplete = result();
     incomplete.columnHeaders = incomplete.columnHeaders.filter((header) => header.columnName !== 'parent_code');

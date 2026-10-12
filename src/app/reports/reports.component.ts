@@ -1,5 +1,6 @@
 /** Angular Imports */
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
@@ -19,7 +20,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { MatTabLink, MatTabNav, MatTabNavPanel } from '@angular/material/tabs';
 import { AuthenticationService } from '../core/authentication/authentication.service';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { ReportsService } from './reports.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
@@ -46,7 +49,10 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatRow,
     MatPaginator,
     MatIcon,
-    MatIconButton
+    MatIconButton,
+    MatTabNav,
+    MatTabLink,
+    MatTabNavPanel
   ]
 })
 export class ReportsComponent implements OnInit {
@@ -87,7 +93,8 @@ export class ReportsComponent implements OnInit {
     private router: Router,
     private translateService: TranslateService,
     private authenticationService: AuthenticationService,
-    private reportsService: ReportsService
+    private reportsService: ReportsService,
+    private dialog: MatDialog
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.route.data.subscribe((data: { reports: any }) => {
@@ -171,9 +178,33 @@ export class ReportsComponent implements OnInit {
     if (this.pendingReportIds.has(report.id) || this.savedReportsLoading || this.savedReportsError) {
       return;
     }
+    if (this.savedReportIds.has(report.id)) {
+      this.confirmRemoveSaved(report);
+      return;
+    }
+    this.persistSaved(report, false);
+  }
+
+  private confirmRemoveSaved(report: any) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        heading: this.translateService.instant('savedReports.removeHeading'),
+        dialogContext: this.translateService.instant('savedReports.removeConfirm', {
+          name: this.getTranslatedReportName(report.reportName)
+        }),
+        type: 'Strong'
+      }
+    });
+    dialogRef.afterClosed().subscribe((response: { confirm?: boolean }) => {
+      if (response?.confirm) {
+        this.persistSaved(report, true);
+      }
+    });
+  }
+
+  private persistSaved(report: any, wasSaved: boolean) {
     this.savedReportsError = false;
     this.pendingReportIds.add(report.id);
-    const wasSaved = this.savedReportIds.has(report.id);
     const request = wasSaved
       ? this.reportsService.removeSavedReport(report.id)
       : this.reportsService.saveReport(report.id);

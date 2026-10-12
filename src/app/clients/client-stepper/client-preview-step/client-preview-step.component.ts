@@ -15,6 +15,12 @@ import { FindPipe } from '../../../pipes/find.pipe';
 import { DateFormatPipe } from '../../../pipes/date-format.pipe';
 import { YesnoPipe } from '../../../pipes/yesno.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import {
+  CREDESAL_CLIENT_HEADER_STAFF_ROLES,
+  ClientStaffAssignment,
+  findStaffDisplayName,
+  toStaffId
+} from 'app/clients/clients-view/credesal-client-staff-assignment';
 
 /**
  * Client Preview Step Component
@@ -46,8 +52,12 @@ export class ClientPreviewStepComponent {
   @Input() clientTemplate: any;
   /** Client Object */
   @Input() client: any;
+  @Input() assignmentStaffOptions: any[] = [];
+  @Input() staffAssignment: Partial<ClientStaffAssignment> | null = null;
   /** Datatable payloads collected from create-client datatable steps (optional). */
   @Input() datatablesPayload: { registeredTableName: string; data: Record<string, unknown> }[] = [];
+
+  staffAssignmentRoles = CREDESAL_CLIENT_HEADER_STAFF_ROLES;
 
   /** Form submission event */
   @Output() submitEvent = new EventEmitter();
@@ -90,5 +100,9 @@ export class ClientPreviewStepComponent {
       return '—';
     }
     return String(value);
+  }
+
+  staffAssignmentName(controlName: keyof ClientStaffAssignment): string {
+    return findStaffDisplayName(this.assignmentStaffOptions, toStaffId(this.staffAssignment?.[controlName]));
   }
 }

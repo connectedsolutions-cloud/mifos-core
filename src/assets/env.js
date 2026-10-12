@@ -9,10 +9,10 @@
   window['env']['apiVersion'] = '/v1';
 
   window['env']['fineractPlatformTenantId'] = 'default';
-  window['env']['fineractPlatformTenantIds'] = 'default';
+  window['env']['fineractPlatformTenantIds'] = 'default,sandbox';
 
   // Language Environment variables
-  window['env']['defaultLanguage'] = 'en-US';
+  window['env']['defaultLanguage'] = 'es-MX';
   window['env']['supportedLanguages'] = 'cs-CS,de-DE,en-US,es-MX,fr-FR,it-IT,ko-KO,lt-LT,lv-LV,ne-NE,pt-PT,sw-SW';
 
   window['env']['preloadClients'] = 'true';

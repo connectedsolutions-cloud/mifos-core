@@ -16,6 +16,7 @@ import { ChangePasswordDialogComponent } from 'app/zitadel/shared/change-passwor
 import { strings } from '@angular-devkit/schematics';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { dataScopeLabelKey, normalizeRoleDataScope } from 'app/core/utils/data-scope';
 
 /**
  * View user component.
@@ -32,6 +33,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 export class ViewUserComponent {
   /** User Data. */
   userData: any;
+  readonly dataScopeLabelKey = dataScopeLabelKey;
+  readonly normalizeRoleDataScope = normalizeRoleDataScope;
 
   /**
    * Retrieves the user data from `resolve`.
@@ -63,6 +66,14 @@ export class ViewUserComponent {
       };
 
       this.userData = user;
+      this.usersService.getExtraUserData(user.id).subscribe((resp: any) => {
+        const extra = resp?.object || {};
+        this.userData = {
+          ...this.userData,
+          dataScope: extra.data_scope || extra.dataScope || '',
+          effectiveDataScope: extra.effective_data_scope || extra.effectiveDataScope
+        };
+      });
     });
   }
 

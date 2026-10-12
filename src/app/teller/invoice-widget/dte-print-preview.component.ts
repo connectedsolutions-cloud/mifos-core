@@ -70,6 +70,7 @@ export class DtePrintPreviewComponent implements OnInit {
     const loanTransactionId = this.parseId(params.get('loanTransactionId'));
     const savingsTransactionId = this.parseId(params.get('savingsTransactionId'));
     const clientTransactionId = this.parseId(params.get('clientTransactionId'));
+    const invoiceId = this.parseId(params.get('invoiceId'));
 
     let transactionId: number | null = null;
     let resolvedType: InvoiceTransactionType = entityType;
@@ -85,22 +86,24 @@ export class DtePrintPreviewComponent implements OnInit {
       resolvedType = 'client';
     }
 
-    if (transactionId == null) {
+    if (transactionId == null && invoiceId == null) {
       this.loading = false;
       this.loadError =
-        'Indica loanTransactionId, savingsTransactionId o clientTransactionId en la URL, o usa ?sample=1 para datos de ejemplo.';
+        'Indica invoiceId, loanTransactionId, savingsTransactionId o clientTransactionId en la URL, o usa ?sample=1 para datos de ejemplo.';
       this.viewModel = null;
       this.invoice = null;
       return;
     }
 
     const queryLoanId = this.parseId(params.get('loanId'));
-    const isLoanTransaction = resolvedType === 'loans';
+    const isLoanTransaction = invoiceId == null && transactionId != null && resolvedType === 'loans';
 
     this.loading = true;
     this.loadError = '';
-    this.organizationService
-      .getInvoiceByTransaction(resolvedType, transactionId)
+    (invoiceId != null
+      ? this.organizationService.getInvoiceById(invoiceId)
+      : this.organizationService.getInvoiceByTransaction(resolvedType, transactionId!)
+    )
       .pipe(
         switchMap((invoice: any) => {
           if (!invoice?.id) {
@@ -113,20 +116,21 @@ export class DtePrintPreviewComponent implements OnInit {
               : of(null);
           return loanAccount$.pipe(
             switchMap((loanAccount: any) => {
-              const clientId = loanAccount?.clientId;
+              const clientId = loanAccount?.clientId ?? invoice.historicalClientId;
               const client$ =
                 clientId != null
                   ? this.clientsService.getClientData(String(clientId)).pipe(catchError(() => of(null)))
                   : of(null);
-              const linePreview$ = isLoanTransaction
-                ? client$.pipe(
-                    switchMap((client: any) =>
-                      this.productsService
-                        .previewMhDteItemComponent(transactionId, client?.clientType?.name, false)
-                        .pipe(catchError(() => of(null)))
+              const linePreview$ =
+                isLoanTransaction && transactionId != null
+                  ? client$.pipe(
+                      switchMap((client: any) =>
+                        this.productsService
+                          .previewMhDteItemComponent(transactionId, client?.clientType?.name, false)
+                          .pipe(catchError(() => of(null)))
+                      )
                     )
-                  )
-                : of(null);
+                  : of(null);
               return forkJoin({
                 invoice: of(invoice),
                 loanAccount: of(loanAccount),
@@ -140,7 +144,7 @@ export class DtePrintPreviewComponent implements OnInit {
       .subscribe({
         next: ({ invoice, loanAccount, linePreview }) => {
           if (!invoice?.id) {
-            this.loadError = 'No se encontró factura para esta transacción.';
+            this.loadError = 'No se encontró la factura.';
             this.viewModel = null;
             this.invoice = null;
             return;

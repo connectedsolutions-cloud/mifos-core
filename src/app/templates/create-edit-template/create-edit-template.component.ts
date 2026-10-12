@@ -14,6 +14,7 @@ import { clientParameterLabels, loanParameterLabels, repaymentParameterLabels } 
 
 /** Custom Services */
 import { TemplatesService } from '../templates.service';
+import { SettingsService } from 'app/settings/settings.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { EditorComponent, EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import {
@@ -95,7 +96,8 @@ export class CreateEditComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private templateService: TemplatesService
+    private templateService: TemplatesService,
+    private settingsService: SettingsService
   ) {
     this.route.data.subscribe((data: { templateData: any; mode: 'create' | 'edit' }) => {
       this.templateData = data.templateData;
@@ -164,7 +166,7 @@ export class CreateEditComponent implements OnInit {
    * Subscribe to value changes of entity to set default mapper.
    */
   buildDependencies() {
-    const tenantIdentifier = 'default'; // update once global settings are setup.
+    const tenantIdentifier = this.settingsService.tenantIdentifier || 'default';
     this.templateForm.get('entity').valueChanges.subscribe((value: any) => {
       if (value === 0) {
         // client

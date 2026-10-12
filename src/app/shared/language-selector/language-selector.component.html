@@ -1,4 +1,4 @@
-<mat-form-field id="language-selector" class="m-l-10">
+<mat-form-field *ngIf="!menuItem" id="language-selector" class="m-l-10">
   <mat-label>{{ 'labels.inputs.Language' | translate }}</mat-label>
   <mat-select [formControl]="languageSelector" (selectionChange)="setLanguage()" class="languageselector">
     <mat-option *ngFor="let language of languages" [value]="language">
@@ -6,3 +6,15 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
+
+<button *ngIf="menuItem" mat-menu-item [matMenuTriggerFor]="languageMenu" type="button">
+  <mat-icon>language</mat-icon>
+  <span>{{ 'labels.inputs.Language' | translate }}</span>
+</button>
+
+<mat-menu #languageMenu="matMenu">
+  <button mat-menu-item type="button" *ngFor="let language of languages" (click)="selectLanguage(language)">
+    <mat-icon>{{ language === currentLanguage ? 'check' : '' }}</mat-icon>
+    <span>{{ 'languages.' + language | translate }}</span>
+  </button>
+</mat-menu>

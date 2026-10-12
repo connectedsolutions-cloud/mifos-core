@@ -5,7 +5,14 @@
         <div class="layout-column">
           <mat-form-field>
             <mat-label>{{ 'labels.inputs.Role Name' | translate }}</mat-label>
-            <input matInput disabled formControlName="name" />
+            <input matInput required formControlName="name" />
+            <mat-error *ngIf="roleForm.controls.name.hasError('required')">
+              {{ 'labels.inputs.Role Name' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+            <mat-error *ngIf="roleForm.controls.name.hasError('duplicate')">
+              {{ 'labels.inputs.Role Name' | translate }} {{ 'labels.commons.already exists' | translate }}
+            </mat-error>
           </mat-form-field>
 
           <mat-form-field>
@@ -15,6 +22,15 @@
               {{ 'labels.inputs.Description' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{ 'labels.inputs.Data access' | translate }}</mat-label>
+            <mat-select formControlName="dataScope">
+              <mat-option *ngFor="let option of dataScopeOptions" [value]="option.value">
+                {{ option.labelKey | translate }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
       </mat-card-content>

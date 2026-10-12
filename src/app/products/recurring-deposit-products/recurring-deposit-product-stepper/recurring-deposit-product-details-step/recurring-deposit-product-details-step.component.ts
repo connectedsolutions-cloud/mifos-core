@@ -33,8 +33,12 @@ export class RecurringDepositProductDetailsStepComponent implements OnInit {
       this.recurringDepositProductDetailsForm.patchValue({
         name: this.recurringDepositProductsTemplate.name,
         shortName: this.recurringDepositProductsTemplate.shortName,
+        numberingCode: this.recurringDepositProductsTemplate.numberingCode,
         description: this.recurringDepositProductsTemplate.description
       });
+      if (this.recurringDepositProductsTemplate.numberingCode) {
+        this.recurringDepositProductDetailsForm.get('numberingCode')?.disable();
+      }
     }
   }
 
@@ -48,6 +52,7 @@ export class RecurringDepositProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
+      numberingCode: [''],
       description: [
         '',
         Validators.required
@@ -56,6 +61,10 @@ export class RecurringDepositProductDetailsStepComponent implements OnInit {
   }
 
   get recurringDepositProductDetails() {
-    return this.recurringDepositProductDetailsForm.value;
+    const details = this.recurringDepositProductDetailsForm.getRawValue();
+    if (!details.numberingCode) {
+      delete details.numberingCode;
+    }
+    return details;
   }
 }

@@ -97,7 +97,7 @@ export class ExportTransactionsComponent implements OnInit {
       .getPentahoRunReportData(
         'Client Saving Transactions',
         data,
-        'default',
+        this.settingsService.tenantIdentifier || 'default',
         this.settingsService.language.code,
         this.settingsService.dateFormat
       )

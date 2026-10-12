@@ -47,6 +47,14 @@
         <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Actions' | translate }}</th>
         <td mat-cell *matCellDef="let role">
           <button
+            mat-icon-button
+            color="primary"
+            (click)="exportRole($event, role)"
+            [matTooltip]="'labels.buttons.Export' | translate"
+          >
+            <fa-icon icon="download"></fa-icon>
+          </button>
+          <button
             *ngIf="role.name !== 'Super user'"
             mat-icon-button
             color="primary"

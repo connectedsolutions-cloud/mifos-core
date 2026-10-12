@@ -63,6 +63,8 @@
         [clientTemplate]="clientTemplate"
         [clientAddressFieldConfig]="clientAddressFieldConfig"
         [client]="client"
+        [assignmentStaffOptions]="clientGeneralStep.staffOptions"
+        [staffAssignment]="clientGeneralStep.createClientForm.value"
         [datatablesPayload]="datatablesPreview"
         (submitEvent)="submit()"
       >

@@ -1,3 +1,4 @@
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 /** Angular Imports */
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
@@ -25,6 +26,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],
   imports: [
+    LoaderComponent,
     ...STANDALONE_SHARED_IMPORTS,
     MatSidenavContainer,
     MatSidenav,
@@ -46,7 +48,7 @@ export class ShellComponent implements OnInit, OnDestroy {
   /** Sets the initial state of sidenav as collapsed. Not collapsed if false. */
   sidenavCollapsed = true;
   /** Progress bar mode. */
-  progressBarMode: string;
+  progressBarMode: string = 'none';
   /** Subscription to progress bar. */
   progressBar$: Subscription;
 
@@ -65,6 +67,7 @@ export class ShellComponent implements OnInit, OnDestroy {
    * Subscribes to progress bar to update its mode.
    */
   ngOnInit() {
+    this.progressBarMode = this.progressBarService.getRequestsRunning() > 0 ? 'indeterminate' : 'none';
     this.progressBar$ = this.progressBarService.updateProgressBar.subscribe((mode: string) => {
       this.progressBarMode = mode;
       this.cdr.detectChanges();

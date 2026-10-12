@@ -106,4 +106,30 @@
       }
     }
   }
+
+  mifosx-fixed-deposit-account-view,
+  mifosx-loans-view,
+  mifosx-shares-account-view,
+  mifosx-recurring-deposits-account-view,
+  mifosx-savings-account-view {
+    .account-card {
+      overflow: hidden;
+
+      .account-status-ribbon {
+        display: block;
+        height: 12px;
+        width: 100%;
+        margin: 0;
+      }
+
+      .account-status-ribbon + .header {
+        margin-top: 0;
+      }
+
+      h3 > .fa-stop {
+        font-size: 20px;
+        margin-right: 6px;
+      }
+    }
+  }
 }

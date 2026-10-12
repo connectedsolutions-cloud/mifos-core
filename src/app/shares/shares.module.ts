@@ -29,6 +29,7 @@ import { ApproveShareDialogComponent } from './shares-account-actions/approve-sh
 import { RejectSharesComponent } from './shares-account-actions/reject-shares/reject-shares.component';
 import { RejectShareDialogComponent } from './shares-account-actions/reject-shares/reject-share-dialog/reject-share-dialog.component';
 import { GeneralTabComponent } from './shares-account-view/general-tab/general-tab.component';
+import { YieldTabComponent } from './shares-account-view/yield-tab/yield-tab.component';
 
 /**
  * Shares Module
@@ -63,7 +64,8 @@ import { GeneralTabComponent } from './shares-account-view/general-tab/general-t
     ApproveShareDialogComponent,
     RejectSharesComponent,
     RejectShareDialogComponent,
-    GeneralTabComponent
+    GeneralTabComponent,
+    YieldTabComponent
   ],
   providers: []
 })

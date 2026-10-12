@@ -29,6 +29,8 @@
           {{ transactionData.id }}
         </div>
 
+        <mifosx-treasury-link linkType="loan_transaction" [entityId]="transactionData.id"></mifosx-treasury-link>
+
         <div class="flex-50 mat-body-strong" *ngIf="transactionData.toLoanTransactionRelation">
           {{ 'Repayment Transaction' | translateKey: 'catalogs' }}
         </div>
@@ -53,6 +55,14 @@
 
         <div class="flex-50">
           {{ transactionData.date | dateFormat }}
+        </div>
+
+        <div class="flex-50 mat-body-strong" *ngIf="transactionData.manuallyReversed && transactionData.reversedOnDate">
+          {{ 'labels.inputs.Reversal Date' | translate }}
+        </div>
+
+        <div class="flex-50" *ngIf="transactionData.manuallyReversed && transactionData.reversedOnDate">
+          {{ transactionData.reversedOnDate | dateFormat }}
         </div>
 
         <div class="flex-50 mat-body-strong">

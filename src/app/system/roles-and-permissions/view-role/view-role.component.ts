@@ -9,6 +9,7 @@ import {
   UntypedFormControl
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { SystemService } from '../../system.service';
@@ -18,6 +19,17 @@ import { TranslateService } from '@ngx-translate/core';
 import { DeleteDialogComponent } from '../../../shared/delete-dialog/delete-dialog.component';
 import { DisableDialogComponent } from '../../../shared/disable-dialog/disable-dialog.component';
 import { EnableDialogComponent } from '../../../shared/enable-dialog/enable-dialog.component';
+import { ConfirmationDialogComponent } from '../../../shared/confirmation-dialog/confirmation-dialog.component';
+import {
+  RolePermissionJson,
+  RolePermissionJsonError,
+  buildRolePermissionUpdateBody,
+  downloadRolePermissionJson,
+  parseRolePermissionJson,
+  permissionCodesFromRole,
+  splitKnownPermissions,
+  toRolePermissionJson
+} from '../role-permission-json';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
 import { MatList, MatListItem } from '@angular/material/list';
@@ -34,6 +46,7 @@ import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operato
 /** Custom Service Zitadel */
 import { environment } from '../../../../environments/environment';
 import { AuthService } from 'app/zitadel/auth.service';
+import { dataScopeLabelKey, normalizeRoleDataScope } from 'app/core/utils/data-scope';
 
 /**
  * Permission option interface for search
@@ -112,6 +125,8 @@ export class ViewRoleComponent implements OnInit {
   highlightedPermissionCode: string | null = null;
   /** ViewChildren reference for permission elements */
   @ViewChildren('permissionElement') permissionElements: QueryList<ElementRef>;
+  readonly dataScopeLabelKey = dataScopeLabelKey;
+  readonly normalizeRoleDataScope = normalizeRoleDataScope;
 
   /**
    * Retrieves the roledetails data from `resolve`.
@@ -129,12 +144,34 @@ export class ViewRoleComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private translateService: TranslateService,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {
     this.route.data.subscribe((data: { roledetails: any }) => {
       this.rolePermissionService = data.roledetails;
     });
+  }
+
+  /**
+   * Total permissions in the role catalog.
+   */
+  get totalPermissionCount(): number {
+    return this.rolePermissionService?.permissionUsageData?.length ?? 0;
+  }
+
+  /**
+   * Count of currently enabled (selected) permissions from the form roster.
+   */
+  get enabledPermissionCount(): number {
+    if (!this.formGroup) {
+      return 0;
+    }
+    const roster = this.formGroup.get('roster') as FormArray;
+    if (!roster) {
+      return 0;
+    }
+    return roster.controls.filter((control) => control.get('selected')?.value === true).length;
   }
 
   /**
@@ -502,6 +539,102 @@ export class ViewRoleComponent implements OnInit {
         });
       } else {
       }
+    });
+  }
+
+  /**
+   * Downloads this role's selected permission codes as JSON.
+   */
+  exportRoleJson(): void {
+    downloadRolePermissionJson(toRolePermissionJson(this.rolePermissionService));
+  }
+
+  /**
+   * Reads a role permission JSON file and replaces this role's permissions.
+   */
+  onImportRoleJson(event: Event): void {
+    if (this.rolePermissionService.name === 'Super user') {
+      return;
+    }
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = parseRolePermissionJson(String(reader.result || ''));
+        this.confirmAndImportRoleJson(parsed);
+      } catch (error) {
+        const message =
+          error instanceof RolePermissionJsonError
+            ? error.message
+            : this.translateService.instant('labels.text.Invalid role permission JSON');
+        this.snackBar.open(message, 'Close', { duration: 4000 });
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  private confirmAndImportRoleJson(parsed: RolePermissionJson): void {
+    const confirmDialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        heading: this.translateService.instant('labels.heading.Import Role Permissions'),
+        dialogContext: this.translateService.instant(
+          'labels.dialogContext.Are you sure you want to replace this role permissions'
+        ),
+        type: 'Mild'
+      }
+    });
+    confirmDialogRef.afterClosed().subscribe((response: { confirm?: boolean }) => {
+      if (!response?.confirm) {
+        return;
+      }
+      const catalog = permissionCodesFromRole(this.rolePermissionService);
+      const { known, unknown } = splitKnownPermissions(parsed.permissions, catalog);
+      this.systemService
+        .updateRolePermission(this.roleId, buildRolePermissionUpdateBody(known, catalog))
+        .subscribe(() => {
+          this.applyImportedPermissions(known);
+          this.showImportResult(known.length, unknown);
+        });
+    });
+  }
+
+  private applyImportedPermissions(selectedCodes: string[]): void {
+    const selected = new Set(selectedCodes);
+    this.rolePermissionService.permissionUsageData.forEach((permission: { code: string; selected?: boolean }) => {
+      permission.selected = selected.has(permission.code);
+    });
+    this.groupings = [];
+    this.createForm();
+    this.groupRules();
+    this.initializePermissionSearch();
+    this.filterPermissions();
+    this.selectedItem = this.previousGrouping || this.groupings[0];
+    this.showPermissions(this.selectedItem);
+    this.formGroup.controls.roster.disable();
+    this.isDisabled = true;
+  }
+
+  private showImportResult(applied: number, unknown: string[]): void {
+    if (unknown.length) {
+      this.snackBar.open(
+        this.translateService.instant('labels.text.Applied permissions skipped unknown', {
+          applied,
+          count: unknown.length,
+          codes: unknown.join(', ')
+        }),
+        'Close',
+        { duration: 8000 }
+      );
+      return;
+    }
+    this.snackBar.open(this.translateService.instant('labels.text.Applied permissions', { applied }), 'Close', {
+      duration: 4000
     });
   }
 }

@@ -34,12 +34,11 @@ export class BalanceSaldosDetalladoReportComponent implements OnChanges {
     if (value == null) {
       return '';
     }
-    const formatted = new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }).format(Math.abs(value));
-    return value < 0 ? `(${formatted})` : formatted;
+    }).format(value);
   }
 }

@@ -193,20 +193,19 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="flex-48">
-      <mat-label>{{ 'labels.inputs.Staff' | translate }}</mat-label>
-      <mat-select formControlName="staffId">
-        <mat-option *ngFor="let staff of staffOptions" [value]="staff.id">
-          {{ staff.displayName }}
+    <mat-form-field class="flex-48" *ngFor="let role of staffAssignmentRoles">
+      <mat-label>{{ 'labels.inputs.' + role.labelKey | translate }}</mat-label>
+      <mat-select [formControlName]="role.controlName">
+        <mat-option>
+          <ngx-mat-select-search
+            [formControl]="staffFilterCtrls[role.controlName]"
+            placeholderLabel="{{ 'labels.buttons.Search' | translate }}"
+            noEntriesFoundLabel="{{ 'labels.text.No data found' | translate }}"
+          ></ngx-mat-select-search>
         </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="flex-48">
-      <mat-label>{{ 'labels.inputs.Gestor' | translate }}</mat-label>
-      <mat-select formControlName="gestorId">
-        <mat-option *ngFor="let gestor of gestorOptions" [value]="gestor.id">
-          {{ gestor.displayName }}
+        <mat-option [value]="null">{{ 'labels.inputs.Unassigned' | translate }}</mat-option>
+        <mat-option *ngFor="let staff of filteredStaffByRole[role.controlName]" [value]="staff.id">
+          {{ staff.displayName }}
         </mat-option>
       </mat-select>
     </mat-form-field>

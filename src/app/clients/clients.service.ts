@@ -1,11 +1,18 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { SKIP_ERROR_HANDLER } from 'app/core/http/http-context.tokens';
 
 /** rxjs Imports */
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import {
+  buildClientStaffAssignmentPayload,
+  ClientStaffAssignment,
+  CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE,
+  EMPTY_CLIENT_STAFF_ASSIGNMENT,
+  parseClientStaffAssignment
+} from './clients-view/credesal-client-staff-assignment';
 
 /**
  * Clients service.
@@ -109,6 +116,43 @@ export class ClientsService {
   editClientDatatableEntry(clientId: string, datatableName: string, data: any) {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
     return this.http.put(`/datatables/${datatableName}/${clientId}`, data, { params: httpParams });
+  }
+
+  getActiveStaff(): Observable<any[]> {
+    const httpParams = new HttpParams().set('status', 'active');
+    return this.http.get<any[]>('/staff', { params: httpParams });
+  }
+
+  getClientStaffAssignment(clientId: string): Observable<{
+    assignment: ClientStaffAssignment;
+    hasExistingRow: boolean;
+  }> {
+    return this.getClientDatatable(clientId, CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE, {
+      skipErrorHandler: true
+    }).pipe(
+      map((response) => parseClientStaffAssignment(response)),
+      catchError(() => of({ assignment: { ...EMPTY_CLIENT_STAFF_ASSIGNMENT }, hasExistingRow: false }))
+    );
+  }
+
+  saveClientStaffAssignment(
+    clientId: string,
+    assignment: ClientStaffAssignment,
+    locale: string,
+    hasExistingRow: boolean
+  ): Observable<any> {
+    const data = buildClientStaffAssignmentPayload(assignment, locale);
+    if (hasExistingRow) {
+      return this.editClientDatatableEntry(clientId, CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE, data);
+    }
+    return this.editClientDatatableEntry(clientId, CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error?.status === 404) {
+          return this.addClientDatatableEntry(clientId, CREDESAL_CLIENT_STAFF_ASSIGNMENT_DATATABLE, data);
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   deleteDatatableContent(clientId: string, datatableName: string) {
@@ -427,11 +471,51 @@ export class ClientsService {
     return this.http.get(`/clients/${clientId}/collaterals/template`);
   }
 
-  searchByText(text: string, page: number, pageSize: number, sortAttribute: string = '', sortDirection: string = '') {
+  getClientSearchOptions(officeId?: number | null): Observable<any> {
+    let params = new HttpParams();
+    if (officeId) {
+      params = params.set('officeId', officeId.toString());
+    }
+    const opts = params.keys().length ? { params } : {};
+    return this.http.get('/v2/clients/search/options', opts);
+  }
+
+  searchByText(
+    text: string,
+    page: number,
+    pageSize: number,
+    sortAttribute: string = '',
+    sortDirection: string = '',
+    filters: {
+      officeId?: number | null;
+      status?: string | null;
+      tagId?: number | null;
+      promoterStaffId?: number | null;
+      accountExecutiveStaffId?: number | null;
+      collectionsManagerStaffId?: number | null;
+    } = {}
+  ) {
+    const requestBody: any = { text };
+    if (filters.officeId) {
+      requestBody.officeId = filters.officeId;
+    }
+    if (filters.status) {
+      requestBody.status = filters.status;
+    }
+    if (filters.tagId) {
+      requestBody.tagId = filters.tagId;
+    }
+    if (filters.promoterStaffId) {
+      requestBody.promoterStaffId = filters.promoterStaffId;
+    }
+    if (filters.accountExecutiveStaffId) {
+      requestBody.accountExecutiveStaffId = filters.accountExecutiveStaffId;
+    }
+    if (filters.collectionsManagerStaffId) {
+      requestBody.collectionsManagerStaffId = filters.collectionsManagerStaffId;
+    }
     let request: any = {
-      request: {
-        text
-      },
+      request: requestBody,
       page,
       size: pageSize
     };

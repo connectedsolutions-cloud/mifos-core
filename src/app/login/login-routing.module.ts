@@ -11,6 +11,16 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent,
     data: { title: 'Login' }
+  },
+  {
+    path: 'forgot-password',
+    component: LoginComponent,
+    data: { title: 'Forgot Password' }
+  },
+  {
+    path: 'reset-password',
+    component: LoginComponent,
+    data: { title: 'Reset Password' }
   }
 ];
 

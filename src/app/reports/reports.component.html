@@ -1,73 +1,82 @@
 <div class="container">
-  <nav class="report-sections" [attr.aria-label]="'savedReports.navigation' | translate">
-    <a mat-button routerLink="/reports" [attr.aria-current]="!filter ? 'page' : null">{{
-      'savedReports.all' | translate
-    }}</a>
-    <a mat-button routerLink="/reports/saved" [attr.aria-current]="filter === savedSection ? 'page' : null">
-      <mat-icon>star</mat-icon> {{ 'savedReports.title' | translate }}
+  <nav
+    mat-tab-nav-bar
+    class="report-sections"
+    [mat-stretch-tabs]="false"
+    [tabPanel]="reportSections"
+    [attr.aria-label]="'savedReports.navigation' | translate"
+  >
+    <a mat-tab-link routerLink="/reports" [active]="!filter">{{ 'savedReports.all' | translate }}</a>
+    <a mat-tab-link routerLink="/reports/saved" [active]="filter === savedSection">
+      <mat-icon class="report-section-icon">star</mat-icon>
+      {{ 'savedReports.title' | translate }}
     </a>
   </nav>
-  <p *ngIf="filter === savedSection && savedReportsLoading">{{ 'savedReports.loading' | translate }}</p>
-  <p *ngIf="savedReportsError" role="alert">{{ 'savedReports.error' | translate }}</p>
-  <div class="layout-row gap-20px">
-    <mat-form-field class="flex-fill">
-      <mat-label>{{ 'labels.inputs.Filter' | translate }}</mat-label>
-      <input matInput (keyup)="applyFilter($event.target.value)" />
-    </mat-form-field>
-  </div>
+  <mat-tab-nav-panel #reportSections>
+    <p *ngIf="filter === savedSection && savedReportsLoading">{{ 'savedReports.loading' | translate }}</p>
+    <p *ngIf="savedReportsError" role="alert">{{ 'savedReports.error' | translate }}</p>
+    <div class="layout-row gap-20px">
+      <mat-form-field class="flex-fill">
+        <mat-label>{{ 'labels.inputs.Filter' | translate }}</mat-label>
+        <input matInput (keyup)="applyFilter($event.target.value)" />
+      </mat-form-field>
+    </div>
 
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container matColumnDef="reportName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.name' | translate }}</th>
-        <td mat-cell *matCellDef="let report">{{ getTranslatedReportName(report.reportName) }}</td>
-      </ng-container>
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="reportName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.name' | translate }}</th>
+          <td mat-cell *matCellDef="let report">{{ getTranslatedReportName(report.reportName) }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="reportType">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Type' | translate }}</th>
-        <td mat-cell *matCellDef="let report">{{ 'labels.text.' + report.reportType | translate }}</td>
-      </ng-container>
+        <ng-container matColumnDef="reportType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Type' | translate }}</th>
+          <td mat-cell *matCellDef="let report">{{ 'labels.text.' + report.reportType | translate }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="reportCategory">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Category' | translate }}</th>
-        <td mat-cell *matCellDef="let report">{{ 'labels.text.' + report.reportCategory | translate }}</td>
-      </ng-container>
+        <ng-container matColumnDef="reportCategory">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Category' | translate }}</th>
+          <td mat-cell *matCellDef="let report">{{ 'labels.text.' + report.reportCategory | translate }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="saved">
-        <th mat-header-cell *matHeaderCellDef>{{ 'savedReports.title' | translate }}</th>
-        <td mat-cell *matCellDef="let report">
-          <button
-            mat-icon-button
-            type="button"
-            (click)="toggleSaved($event, report)"
-            [disabled]="savedReportsLoading || savedReportsError || pendingReportIds.has(report.id)"
-            [attr.aria-label]="(savedReportIds.has(report.id) ? 'savedReports.remove' : 'savedReports.add') | translate"
-            [attr.aria-pressed]="savedReportIds.has(report.id)"
-            [title]="(savedReportIds.has(report.id) ? 'savedReports.remove' : 'savedReports.add') | translate"
-          >
-            <mat-icon>{{ savedReportIds.has(report.id) ? 'star' : 'star_border' }}</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="saved">
+          <th mat-header-cell *matHeaderCellDef>{{ 'savedReports.title' | translate }}</th>
+          <td mat-cell *matCellDef="let report">
+            <button
+              mat-icon-button
+              type="button"
+              (click)="toggleSaved($event, report)"
+              [disabled]="savedReportsLoading || savedReportsError || pendingReportIds.has(report.id)"
+              [attr.aria-label]="
+                (savedReportIds.has(report.id) ? 'savedReports.remove' : 'savedReports.add') | translate
+              "
+              [attr.aria-pressed]="savedReportIds.has(report.id)"
+              [title]="(savedReportIds.has(report.id) ? 'savedReports.remove' : 'savedReports.add') | translate"
+            >
+              <mat-icon>{{ savedReportIds.has(report.id) ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        class="select-row"
-        [routerLink]="['/reports', 'run', row.reportName]"
-        [queryParams]="{ type: row.reportType, subType: row.reportSubType, id: row.id }"
-      ></tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="select-row"
+          [routerLink]="['/reports', 'run', row.reportName]"
+          [queryParams]="{ type: row.reportType, subType: row.reportSubType, id: row.id }"
+        ></tr>
+      </table>
 
-    <p
-      class="empty-saved-reports"
-      *ngIf="
-        filter === savedSection && !savedReportsLoading && !savedReportsError && dataSource.filteredData.length === 0
-      "
-    >
-      {{ 'savedReports.empty' | translate }}
-    </p>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
-  </div>
+      <p
+        class="empty-saved-reports"
+        *ngIf="
+          filter === savedSection && !savedReportsLoading && !savedReportsError && dataSource.filteredData.length === 0
+        "
+      >
+        {{ 'savedReports.empty' | translate }}
+      </p>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-tab-nav-panel>
 </div>

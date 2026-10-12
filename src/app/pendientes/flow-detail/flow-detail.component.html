@@ -4,7 +4,7 @@
     {{ 'labels.buttons.Back' | translate }}
   </button>
   <div *ngIf="loading">
-    <mat-spinner diameter="40"></mat-spinner>
+    <mifosx-loader diameter="40"></mifosx-loader>
   </div>
   <div *ngIf="error" class="error-message">{{ error }}</div>
   <div *ngIf="!loading && flow && displaySteps.length === 0 && hasStepIdQuery" class="error-message">
@@ -39,6 +39,15 @@
         <p class="step-note-content">{{ step.note }}</p>
       </mat-card-content>
       <mat-card-actions class="step-actions">
+        <mat-form-field
+          *ngIf="step.name === 'transferencia_cheque_boveda' && !isStepFinished(step)"
+          class="treasury-bank-field"
+        >
+          <mat-label>{{ 'labels.text.treasury.chooseBank' | translate }}</mat-label>
+          <mat-select (selectionChange)="treasuryBankAccountId = $event.value">
+            <mat-option *ngFor="let bank of treasuryBanks" [value]="bank.id">{{ bankLabel(bank) }}</mat-option>
+          </mat-select>
+        </mat-form-field>
         <button
           mat-raised-button
           color="warn"

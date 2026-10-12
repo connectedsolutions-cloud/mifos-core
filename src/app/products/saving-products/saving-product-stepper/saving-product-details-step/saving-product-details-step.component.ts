@@ -33,8 +33,12 @@ export class SavingProductDetailsStepComponent implements OnInit {
       this.savingProductDetailsForm.patchValue({
         name: this.savingProductsTemplate.name,
         shortName: this.savingProductsTemplate.shortName,
+        numberingCode: this.savingProductsTemplate.numberingCode,
         description: this.savingProductsTemplate.description
       });
+      if (this.savingProductsTemplate.numberingCode) {
+        this.savingProductDetailsForm.get('numberingCode')?.disable();
+      }
     }
   }
 
@@ -48,11 +52,16 @@ export class SavingProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
+      numberingCode: [''],
       description: ['']
     });
   }
 
   get savingProductDetails() {
-    return this.savingProductDetailsForm.value;
+    const details = this.savingProductDetailsForm.getRawValue();
+    if (!details.numberingCode) {
+      delete details.numberingCode;
+    }
+    return details;
   }
 }

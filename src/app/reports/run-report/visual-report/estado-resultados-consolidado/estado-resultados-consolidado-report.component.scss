@@ -1,0 +1,192 @@
+:host {
+  display: block;
+}
+
+/* stylelint-disable no-descending-specificity */
+
+.income-statement-document {
+  box-sizing: border-box;
+  width: 816px;
+  min-height: 1056px;
+  margin: 0 auto;
+  padding: 54px 56px 46px;
+  background: #fff;
+  color: #111;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  line-height: 1.28;
+}
+
+.income-statement-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.description-column {
+  width: 56%;
+}
+
+.amount-column {
+  width: 22%;
+}
+
+.document-heading-row th {
+  padding: 0;
+  font-weight: 400;
+}
+
+.document-heading {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #555;
+  text-align: center;
+}
+
+.document-heading h1,
+.document-heading h2,
+.document-heading p {
+  margin: 0;
+}
+
+.document-heading h1 {
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.document-heading h2 {
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.document-heading p {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.document-heading .currency-label {
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+.amount-heading-row th {
+  padding: 8px 6px 4px;
+  border-bottom: 1px solid #555;
+  text-align: center;
+}
+
+.amount-heading-row td {
+  padding: 0;
+}
+
+.section-row,
+.group-row,
+.account-row,
+.result-row {
+  break-inside: avoid;
+}
+
+.section-row th,
+.section-row td {
+  padding: 6px 6px 4px;
+}
+
+.section-row th {
+  text-align: left;
+}
+
+.group-row th,
+.group-row td {
+  padding: 4px 6px;
+}
+
+.group-row th {
+  padding-left: 20px;
+  text-align: left;
+}
+
+.account-row td {
+  padding: 4px 6px;
+}
+
+.account-row td:first-child {
+  padding-left: 42px;
+  color: #555;
+}
+
+.account-code {
+  display: inline-block;
+  min-width: 40px;
+  margin-right: 8px;
+}
+
+.amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result-row th,
+.result-row td {
+  padding: 12px 6px 5px;
+  border-bottom: 1px solid #555;
+}
+
+.result-row th {
+  display: flex;
+  align-items: baseline;
+  text-align: left;
+}
+
+.result-leader {
+  flex: 1;
+  margin-left: 3px;
+  border-bottom: 2px dotted #555;
+}
+
+.document-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 360px;
+  padding-top: 5px;
+  border-top: 1px solid #555;
+  color: #555;
+  font-size: 8px;
+}
+
+.income-statement-error {
+  padding: 16px;
+  border: 1px solid #b00020;
+  background: #fff4f4;
+  color: #b00020;
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  .income-statement-document {
+    width: 816px;
+    min-height: 1056px;
+    margin: 0;
+    padding: 54px 56px 46px;
+  }
+
+  .income-statement-table thead {
+    display: table-header-group;
+  }
+
+  .document-footer {
+    position: fixed;
+    right: 56px;
+    bottom: 18px;
+    left: 56px;
+    margin-top: 0;
+  }
+
+  .page-current::after {
+    content: counter(page);
+  }
+}

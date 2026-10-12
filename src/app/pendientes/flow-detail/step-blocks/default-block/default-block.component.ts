@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import type { BlockConfig, BlockData } from '../block.interface';
 
 @Component({
@@ -8,7 +8,7 @@ import type { BlockConfig, BlockData } from '../block.interface';
   standalone: true,
   imports: [
     CommonModule,
-    MatProgressSpinnerModule
+    LoaderComponent
   ],
   templateUrl: './default-block.component.html',
   styleUrls: ['../block-common.scss']

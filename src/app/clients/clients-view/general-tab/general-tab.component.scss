@@ -2,10 +2,6 @@
   padding: 1%;
   margin: 1%;
 
-  h3 {
-    margin: 1% auto;
-  }
-
   table {
     width: 100%;
 
@@ -26,20 +22,179 @@
   }
 
   .performance-history-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     border: none;
-    background-color: #e9e9e9;
-    border-radius: 8px;
-    padding: 1%;
-
-    table {
-      border: none;
-
-      td,
-      th {
-        border: none;
-      }
-    }
+    background-color: #eee;
+    padding: 16px 20px;
   }
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.metric-value {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 28px;
+  color: rgb(0 0 0 / 87%);
+}
+
+.metric-label {
+  font-size: 12px;
+  line-height: 16px;
+  color: #5f6368;
+}
+
+.general-section {
+  margin-top: 28px;
+  margin-bottom: 28px;
+}
+
+.general-section h3 {
+  margin-bottom: 12px;
+}
+
+.charges-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.charges-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.charges-empty {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.account-groups {
+  display: flex;
+  flex-direction: column;
+  margin-top: 28px;
+  margin-bottom: 28px;
+}
+
+.empty-types-label {
+  order: 1;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: #5f6368;
+}
+
+.account-type {
+  order: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.account-type.is-empty {
+  order: 2;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.account-type-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 16px;
+  background-color: #e4eef6;
+}
+
+.account-type-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.account-type.is-empty .account-type-band {
+  min-height: 48px;
+  background-color: #f4f5f7;
+}
+
+.account-type-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.account-type-name {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgb(0 0 0 / 87%);
+}
+
+.account-type-count {
+  font-size: 13px;
+  line-height: 16px;
+  color: #5f6368;
+}
+
+.type-mark {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.type-mark-loan {
+  background-color: #3949ab;
+}
+
+.type-mark-savings {
+  background-color: #43a047;
+}
+
+.type-mark-fixed {
+  background-color: #1074b9;
+}
+
+.type-mark-recurring {
+  background-color: #004989;
+}
+
+.type-mark-shares {
+  background-color: #83a447;
+}
+
+.type-mark-collateral {
+  background-color: #5f6368;
+}
+
+.account-type table {
+  margin-left: 40px;
+  width: calc(100% - 40px);
 }
 
 .heading-content {

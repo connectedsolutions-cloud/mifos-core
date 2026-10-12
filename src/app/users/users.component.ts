@@ -23,6 +23,7 @@ import { of } from 'rxjs';
 /** Custom Services */
 import { PopoverService } from '../configuration-wizard/popover/popover.service';
 import { ConfigurationWizardService } from '../configuration-wizard/configuration-wizard.service';
+import { AuthenticationService } from '../core/authentication/authentication.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
@@ -59,7 +60,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     'firstname',
     'lastname',
     'email',
-    'officeName'
+    'officeName',
+    'actions'
   ];
   /** Data source for users table. */
   dataSource: MatTableDataSource<any>;
@@ -89,7 +91,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private authenticationService: AuthenticationService
   ) {
     this.route.data.subscribe((data: { users: any }) => {
       this.usersData = data.users;
@@ -118,6 +121,19 @@ export class UsersComponent implements OnInit, AfterViewInit {
     this.dataSource = new MatTableDataSource(this.usersData);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  get currentUserId(): number | null {
+    return this.authenticationService.getCredentials()?.userId ?? null;
+  }
+
+  get isImpersonating(): boolean {
+    return this.authenticationService.isImpersonating();
+  }
+
+  loginAs(event: Event, user: any): void {
+    event.stopPropagation();
+    this.authenticationService.loginAsUser(user.id).subscribe();
   }
 
   /**

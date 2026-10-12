@@ -41,6 +41,13 @@
           </mat-select>
         </mat-form-field>
 
+        <mifosx-treasury-bank-hint
+          *ngIf="transactionType.withdrawal"
+          [form]="accountTransactionForm"
+          productType="savings"
+          [productId]="productId"
+        ></mifosx-treasury-bank-hint>
+
         <div class="flex-fill">
           <span class="expandcollapsebutton m-l-10 m-t-40 flex-75" (click)="addPaymentDetails()">
             <mat-slide-toggle>

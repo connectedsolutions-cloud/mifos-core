@@ -42,7 +42,7 @@ export class Dates {
 
   get language() {
     if (!localStorage.getItem('mifosXLanguage')) {
-      return 'en';
+      return 'es';
     }
     return JSON.parse(localStorage.getItem('mifosXLanguage'));
   }

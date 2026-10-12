@@ -29,6 +29,19 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Certificate Numbering Code' | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="numberingCode"
+        maxlength="4"
+        matTooltip="{{
+          'tooltips.Certificate numbering code is used when issuing share certificates, not share account numbers'
+            | translate
+        }}"
+      />
+    </mat-form-field>
+
     <mat-form-field class="flex-98">
       <mat-label>{{ 'labels.inputs.Description' | translate }}</mat-label>
       <textarea

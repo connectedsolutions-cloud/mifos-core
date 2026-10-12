@@ -37,6 +37,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { TransactionPaymentDetailComponent } from '../../../../shared/transaction-payment-detail/transaction-payment-detail.component';
 import { DateFormatPipe } from '../../../../pipes/date-format.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { TreasuryLinkComponent } from 'app/treasury/treasury-link.component';
 
 /** Custom Dialogs */
 
@@ -67,7 +68,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatRow,
     TransactionPaymentDetailComponent,
     CurrencyPipe,
-    DateFormatPipe
+    DateFormatPipe,
+    TreasuryLinkComponent
   ]
 })
 export class ViewTransactionComponent implements OnInit {

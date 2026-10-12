@@ -9,7 +9,6 @@ import { finalize } from 'rxjs/operators';
 import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { MatDivider } from '@angular/material/divider';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatFormField, MatPrefix, MatLabel, MatHint, MatError } from '@angular/material/form-field';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
@@ -26,7 +25,6 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatDivider,
     MatRadioGroup,
     MatRadioButton,
-    MatProgressSpinner,
     MatPrefix,
     FaIconComponent,
     MatHint

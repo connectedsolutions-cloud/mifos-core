@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credesal · Loader</title>
+    <style>
+      body {
+        margin: 0;
+        background: white;
+        font:
+          14px system-ui,
+          sans-serif;
+        color: #586475;
+      }
+      .controls {
+        position: fixed;
+        bottom: 32px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+      }
+      button {
+        font: inherit;
+        padding: 8px 16px;
+        border: 1px solid #d9dfe5;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+      }
+      .loader-wrapper {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        width: 100%;
+      }
+
+      .credesal-loader {
+        --loader-size: 220px;
+        --loader-duration: 7s;
+        position: relative;
+        width: var(--loader-size);
+        height: var(--loader-size);
+      }
+
+      .credesal-loader-scene,
+      .credesal-loader-rotor {
+        position: absolute;
+        transform-style: preserve-3d;
+      }
+
+      .credesal-loader-links,
+      .credesal-loader-scene {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-size: calc(var(--loader-size) / 220);
+        perspective: 700px;
+      }
+
+      .credesal-loader-links {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .credesal-loader-scene {
+        z-index: 1;
+      }
+
+      .credesal-loader-rotor {
+        left: 50%;
+        top: 50%;
+        animation: credesal-orbit var(--loader-duration) linear infinite;
+      }
+
+      .credesal-loader-orbit {
+        position: absolute;
+        transform-style: preserve-3d;
+        transform: translate3d(var(--node-x), var(--node-y), 0);
+      }
+
+      .credesal-loader-dot,
+      .credesal-loader-center {
+        position: absolute;
+        display: block;
+        border-radius: 50%;
+        width: var(--node-size);
+        height: var(--node-size);
+        margin-left: calc(var(--node-size) / -2);
+        margin-top: calc(var(--node-size) / -2);
+        background: var(--node-color);
+      }
+
+      .credesal-loader-dot {
+        animation:
+          credesal-face-camera var(--loader-duration) linear infinite,
+          credesal-speed-blur var(--loader-duration) linear infinite;
+      }
+
+      .credesal-loader-center {
+        --node-size: 64em;
+        --node-color: #2fb2ff;
+        top: 50%;
+        left: 50%;
+      }
+
+      .credesal-loader-green {
+        --node-x: -78em;
+        --node-y: 1em;
+        --node-size: 52em;
+        --node-color: #9ae266;
+      }
+
+      .credesal-loader-yellow {
+        --node-x: 33em;
+        --node-y: -60em;
+        --node-size: 30em;
+        --node-color: #ffbd4a;
+      }
+
+      .credesal-loader-red {
+        --node-x: 21em;
+        --node-y: 66em;
+        --node-size: 42em;
+        --node-color: #ff5d5e;
+      }
+
+      .credesal-loader-link {
+        position: absolute;
+        display: block;
+        height: 7em;
+        margin-top: -3.5em;
+        background: #a5a7a3;
+        transform-origin: 0 50%;
+        animation: credesal-speed-blur var(--loader-duration) linear infinite;
+      }
+
+      .credesal-loader-link-green {
+        width: 78.006em;
+        transform: rotateZ(179.265deg);
+      }
+
+      .credesal-loader-link-yellow {
+        width: 68.476em;
+        transform: rotateZ(-61.189deg);
+      }
+
+      .credesal-loader-link-red {
+        width: 69.26em;
+        transform: rotateZ(72.35deg);
+      }
+
+      @keyframes credesal-orbit {
+        0% {
+          transform: rotateY(0deg);
+          animation-timing-function: linear;
+        }
+        28.571429% {
+          transform: rotateY(1080deg);
+          animation-timing-function: cubic-bezier(0.3333, 0.8333, 0.6667, 0.9333);
+        }
+        85.714286% {
+          transform: rotateY(1944deg);
+          animation-timing-function: cubic-bezier(0.3333, 0.0667, 0.6667, 0.1667);
+        }
+        100% {
+          transform: rotateY(2160deg);
+        }
+      }
+      @keyframes credesal-face-camera {
+        0% {
+          transform: rotateY(0deg);
+          animation-timing-function: linear;
+        }
+        28.571429% {
+          transform: rotateY(-1080deg);
+          animation-timing-function: cubic-bezier(0.3333, 0.8333, 0.6667, 0.9333);
+        }
+        85.714286% {
+          transform: rotateY(-1944deg);
+          animation-timing-function: cubic-bezier(0.3333, 0.0667, 0.6667, 0.1667);
+        }
+        100% {
+          transform: rotateY(-2160deg);
+        }
+      }
+      @keyframes credesal-speed-blur {
+        0%,
+        28.571429%,
+        100% {
+          filter: blur(1.4em);
+        }
+        42.857143% {
+          filter: blur(0.8em);
+        }
+        57.142857% {
+          filter: blur(0.35em);
+        }
+        71.428571%,
+        85.714286% {
+          filter: blur(0);
+        }
+        92.857143% {
+          filter: blur(0.35em);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .credesal-loader-rotor,
+        .credesal-loader-dot,
+        .credesal-loader-link {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader-wrapper" role="status" aria-label="Cargando / Loading">
+      <div class="credesal-loader" aria-hidden="true">
+        <div class="credesal-loader-links">
+          <div class="credesal-loader-rotor">
+            <span class="credesal-loader-link credesal-loader-link-green"></span>
+            <span class="credesal-loader-link credesal-loader-link-yellow"></span>
+            <span class="credesal-loader-link credesal-loader-link-red"></span>
+          </div>
+        </div>
+        <div class="credesal-loader-scene">
+          <div class="credesal-loader-rotor">
+            <span class="credesal-loader-orbit credesal-loader-green"><span class="credesal-loader-dot"></span></span>
+            <span class="credesal-loader-orbit credesal-loader-yellow"><span class="credesal-loader-dot"></span></span>
+            <span class="credesal-loader-orbit credesal-loader-red"><span class="credesal-loader-dot"></span></span>
+          </div>
+          <span class="credesal-loader-center"></span>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="toggle" type="button">Pausar</button
+      ><label>Giro <input id="scrub" type="range" min="0" max="7000" value="0" aria-label="Posición del giro" /></label
+      ><button id="reset" type="button">Ver logo original</button>
+    </div>
+    <script>
+      const animations = document.querySelector('.credesal-loader').getAnimations({ subtree: true });
+      const toggle = document.querySelector('#toggle');
+      const scrub = document.querySelector('#scrub');
+      toggle.onclick = () => {
+        const paused = animations[0]?.playState === 'paused';
+        animations.forEach((a) => (paused ? a.play() : a.pause()));
+        toggle.textContent = paused ? 'Pausar' : 'Continuar';
+      };
+      scrub.oninput = () => {
+        animations.forEach((a) => {
+          a.pause();
+          a.currentTime = Number(scrub.value);
+        });
+        toggle.textContent = 'Continuar';
+      };
+      document.querySelector('#reset').onclick = () => {
+        scrub.value = 0;
+        scrub.oninput();
+      };
+    </script>
+  </body>
+</html>

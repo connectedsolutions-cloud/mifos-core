@@ -37,7 +37,7 @@ export class CentersDataSource implements DataSource<any> {
     orderBy: string = '',
     sortOrder: string = '',
     pageIndex: number = 0,
-    limit: number = 10,
+    limit: number = 25,
     centerActive: boolean = true
   ) {
     this.centersSubject.next([]);

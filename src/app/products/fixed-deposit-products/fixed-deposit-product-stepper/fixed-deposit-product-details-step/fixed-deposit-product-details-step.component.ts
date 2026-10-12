@@ -29,8 +29,12 @@ export class FixedDepositProductDetailsStepComponent implements OnInit {
       this.fixedDepositProductDetailsForm.patchValue({
         name: this.fixedDepositProductsTemplate.name,
         shortName: this.fixedDepositProductsTemplate.shortName,
+        numberingCode: this.fixedDepositProductsTemplate.numberingCode,
         description: this.fixedDepositProductsTemplate.description
       });
+      if (this.fixedDepositProductsTemplate.numberingCode) {
+        this.fixedDepositProductDetailsForm.get('numberingCode')?.disable();
+      }
     }
   }
 
@@ -44,6 +48,7 @@ export class FixedDepositProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
+      numberingCode: [''],
       description: [
         '',
         Validators.required
@@ -52,6 +57,10 @@ export class FixedDepositProductDetailsStepComponent implements OnInit {
   }
 
   get fixedDepositProductDetails() {
-    return this.fixedDepositProductDetailsForm.value;
+    const details = this.fixedDepositProductDetailsForm.getRawValue();
+    if (!details.numberingCode) {
+      delete details.numberingCode;
+    }
+    return details;
   }
 }

@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 
 /** Custom Services */
 import { CentersService } from '../centers.service';
+import { SettingsService } from 'app/settings/settings.service';
 
 /**
  * Group Actions data resolver.
@@ -16,7 +17,10 @@ export class CenterActionsResolver {
   /**
    * @param {CentersService} centersService Savings service.
    */
-  constructor(private centersService: CentersService) {}
+  constructor(
+    private centersService: CentersService,
+    private settingsService: SettingsService
+  ) {}
 
   /**
    * Returns the Centers account actions data.
@@ -40,7 +44,12 @@ export class CenterActionsResolver {
         const calendarId = route.queryParamMap.get('calendarId');
         return this.centersService.getCalendarAndTemplate(centerId, calendarId);
       case 'Staff Assignment History':
-        return this.centersService.getStaffAssignmentHistoryData('Staff Assignment History', centerId, 'default', 'en');
+        return this.centersService.getStaffAssignmentHistoryData(
+          'Staff Assignment History',
+          centerId,
+          this.settingsService.tenantIdentifier || 'default',
+          'en'
+        );
       default:
         return undefined;
     }

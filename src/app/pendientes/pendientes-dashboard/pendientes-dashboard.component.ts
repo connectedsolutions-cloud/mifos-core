@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { MatCardModule, MatCardContent } from '@angular/material/card';
 import { PendientesService } from '../pendientes.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -17,7 +17,7 @@ import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
   imports: [
     CommonModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
+    LoaderComponent,
     MatCardModule,
     MatCardContent,
     FaIconComponent,

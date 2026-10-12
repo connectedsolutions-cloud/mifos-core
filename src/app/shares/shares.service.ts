@@ -27,6 +27,34 @@ export class SharesService {
     return this.http.get(`/accounts/share/${accountId}`, { params: httpParams });
   }
 
+  getShareYield(accountId: string): Observable<any> {
+    return this.http.get(`/shareyield/accounts/${accountId}`);
+  }
+
+  getShareCertificates(shareAccountId: string): Observable<any> {
+    const httpParams = new HttpParams().set('shareAccountId', shareAccountId);
+    return this.http.get('/sharecertificates', { params: httpParams });
+  }
+
+  getShareCertificateSummaries(clientId: string): Observable<any> {
+    const httpParams = new HttpParams().set('clientId', clientId);
+    return this.http.get('/sharecertificates', { params: httpParams });
+  }
+
+  getShareCertificate(certificateId: string): Observable<any> {
+    return this.http.get(`/sharecertificates/${certificateId}`);
+  }
+
+  emitShareCertificate(certificateId: string): Observable<any> {
+    const httpParams = new HttpParams().set('command', 'emit');
+    return this.http.post(`/sharecertificates/${certificateId}`, {}, { params: httpParams });
+  }
+
+  markShareCertificatePrinted(certificateId: string): Observable<any> {
+    const httpParams = new HttpParams().set('command', 'print');
+    return this.http.post(`/sharecertificates/${certificateId}`, {}, { params: httpParams });
+  }
+
   /**
    * @param {string} clientId Client Id assosciated with shares account.
    * @param {string} productId Product Id

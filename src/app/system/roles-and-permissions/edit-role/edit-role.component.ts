@@ -6,13 +6,15 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 /** Custom Services */
 import { SystemService } from '../../system.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { ROLE_DATA_SCOPE_OPTIONS, normalizeRoleDataScope } from 'app/core/utils/data-scope';
+import { rolesFromResponse, uniqueRoleNameValidator } from '../unique-role-name.validator';
 
 /** Custom Service Zitadel */
 import { environment } from '../../../../environments/environment';
 import { AuthService } from 'app/zitadel/auth.service';
 
 /**
- * Edit Role Description Component.
+ * Edit Role Component.
  */
 @Component({
   selector: 'mifosx-edit-role',
@@ -27,6 +29,7 @@ export class EditRoleComponent implements OnInit {
   roleForm: UntypedFormGroup;
   /** Role Data */
   roleData: any;
+  readonly dataScopeOptions = ROLE_DATA_SCOPE_OPTIONS;
 
   /**
    * Retrieves the code data from `resolve`.
@@ -52,6 +55,10 @@ export class EditRoleComponent implements OnInit {
    */
   ngOnInit() {
     this.createRoleForm();
+    this.systemService.getRoles().subscribe((response: unknown) => {
+      this.roleForm.get('name')?.addValidators(uniqueRoleNameValidator(rolesFromResponse(response), this.roleData.id));
+      this.roleForm.get('name')?.updateValueAndValidity();
+    });
   }
 
   /**
@@ -60,18 +67,19 @@ export class EditRoleComponent implements OnInit {
   createRoleForm() {
     this.roleForm = this.formBuilder.group({
       name: [
-        { value: this.roleData.name, disabled: true },
+        this.roleData.name,
         Validators.required
       ],
       description: [
         this.roleData.description,
         Validators.required
-      ]
+      ],
+      dataScope: [normalizeRoleDataScope(this.roleData.dataScope)]
     });
   }
 
   /**
-   * Submits the role form and updates role description,
+   * Submits the role form and updates role name and description,
    * if successful redirects to view updated roles and permissions.
    */
   submit() {

@@ -444,7 +444,9 @@ export class InvoiceWidgetComponent implements OnInit {
         'GENERATED',
         'SIGNED',
         'SUBMITTED',
-        'ACCEPTED'
+        'ACCEPTED',
+        'REJECTED',
+        'VOIDED'
       ].includes(status) || mhStatus === 'SUCCESS';
   }
 

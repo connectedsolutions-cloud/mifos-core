@@ -25,6 +25,7 @@ import { AccountsFilterPipe } from '../../../pipes/accounts-filter.pipe';
 import { DateFormatPipe } from '../../../pipes/date-format.pipe';
 import { FormatNumberPipe } from '../../../pipes/format-number.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { SharesService } from 'app/shares/shares.service';
 
 /**
  * General Tab component.
@@ -63,7 +64,6 @@ export class GeneralTabComponent {
     'Original Loan',
     'Loan Balance',
     'Amount Paid',
-    'Type',
     'Actions'
   ];
   /** Closed Loan Accounts Columns */
@@ -73,7 +73,6 @@ export class GeneralTabComponent {
     'Original Loan',
     'Loan Balance',
     'Amount Paid',
-    'Type',
     'Closed Date'
   ];
   /** Open Savings Accounts Columns */
@@ -96,6 +95,7 @@ export class GeneralTabComponent {
     'Share Account',
     'Approved Shares',
     'Pending For Approval Shares',
+    'Certificates',
     'Actions'
   ];
   /** Closed Shares Accounts Columns */
@@ -104,6 +104,7 @@ export class GeneralTabComponent {
     'Share Account',
     'Approved Shares',
     'Pending For Approval Shares',
+    'Certificates',
     'Closed Date'
   ];
   /** Upcoming Charges Columns */
@@ -153,6 +154,17 @@ export class GeneralTabComponent {
 
   /** Client Id */
   clientid: any;
+  certificateSummaries: { [accountId: string]: any } = {};
+  private readonly accountsFilterPipe = new AccountsFilterPipe();
+  private readonly accountSections = [
+    'loans',
+    'savings',
+    'fixed',
+    'recurring',
+    'shares',
+    'collateral'
+  ] as const;
+  private sectionExpanded: Record<string, boolean | undefined> = {};
 
   /**
    * @param {ActivatedRoute} route Activated Route
@@ -162,6 +174,7 @@ export class GeneralTabComponent {
   constructor(
     private route: ActivatedRoute,
     private clientService: ClientsService,
+    private sharesService: SharesService,
     private router: Router
   ) {
     this.route.data.subscribe(
@@ -174,8 +187,22 @@ export class GeneralTabComponent {
         this.collaterals = data.clientCollateralData;
         this.clientSummary = data.clientSummary ? data.clientSummary[0] : [];
         this.clientid = this.route.parent.snapshot.params['clientId'];
+        this.sharesService.getShareCertificateSummaries(this.clientid).subscribe((summaries: any[]) => {
+          this.certificateSummaries = {};
+          (summaries || []).forEach((summary) => {
+            this.certificateSummaries[summary.shareAccountId] = summary;
+          });
+        });
       }
     );
+  }
+
+  certificateLabel(accountId: any): string {
+    const summary = this.certificateSummaries[accountId];
+    if (!summary || !summary.certificateCount) {
+      return '';
+    }
+    return summary.certificateCount === 1 ? summary.displayNumber : String(summary.certificateCount);
   }
 
   /**
@@ -183,6 +210,7 @@ export class GeneralTabComponent {
    */
   toggleLoanAccountsOverview() {
     this.showClosedLoanAccounts = !this.showClosedLoanAccounts;
+    this.sectionExpanded['loans'] = true;
   }
 
   /**
@@ -190,6 +218,7 @@ export class GeneralTabComponent {
    */
   toggleSavingAccountsOverview() {
     this.showClosedSavingAccounts = !this.showClosedSavingAccounts;
+    this.sectionExpanded['savings'] = true;
   }
 
   /**
@@ -197,6 +226,7 @@ export class GeneralTabComponent {
    */
   toggleShareAccountsOverview() {
     this.showClosedShareAccounts = !this.showClosedShareAccounts;
+    this.sectionExpanded['shares'] = true;
   }
 
   /**
@@ -204,6 +234,7 @@ export class GeneralTabComponent {
    */
   toggleRecurringAccountsOverview() {
     this.showClosedRecurringAccounts = !this.showClosedRecurringAccounts;
+    this.sectionExpanded['recurring'] = true;
   }
 
   /**
@@ -211,6 +242,7 @@ export class GeneralTabComponent {
    */
   toggleFixedAccountsOverview() {
     this.showClosedFixedAccounts = !this.showClosedFixedAccounts;
+    this.sectionExpanded['fixed'] = true;
   }
 
   /**
@@ -266,5 +298,64 @@ export class GeneralTabComponent {
     } else {
       return 'labels.buttons.View Closed Accounts';
     }
+  }
+
+  get clientIsActive(): boolean {
+    return this.route.parent?.snapshot.data['clientViewData']?.status?.value === 'Active';
+  }
+
+  visibleCount(section: string): number {
+    switch (section) {
+      case 'loans':
+        return this.filteredLength(this.loanAccounts, 'loan', this.showClosedLoanAccounts ? 'closed' : undefined);
+      case 'savings':
+        return this.filteredLength(
+          this.savingAccounts,
+          'saving',
+          this.showClosedSavingAccounts ? 'closed' : 'open',
+          'isSavings'
+        );
+      case 'fixed':
+        return this.filteredLength(
+          this.savingAccounts,
+          'saving',
+          this.showClosedFixedAccounts ? 'closed' : 'open',
+          'isFixed'
+        );
+      case 'recurring':
+        return this.filteredLength(
+          this.savingAccounts,
+          'saving',
+          this.showClosedRecurringAccounts ? 'closed' : 'open',
+          'isRecurring'
+        );
+      case 'shares':
+        return this.filteredLength(this.shareAccounts, 'share', this.showClosedShareAccounts ? 'closed' : undefined);
+      case 'collateral':
+        return Array.isArray(this.collaterals) ? this.collaterals.length : 0;
+      default:
+        return 0;
+    }
+  }
+
+  isExpanded(section: string): boolean {
+    const choice = this.sectionExpanded[section];
+    if (choice !== undefined) {
+      return choice;
+    }
+    return this.visibleCount(section) > 0;
+  }
+
+  toggleSection(section: string): void {
+    this.sectionExpanded[section] = !this.isExpanded(section);
+  }
+
+  hasEmptyAccountTypes(): boolean {
+    return this.accountSections.some((section) => this.visibleCount(section) === 0);
+  }
+
+  private filteredLength(accounts: any, type: string, status?: string, checkSavings?: string): number {
+    const filtered = this.accountsFilterPipe.transform(accounts, type, status, checkSavings);
+    return Array.isArray(filtered) ? filtered.length : 0;
   }
 }

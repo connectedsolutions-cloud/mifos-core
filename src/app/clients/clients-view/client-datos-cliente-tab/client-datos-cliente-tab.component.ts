@@ -12,6 +12,7 @@ import {
   CREDESAL_ALLOWED_SHAREHOLDER_TYPE_TAG_NAMES,
   CREDESAL_CLIENT_TYPE_RESTRICTED_DATATABLE_NAMES,
   CREDESAL_CLIENT_DATA_DATATABLE_NAMES,
+  CREDESAL_HIDDEN_CLIENT_DATATABLE_NAMES,
   CREDESAL_WORK_BUSINESS_DATATABLE_NAME
 } from '../credesal-client-data-datatables';
 
@@ -84,6 +85,9 @@ export class ClientDatosClienteTabComponent implements OnInit {
   }
 
   private shouldDisplayDatatable(registeredTableName: string, selectedClientTypeTagNames: Set<string>): boolean {
+    if (CREDESAL_HIDDEN_CLIENT_DATATABLE_NAMES.has(registeredTableName)) {
+      return false;
+    }
     if (registeredTableName === this.workBusinessDatatableName) {
       return this.hasAnyAllowedTypeTag(selectedClientTypeTagNames, this.allowedShareholderTagNames);
     }

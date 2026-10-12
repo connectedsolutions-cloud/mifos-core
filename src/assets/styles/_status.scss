@@ -44,6 +44,43 @@
   color: $subStatus-contract-termination;
 }
 
+.account-status-ribbon {
+  background-color: $status-inactive;
+
+  &.status-active {
+    background-color: $status-active;
+  }
+
+  &.status-pending {
+    background-color: $status-pending;
+  }
+
+  &.status-approved {
+    background-color: $status-approved;
+  }
+
+  &.status-overpaid {
+    background-color: $status-overpaid;
+  }
+
+  &.status-chargeoff {
+    background-color: $status-chargeoff;
+  }
+
+  &.status-active-overdue,
+  &.status-block {
+    background-color: $status-active-overdue;
+  }
+
+  &.status-matured {
+    background-color: $status-matured;
+  }
+
+  &.subStatus-contract-termination {
+    background-color: $subStatus-contract-termination;
+  }
+}
+
 .mat-step-header .mat-step-icon-state-done {
   background-color: $state-done;
 

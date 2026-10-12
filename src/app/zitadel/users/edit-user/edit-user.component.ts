@@ -8,6 +8,7 @@ import { UsersService } from 'app/users/users.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { COUNTRY_CODES } from 'app/zitadel/constants/coutry-codes';
 import { ZITADEL_LANGUAGES } from 'app/zitadel/constants/languages';
+import { USER_DATA_SCOPE_OPTIONS, normalizeUserDataScope } from 'app/core/utils/data-scope';
 /**
  * Edit User Component.
  */
@@ -34,6 +35,7 @@ export class EditUserComponent implements OnInit {
   countryCodes = COUNTRY_CODES;
   /** Language Codes */
   languageCodes = ZITADEL_LANGUAGES;
+  readonly dataScopeOptions = USER_DATA_SCOPE_OPTIONS;
 
   /**
    * Retrieves the offices data from `resolve`.
@@ -63,7 +65,9 @@ export class EditUserComponent implements OnInit {
           userName: data.username_zitadel,
           officeId: data.office_id,
           staffId: data.staff_id,
-          selectedRoles: data.roles || []
+          selectedRoles: data.roles || [],
+          dataScope: data.data_scope || data.dataScope || '',
+          effectiveDataScope: data.effective_data_scope || data.effectiveDataScope
         };
         this.createEditUserForm();
         this.officeChanged(this.userData.officeId);
@@ -149,7 +153,8 @@ export class EditUserComponent implements OnInit {
       roles: [
         this.userData.selectedRoles.map((role: any) => role.id.toString()),
         Validators.required
-      ]
+      ],
+      dataScope: [normalizeUserDataScope(this.userData.dataScope)]
     });
   }
 
@@ -206,7 +211,8 @@ export class EditUserComponent implements OnInit {
     const officePayload = {
       userId: this.userData.id,
       officeId: form.officeId,
-      staffId: form.staffId
+      staffId: form.staffId,
+      dataScope: form.dataScope || null
     };
 
     this.UsersServiceZitadel.editUser(userPayload).subscribe();

@@ -1,6 +1,7 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
+import { SKIP_ERROR_HANDLER } from 'app/core/http/http-context.tokens';
 
 /** rxjs Imports */
 import { Observable } from 'rxjs';
@@ -283,9 +284,17 @@ export class LoansService {
    * @param loanId Loan ID
    * @param datatableName Datatable Name
    */
-  getLoanDatatable(loanId: string, datatableName: string) {
+  getLoanDatatable(loanId: string, datatableName: string, options?: { skipErrorHandler?: boolean }) {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
-    return this.http.get(`/datatables/${datatableName}/${loanId}`, { params: httpParams });
+    let context = new HttpContext();
+    if (options?.skipErrorHandler) {
+      context = context.set(SKIP_ERROR_HANDLER, true);
+    }
+    return this.http.get(`/datatables/${datatableName}/${loanId}`, { params: httpParams, context });
+  }
+
+  getStaffForAssignment(): Observable<any[]> {
+    return this.http.get<any[]>('/staff', { params: new HttpParams().set('status', 'all') });
   }
 
   /**

@@ -11,8 +11,6 @@ import { MatFormField, MatPrefix, MatLabel, MatError, MatSuffix } from '@angular
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /** Custom Service Zitadel */
@@ -30,9 +28,7 @@ import { environment } from '../../../environments/environment';
     ...STANDALONE_SHARED_IMPORTS,
     MatPrefix,
     FaIconComponent,
-    MatIconButton,
-    MatProgressBar,
-    MatProgressSpinner
+    MatIconButton
   ]
 })
 export class LoginFormComponent implements OnInit {

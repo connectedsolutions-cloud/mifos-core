@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="h-full bg-gray-100">
+<html lang="es" class="h-full bg-gray-100">
   <head>
     <meta charset="utf-8" />
     <title>{{'APP_NAME' | translate}}</title>
@@ -51,11 +51,26 @@
     </script>
 
     <mifosx-web-app>
-      <div class="loader-wrapper">
-        <div class="bottom triangle"></div>
-        <div class="top triangle"></div>
-        <div class="left triangle"></div>
-        <div class="right triangle"></div>
+      <div class="loader-wrapper" role="status" aria-label="Cargando / Loading">
+        <div class="credesal-loader" aria-hidden="true">
+          <div class="credesal-loader-links">
+            <div class="credesal-loader-rotor">
+              <span class="credesal-loader-link credesal-loader-link-green"></span>
+              <span class="credesal-loader-link credesal-loader-link-yellow"></span>
+              <span class="credesal-loader-link credesal-loader-link-red"></span>
+            </div>
+          </div>
+          <div class="credesal-loader-scene">
+            <div class="credesal-loader-rotor">
+              <span class="credesal-loader-orbit credesal-loader-green"><span class="credesal-loader-dot"></span></span>
+              <span class="credesal-loader-orbit credesal-loader-yellow"
+                ><span class="credesal-loader-dot"></span
+              ></span>
+              <span class="credesal-loader-orbit credesal-loader-red"><span class="credesal-loader-dot"></span></span>
+            </div>
+            <span class="credesal-loader-center"></span>
+          </div>
+        </div>
       </div>
     </mifosx-web-app>
   </body>
