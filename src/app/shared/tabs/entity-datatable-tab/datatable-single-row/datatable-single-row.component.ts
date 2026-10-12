@@ -8,7 +8,7 @@ import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.co
 import { FormDialogComponent } from 'app/shared/form-dialog/form-dialog.component';
 import { FormfieldBase } from 'app/shared/form-dialog/formfield/model/formfield-base';
 import { SystemService } from 'app/system/system.service';
-import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from '@angular/common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatDivider } from '@angular/material/divider';
@@ -33,6 +33,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     NgSwitchCase,
     CdkTextareaAutosize,
     NgSwitchDefault,
+    NgTemplateOutlet,
     MatIconButton,
     MatTooltip,
     DateFormatPipe,
@@ -45,6 +46,8 @@ export class DatatableSingleRowComponent implements OnInit {
   @Input() dataObject: any;
   @Input() entityId: string;
   @Input() entityType: string;
+  /** Split fields into two key-value tables that use the shared project table style. */
+  @Input() twoColumnTable = false;
   datatableName: string;
   readonly emptyValuePlaceholder = '-';
 
@@ -154,6 +157,18 @@ export class DatatableSingleRowComponent implements OnInit {
 
   get displayColumns(): any[] {
     return this.datatables.filterSystemColumns(this.dataObject?.columnHeaders || []);
+  }
+
+  get fieldColumns(): any[][] {
+    const columns = this.displayColumns;
+    const midpoint = Math.ceil(columns.length / 2);
+    return [
+      columns.slice(0, midpoint),
+      columns.slice(midpoint)].filter((column) => column.length > 0);
+  }
+
+  trackByIndex(index: number): number {
+    return index;
   }
 
   hasRowData(): boolean {

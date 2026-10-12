@@ -4,106 +4,102 @@
     [ngClass]="fixedDepositsAccountData.status.code | statusLookup"
     [matTooltip]="fixedDepositsAccountData.status.value"
   ></div>
-  <mat-card-header class="header layout-column">
-    <mat-card-title-group class="header-title-group">
-      <div class="profile-image-container">
-        <div>
-          <img
-            mat-card-md-image
-            class="profile-image"
-            matTooltip="{{ 'tooltips.Fixed Deposits Account' | translate }}"
-            [src]="'assets/images/fd_account_placeholder.png'"
-          />
+  <mat-card-header class="header account-header">
+    <div class="account-header-body">
+      <img
+        class="account-header-mark"
+        matTooltip="{{ 'tooltips.Fixed Deposits Account' | translate }}"
+        src="assets/images/fd_account_placeholder.png"
+        alt=""
+      />
+
+      <div class="account-header-identity">
+        <div class="account-header-title-row">
+          <mifosx-account-status-mark
+            accountKind="fixedDeposit"
+            [statusCode]="fixedDepositsAccountData.status.code"
+            [statusLabel]="fixedDepositsAccountData.status.value"
+            [colorCode]="fixedDepositsAccountData.status.code"
+            [stepDates]="{
+              submitted: fixedDepositsAccountData.timeline?.submittedOnDate,
+              approved: fixedDepositsAccountData.timeline?.approvedOnDate,
+              active: fixedDepositsAccountData.timeline?.activatedOnDate
+            }"
+          ></mifosx-account-status-mark>
+          <h3 class="account-header-title">{{ fixedDepositsAccountData.depositProductName }}</h3>
+          <span class="account-header-status">{{ fixedDepositsAccountData.status.value }}</span>
+          <span class="account-header-spacer"></span>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="accountMenu"
+            aria-label="Fixed Deposit account actions"
+            yPosition="below"
+          >
+            <mat-icon matListIcon class="actions-menu">
+              <fa-icon icon="bars" size="sm"></fa-icon>
+            </mat-icon>
+          </button>
+        </div>
+
+        <div class="account-header-facts">
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Account No' | translate }}</span>
+            <span class="account-header-value">
+              <mifosx-account-number accountNo="{{ fixedDepositsAccountData.accountNo }}"></mifosx-account-number>
+            </span>
+          </div>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.text.' + entityType | translate }}</span>
+            <span class="account-header-value">
+              {{ fixedDepositsAccountData.clientName || fixedDepositsAccountData.groupName }}
+              <mifosx-account-number
+                *ngIf="fixedDepositsAccountData.clientAccountNo"
+                accountNo="{{ fixedDepositsAccountData.clientAccountNo }}"
+              ></mifosx-account-number>
+            </span>
+          </div>
+          <div
+            class="account-header-fact"
+            *ngIf="
+              !fixedDepositsAccountData.status.rejected && !fixedDepositsAccountData.status.submittedAndPendingApproval
+            "
+          >
+            <span class="account-header-label">{{ 'labels.inputs.Current Balance' | translate }}</span>
+            <span class="account-header-value">{{
+              fixedDepositsAccountData.summary.accountBalance | currency: currency.code : 'symbol-narrow' : '1.2-2'
+            }}</span>
+          </div>
+          <div
+            class="account-header-fact"
+            *ngIf="
+              !fixedDepositsAccountData.status.rejected && !fixedDepositsAccountData.status.submittedAndPendingApproval
+            "
+          >
+            <span class="account-header-label">{{ 'labels.inputs.Deposit Amount' | translate }}</span>
+            <span class="account-header-value">{{
+              fixedDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2'
+            }}</span>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="mat-typography account-card-title">
-        <mat-card-title>
-          <div class="layout-row responsive-column">
-            <div class="flex-60">
-              <h3>
-                <i
-                  class="fa fa-stop"
-                  [ngClass]="fixedDepositsAccountData.status.code | statusLookup"
-                  [matTooltip]="fixedDepositsAccountData.status.value"
-                ></i>
-                {{ 'labels.inputs.Fixed Deposit Product' | translate }} :
-                {{ fixedDepositsAccountData.depositProductName }}
-                <mifosx-account-number accountNo="{{ fixedDepositsAccountData.accountNo }}"></mifosx-account-number>
-              </h3>
-              <span class="account-overview">
-                <span class="m-r-10">{{ 'labels.text.' + entityType | translate }} :</span>
-                {{ fixedDepositsAccountData.clientName || fixedDepositsAccountData.groupName }}
-                <span class="m-l-10" *ngIf="fixedDepositsAccountData.clientAccountNo">
-                  <mifosx-account-number
-                    accountNo="{{ fixedDepositsAccountData.clientAccountNo }}"
-                  ></mifosx-account-number>
-                </span>
-              </span>
-            </div>
+    <mat-menu #accountMenu="matMenu">
+      <ng-container *ngFor="let button of buttonConfig.singleButtons">
+        <button mat-menu-item (click)="doAction(button.name)">
+          <i ngClass="{{ button.icon }}"></i> {{ button.name | translateKey: 'menus' }}
+        </button>
+      </ng-container>
 
-            <div
-              *ngIf="
-                !fixedDepositsAccountData.status.rejected &&
-                !fixedDepositsAccountData.status.submittedAndPendingApproval
-              "
-              class="flex-30"
-            >
-              <h3 class="flex-100">{{ 'labels.heading.Account Overview' | translate }}</h3>
-              <table class="account-overview flex-100">
-                <tbody>
-                  <tr>
-                    <td class="flex-70">{{ 'labels.inputs.Current Balance' | translate }}</td>
-                    <td class="r-amount flex-30">
-                      {{
-                        fixedDepositsAccountData.summary.accountBalance
-                          | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                      }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="flex-70">{{ 'labels.inputs.Deposit Amount' | translate }}</td>
-                    <td class="r-amount flex-30">
-                      {{ fixedDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2' }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="flex-5">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="accountMenu"
-                aria-label="Fixed Deposit account actions"
-                yPosition="below"
-              >
-                <mat-icon matListIcon class="actions-menu">
-                  <fa-icon icon="bars" size="sm"></fa-icon>
-                </mat-icon>
-              </button>
-            </div>
-          </div>
-        </mat-card-title>
-      </div>
-
-      <mat-menu #accountMenu="matMenu">
-        <ng-container *ngFor="let button of buttonConfig.singleButtons">
-          <button mat-menu-item (click)="doAction(button.name)">
-            <i ngClass="{{ button.icon }}"></i> {{ button.name | translateKey: 'menus' }}
-          </button>
-        </ng-container>
-
-        <ng-container *ngIf="buttonConfig.options.length">
-          <button mat-menu-item [matMenuTriggerFor]="More">{{ 'More' | translateKey: 'menus' }}</button>
-          <mat-menu #More="matMenu">
-            <span *ngFor="let option of buttonConfig.options">
-              <button mat-menu-item (click)="doAction(option.name)">{{ option.name | translateKey: 'menus' }}</button>
-            </span>
-          </mat-menu>
-        </ng-container>
-      </mat-menu>
-    </mat-card-title-group>
+      <ng-container *ngIf="buttonConfig.options.length">
+        <button mat-menu-item [matMenuTriggerFor]="More">{{ 'More' | translateKey: 'menus' }}</button>
+        <mat-menu #More="matMenu">
+          <span *ngFor="let option of buttonConfig.options">
+            <button mat-menu-item (click)="doAction(option.name)">{{ option.name | translateKey: 'menus' }}</button>
+          </span>
+        </mat-menu>
+      </ng-container>
+    </mat-menu>
   </mat-card-header>
 
   <mat-card-content class="content">

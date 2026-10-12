@@ -1191,7 +1191,9 @@
       "Not Yet Amortized Amount": "Valor ainda nao amortizado",
       "Adjusted Amount": "Valor ajustado",
       "Charged Off Amount": "Valor baixado",
-      "Date": "Data"
+      "Date": "Data",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

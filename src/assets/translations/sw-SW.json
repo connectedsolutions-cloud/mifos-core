@@ -1190,7 +1190,9 @@
       "Not Yet Amortized Amount": "Kiasi Bado Kijaondolewa",
       "Adjusted Amount": "Kiasi Kilichorekebishwa",
       "Charged Off Amount": "Kiasi Kilichofutwa",
-      "Date": "Tarehe"
+      "Date": "Tarehe",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

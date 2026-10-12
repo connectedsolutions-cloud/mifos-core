@@ -1,0 +1,638 @@
+<div class="style-guide">
+  <nav class="style-guide-nav" aria-label="Style guide sections">
+    <a *ngFor="let section of sections" href="" (click)="scrollTo($event, section.id)">{{ section.label }}</a>
+  </nav>
+
+  <div class="style-guide-main">
+    <header class="style-guide-intro">
+      <h1>Style guide</h1>
+      <p>
+        Live tokens, controls, and headers used across the app. Sample content is Spanish. Toggle the theme to see which
+        colors move.
+      </p>
+      <p class="style-guide-lookup">
+        Each style has a unique id. Open <code>#/style-guide/&lt;id&gt;</code> or copy the reference. The full list is
+        <code>style-guide.catalog.ts</code>.
+      </p>
+      <p class="unknown-style" *ngIf="unknownStyleId">Unknown style id: {{ unknownStyleId }}</p>
+    </header>
+
+    <section id="index" class="guide-section">
+      <button type="button" class="index-toggle" (click)="indexOpen = !indexOpen" [attr.aria-expanded]="indexOpen">
+        <span class="index-toggle-title">Index</span>
+        <span>{{ indexOpen ? 'Hide' : 'Show' }}</span>
+      </button>
+      <ng-container *ngIf="indexOpen">
+        <div class="style-index" *ngFor="let group of styleGroups">
+          <h3>{{ group }}</h3>
+          <ul>
+            <li *ngFor="let style of stylesIn(group)">
+              <a class="style-id" [routerLink]="['/style-guide', style.id]">{{ style.id }}</a>
+              <span>{{ style.name }}</span>
+              <button type="button" class="copy-style" (click)="copyStyle(style.id)">
+                {{ copiedId === style.id ? 'Copied' : 'Copy' }}
+              </button>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+    </section>
+
+    <section id="color" class="guide-section">
+      <h2>Color</h2>
+      <mifosx-style-guide-specimen styleId="control-theme-buttons" [active]="activeStyleId === 'control-theme-buttons'">
+        <div class="button-row">
+          <button mat-raised-button color="primary">Primary</button>
+          <button mat-raised-button color="accent">Accent</button>
+          <button mat-raised-button color="warn">Warn</button>
+        </div>
+      </mifosx-style-guide-specimen>
+
+      <div *ngFor="let setName of colorSetNames">
+        <mifosx-style-guide-specimen [title]="setName" [source]="colorsIn(setName)[0].source">
+          <div class="swatch-row">
+            <div
+              class="swatch"
+              *ngFor="let swatch of colorsIn(setName)"
+              [class.is-referenced]="activeStyleId === swatch.id"
+              [attr.data-style-id]="swatch.id"
+            >
+              <span
+                class="swatch-chip"
+                [style.background]="swatch.cssVar ? 'var(' + swatch.cssVar + ')' : swatch.value"
+              ></span>
+              <span class="swatch-name">{{ swatch.name }}</span>
+              <code>{{ swatch.id }}</code>
+              <code>{{ swatch.value }}</code>
+              <span class="swatch-kind">{{ swatch.kind }}</span>
+              <span class="swatch-token">{{ swatch.token }}</span>
+              <button type="button" class="copy-style" (click)="copyStyle(swatch.id)">
+                {{ copiedId === swatch.id ? 'Copied' : 'Copy' }}
+              </button>
+            </div>
+          </div>
+        </mifosx-style-guide-specimen>
+      </div>
+    </section>
+
+    <section id="type" class="guide-section">
+      <h2>Type</h2>
+      <mifosx-style-guide-specimen title="Type scale" source="assets/styles/_text.scss" token="Roboto">
+        <div
+          class="type-sample"
+          *ngFor="let sample of typeScale()"
+          [class.is-referenced]="activeStyleId === sample.id"
+          [attr.data-style-id]="sample.id"
+        >
+          <p
+            [style.font-size]="sample.size"
+            [style.font-weight]="sample.weight"
+            [style.line-height]="sample.lineHeight"
+          >
+            {{ sample.sample }}
+          </p>
+          <span>{{ sample.id }} · {{ sample.token }} · {{ sample.value }}</span>
+          <button type="button" class="copy-style" (click)="copyStyle(sample.id)">
+            {{ copiedId === sample.id ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="type-utilities" [active]="activeStyleId === 'type-utilities'">
+        <p class="bold">Negrita con .bold</p>
+        <p class="uppercase">mayúsculas con .uppercase</p>
+        <p class="text-right">Alineado a la derecha con .text-right</p>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="spacing" class="guide-section">
+      <h2>Spacing and layout</h2>
+      <mifosx-style-guide-specimen styleId="spacing-scale" [active]="activeStyleId === 'spacing-scale'">
+        <div class="space-row">
+          <div class="space-step" *ngFor="let step of spacingSteps">
+            <span class="space-bar" [style.width.px]="step" [style.height.px]="step"></span>
+            <span>{{ step }}</span>
+          </div>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="spacing-padding-gap" [active]="activeStyleId === 'spacing-padding-gap'">
+        <div class="layout-row gap-20px">
+          <div class="space-box p-20">.p-20</div>
+          <div class="space-box p-20">.gap-20px</div>
+        </div>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="surfaces" class="guide-section">
+      <h2>Surfaces</h2>
+      <mifosx-style-guide-specimen styleId="surface-set" [active]="activeStyleId === 'surface-set'">
+        <div class="surface-row">
+          <div class="surface-app">
+            <span>App background</span>
+            <code>--mat-app-background-color</code>
+          </div>
+          <mat-card class="surface-card">
+            <span>White card</span>
+            <code>mat-card</code>
+          </mat-card>
+          <div class="bg-header-surface surface-header">
+            <span>Header surface</span>
+            <code>#e4eef6</code>
+          </div>
+        </div>
+        <div class="surface-divider">
+          <span>Client header divider</span>
+        </div>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="buttons" class="guide-section">
+      <h2>Buttons</h2>
+      <mifosx-style-guide-specimen
+        styleId="control-button-variants"
+        [active]="activeStyleId === 'control-button-variants'"
+      >
+        <div class="button-row">
+          <button mat-raised-button color="primary">Guardar</button>
+          <button mat-stroked-button>Cancelar</button>
+          <button mat-button>Texto</button>
+          <button mat-icon-button aria-label="Acciones">
+            <mat-icon>
+              <fa-icon icon="bars" size="sm"></fa-icon>
+            </mat-icon>
+          </button>
+          <button mat-raised-button color="warn">Eliminar</button>
+          <button mat-raised-button color="primary" disabled>Deshabilitado</button>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-button-image" [active]="activeStyleId === 'control-button-image'">
+        <div class="client-image-actions">
+          <button class="client-image-button" mat-raised-button aria-label="Subir"><i class="fa fa-upload"></i></button>
+          <button class="client-image-button" mat-raised-button aria-label="Cámara">
+            <i class="fa fa-camera"></i>
+          </button>
+          <button class="client-image-button" mat-raised-button aria-label="Eliminar">
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-button-focus" [active]="activeStyleId === 'control-button-focus'">
+        <div class="button-row">
+          <button #focusTarget mat-raised-button color="primary">Enfocado</button>
+          <button mat-stroked-button type="button" (click)="showFocus(focusTarget)">Mostrar foco</button>
+        </div>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="fields" class="guide-section">
+      <h2>Inputs and selectors</h2>
+      <form [formGroup]="form" class="field-grid">
+        <mifosx-style-guide-specimen styleId="control-field-fill" [active]="activeStyleId === 'control-field-fill'">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Firma</mat-label>
+            <input matInput formControlName="fill" />
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen
+          styleId="control-field-outline"
+          [active]="activeStyleId === 'control-field-outline'"
+        >
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Agencia</mat-label>
+            <input matInput formControlName="outline" />
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen
+          styleId="control-field-textarea"
+          [active]="activeStyleId === 'control-field-textarea'"
+        >
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Notas</mat-label>
+            <textarea matInput rows="3" formControlName="notes"></textarea>
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen styleId="control-field-date" [active]="activeStyleId === 'control-field-date'">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Fecha de activación</mat-label>
+            <input matInput [matDatepicker]="activationPicker" formControlName="date" />
+            <mat-datepicker-toggle matSuffix [for]="activationPicker"></mat-datepicker-toggle>
+            <mat-datepicker #activationPicker></mat-datepicker>
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen styleId="control-field-amount" [active]="activeStyleId === 'control-field-amount'">
+          <mifosx-input-amount
+            inputLabel="Amount"
+            [currency]="currency"
+            [inputFormControl]="amountControl"
+          ></mifosx-input-amount>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen
+          styleId="control-field-password"
+          [active]="activeStyleId === 'control-field-password'"
+        >
+          <mifosx-input-password formControlName="password" label="Contraseña"></mifosx-input-password>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen styleId="control-field-select" [active]="activeStyleId === 'control-field-select'">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Agencia</mat-label>
+            <mat-select formControlName="office">
+              <mat-option value="santiago">Agencia Santiago de María</mat-option>
+              <mat-option value="usulutan">Agencia Usulután</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen
+          styleId="control-field-disabled"
+          [active]="activeStyleId === 'control-field-disabled'"
+        >
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Asesor</mat-label>
+            <input matInput formControlName="disabled" />
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen styleId="control-field-error" [active]="activeStyleId === 'control-field-error'">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="invalid" required />
+            <mat-error *ngIf="form.controls.invalid.hasError('required')">El nombre es obligatorio</mat-error>
+          </mat-form-field>
+        </mifosx-style-guide-specimen>
+        <mifosx-style-guide-specimen styleId="control-field-choice" [active]="activeStyleId === 'control-field-choice'">
+          <div class="choice-row">
+            <mat-checkbox formControlName="checked">Activo</mat-checkbox>
+            <mat-radio-group formControlName="choice">
+              <mat-radio-button value="active">Activo</mat-radio-button>
+              <mat-radio-button value="pending">Pendiente</mat-radio-button>
+            </mat-radio-group>
+            <mat-slide-toggle formControlName="toggle">Simulación</mat-slide-toggle>
+          </div>
+        </mifosx-style-guide-specimen>
+      </form>
+    </section>
+
+    <section id="icons" class="guide-section">
+      <h2>Icons</h2>
+      <mifosx-style-guide-specimen styleId="control-icon-action" [active]="activeStyleId === 'control-icon-action'">
+        <div class="icon-row">
+          <span><i class="fa fa-upload"></i> upload</span>
+          <span><i class="fa fa-camera"></i> camera</span>
+          <span><i class="fa fa-trash"></i> trash</span>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-icon-button" [active]="activeStyleId === 'control-icon-button'">
+        <button mat-icon-button aria-label="Acciones" [matMenuTriggerFor]="iconMenu">
+          <mat-icon>
+            <fa-icon icon="bars" size="sm"></fa-icon>
+          </mat-icon>
+        </button>
+        <mat-menu #iconMenu="matMenu">
+          <button mat-menu-item>Ver firma</button>
+          <button mat-menu-item>Editar</button>
+        </mat-menu>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="tabs" class="guide-section">
+      <h2>Tabs</h2>
+      <mifosx-style-guide-specimen styleId="control-tabs" [active]="activeStyleId === 'control-tabs'">
+        <mat-tab-group>
+          <mat-tab label="General">
+            <p class="tab-copy">Datos generales del cliente.</p>
+          </mat-tab>
+          <mat-tab label="Cuentas">
+            <p class="tab-copy">Préstamos y ahorros.</p>
+          </mat-tab>
+          <mat-tab label="Documentos" disabled></mat-tab>
+        </mat-tab-group>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="tables" class="guide-section">
+      <h2>Tables</h2>
+      <mifosx-style-guide-specimen styleId="control-table-list" [active]="activeStyleId === 'control-table-list'">
+        <div class="container">
+          <div class="layout-column layout-gt-sm-row align-gt-sm-start-center">
+            <div class="search-box m-r-30">
+              <mat-form-field class="search-box">
+                <input
+                  matInput
+                  placeholder="Buscar por nombre o agencia"
+                  [value]="form.controls.search.value"
+                  (input)="applyFilter($any($event.target).value)"
+                />
+              </mat-form-field>
+            </div>
+            <div class="action-button gap-25px">
+              <button mat-raised-button color="primary" type="button">
+                <fa-icon icon="plus" class="m-r-10"></fa-icon>
+                Crear cliente
+              </button>
+            </div>
+          </div>
+
+          <table mat-table [dataSource]="dataSource" class="bordered-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Nombre</th>
+              <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="office">
+              <th mat-header-cell *matHeaderCellDef>Agencia</th>
+              <td mat-cell *matCellDef="let row">{{ row.office }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let row">
+                <i class="fa fa-stop" [ngClass]="row.statusClass"></i>
+                {{ row.status }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" class="select-row"></tr>
+          </table>
+          <p class="empty-copy" *ngIf="dataSource.filteredData.length === 0">Sin resultados</p>
+          <mat-paginator [pageSize]="2" [pageSizeOptions]="[2, 4]"></mat-paginator>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-table-empty" [active]="activeStyleId === 'control-table-empty'">
+        <table mat-table [dataSource]="emptySource" class="bordered-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="office">
+            <th mat-header-cell *matHeaderCellDef>Agencia</th>
+            <td mat-cell *matCellDef="let row">{{ row.office }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <p class="empty-copy">Sin resultados</p>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="feedback" class="guide-section">
+      <h2>Status and feedback</h2>
+      <mifosx-style-guide-specimen styleId="control-status-color" [active]="activeStyleId === 'control-status-color'">
+        <div class="status-row">
+          <span *ngFor="let status of statusSamples" [ngClass]="status.className">
+            <i class="fa fa-stop"></i>
+            {{ status.label }}
+          </span>
+        </div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-status-ribbon" [active]="activeStyleId === 'control-status-ribbon'">
+        <div class="account-status-ribbon status-active" matTooltip="Activo"></div>
+        <div class="account-status-ribbon status-pending" matTooltip="Pendiente"></div>
+        <div class="account-status-ribbon status-active-overdue" matTooltip="Vencido"></div>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-status-mark" [active]="activeStyleId === 'control-status-mark'">
+        <mifosx-account-status-mark
+          accountKind="savings"
+          appearance="square"
+          statusCode="savingsAccountStatusType.active"
+          statusLabel="Activo"
+          colorCode="savingsAccountStatusType.active"
+        ></mifosx-account-status-mark>
+        <span class="status-mark-label">Activo</span>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-warning" [active]="activeStyleId === 'control-warning'">
+        <p class="ui-warning">Este cliente tiene un pendiente de asignación.</p>
+      </mifosx-style-guide-specimen>
+      <mifosx-style-guide-specimen styleId="control-feedback" [active]="activeStyleId === 'control-feedback'">
+        <div class="button-row">
+          <button mat-stroked-button matTooltip="Ver firma">Con tooltip</button>
+          <mat-chip-set>
+            <mat-chip>Activo</mat-chip>
+            <mat-chip>Pendiente</mat-chip>
+          </mat-chip-set>
+          <button mat-stroked-button [matMenuTriggerFor]="feedbackMenu">Menú</button>
+          <mat-menu #feedbackMenu="matMenu">
+            <button mat-menu-item>Ver firma</button>
+            <button mat-menu-item>Editar</button>
+          </mat-menu>
+          <button mat-raised-button color="primary" type="button" (click)="openSnackbar()">Mostrar aviso</button>
+        </div>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="section-header" class="guide-section">
+      <h2>Section header</h2>
+      <mifosx-style-guide-specimen
+        styleId="pattern-section-header"
+        [active]="activeStyleId === 'pattern-section-header'"
+      >
+        <mat-card class="section-header-card">
+          <mat-card-header class="section-header">
+            <mat-card-title>Clientes</mat-card-title>
+            <span class="section-header-spacer"></span>
+            <button mat-raised-button color="primary" type="button">Crear cliente</button>
+          </mat-card-header>
+          <p class="section-subtitle">Agencia Santiago de María</p>
+        </mat-card>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="dialog-header" class="guide-section">
+      <h2>Dialog header</h2>
+      <mifosx-style-guide-specimen styleId="pattern-dialog-header" [active]="activeStyleId === 'pattern-dialog-header'">
+        <div class="dialog-preview">
+          <h2 mat-dialog-title>Asignar asesor</h2>
+          <div mat-dialog-content>
+            <p>El cliente queda asignado a ayala, robert empleado 3.</p>
+          </div>
+          <div mat-dialog-actions align="end">
+            <button mat-button type="button">Cancelar</button>
+            <button mat-raised-button color="primary" type="button">Guardar</button>
+          </div>
+        </div>
+        <button mat-stroked-button type="button" (click)="openDialog()">Abrir diálogo</button>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="account-header" class="guide-section">
+      <h2>Account header</h2>
+      <mifosx-style-guide-specimen
+        styleId="pattern-account-header"
+        [active]="activeStyleId === 'pattern-account-header'"
+      >
+        <mat-card class="account-card">
+          <div class="account-status-ribbon status-active" matTooltip="Activo"></div>
+          <mat-card-header class="header account-header">
+            <div class="account-header-body">
+              <div class="account-header-mark">
+                <mifosx-svg-icon
+                  iconFile="account_placeholder"
+                  iconName="LOAN_ACCOUNT"
+                  iconWidth="64"
+                ></mifosx-svg-icon>
+              </div>
+              <div class="account-header-identity">
+                <div class="account-header-title-row">
+                  <mifosx-account-status-mark
+                    accountKind="loan"
+                    statusCode="loanStatusType.active"
+                    statusLabel="Activo"
+                    colorCode="loanStatusType.active"
+                  ></mifosx-account-status-mark>
+                  <h3 class="account-header-title">Préstamo individual</h3>
+                  <span class="account-header-status">Activo</span>
+                  <span class="account-header-spacer"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="accountMenu" aria-label="Acciones de cuenta">
+                    <mat-icon class="actions-menu">
+                      <fa-icon icon="bars" size="sm"></fa-icon>
+                    </mat-icon>
+                  </button>
+                  <mat-menu #accountMenu="matMenu">
+                    <button mat-menu-item>Ver transacciones</button>
+                  </mat-menu>
+                </div>
+                <div class="account-header-facts">
+                  <div class="account-header-fact">
+                    <span class="account-header-label">No. de cuenta</span>
+                    <span class="account-header-value">
+                      <mifosx-account-number accountNo="000000128" display="left"></mifosx-account-number>
+                    </span>
+                  </div>
+                  <div class="account-header-fact">
+                    <span class="account-header-label">Cliente</span>
+                    <span class="account-header-value">
+                      <mifosx-entity-name entityName="robert cliente 3 ayalaa"></mifosx-entity-name>
+                    </span>
+                  </div>
+                  <div class="account-header-fact">
+                    <span class="account-header-label">Saldo</span>
+                    <span class="account-header-value">$1,250.00</span>
+                  </div>
+                </div>
+                <div class="account-header-controls">
+                  <div class="account-header-facts">
+                    <div class="account-header-fact">
+                      <span class="account-header-label">Agencia</span>
+                      <span class="account-header-value">Agencia Santiago de María</span>
+                    </div>
+                    <div class="account-header-fact">
+                      <span class="account-header-label">Asesor</span>
+                      <span class="account-header-value">ayala, robert empleado 3</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-header>
+        </mat-card>
+      </mifosx-style-guide-specimen>
+    </section>
+
+    <section id="client-header" class="guide-section">
+      <h2>Client header</h2>
+      <mifosx-style-guide-specimen
+        *ngFor="let sample of clientSamples"
+        [styleId]="sample.styleId"
+        [active]="activeStyleId === sample.styleId"
+      >
+        <mat-card class="account-card">
+          <div
+            class="account-status-ribbon"
+            [ngClass]="sample.statusCode | statusLookup"
+            [matTooltip]="sample.status"
+          ></div>
+          <mat-card-header class="header">
+            <div class="client-profile">
+              <div class="profile-image-container">
+                <img class="profile-image" src="assets/images/user_placeholder.png" alt="" />
+                <div class="client-image-actions">
+                  <button class="client-image-button" mat-raised-button type="button" aria-label="Subir">
+                    <i class="fa fa-upload"></i>
+                  </button>
+                  <button class="client-image-button" mat-raised-button type="button" aria-label="Cámara">
+                    <i class="fa fa-camera"></i>
+                  </button>
+                  <button class="client-image-button" mat-raised-button type="button" aria-label="Eliminar">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+                <p class="signature">Ver firma</p>
+              </div>
+              <div class="client-profile-identity">
+                <div class="client-profile-name">
+                  <mifosx-account-status-mark
+                    accountKind="client"
+                    [statusCode]="sample.statusCode"
+                    [statusLabel]="sample.status"
+                    [stepDates]="{ pending: sample.submittedDate, active: sample.activationDate }"
+                  ></mifosx-account-status-mark>
+                  <h3>
+                    <mifosx-entity-name [entityName]="sample.name"></mifosx-entity-name>
+                  </h3>
+                  <span class="client-status">{{ sample.status }}</span>
+                  <span class="client-profile-spacer"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="clientMenu" aria-label="Acciones del cliente">
+                    <mat-icon class="actions-menu">
+                      <fa-icon icon="bars" size="sm"></fa-icon>
+                    </mat-icon>
+                  </button>
+                  <mat-menu #clientMenu="matMenu">
+                    <button mat-menu-item>Editar</button>
+                  </mat-menu>
+                </div>
+                <div class="client-profile-facts">
+                  <div class="client-fact" [class.is-empty]="!sample.office">
+                    <span class="client-fact-label">Agencia</span>
+                    <span class="client-fact-value" *ngIf="sample.office">
+                      <mifosx-entity-name [entityName]="sample.office"></mifosx-entity-name>
+                    </span>
+                    <span class="client-fact-value" *ngIf="!sample.office">No asignado</span>
+                  </div>
+                  <div class="client-fact" [class.is-empty]="!sample.accountNo">
+                    <span class="client-fact-label">Cliente</span>
+                    <span class="client-fact-value" *ngIf="sample.accountNo">
+                      <mifosx-account-number [accountNo]="sample.accountNo"></mifosx-account-number>
+                    </span>
+                    <span class="client-fact-value" *ngIf="!sample.accountNo">—</span>
+                  </div>
+                  <div class="client-fact" [class.is-empty]="!sample.activationDate">
+                    <span class="client-fact-label">Fecha de activación</span>
+                    <span class="client-fact-value" *ngIf="sample.activationDate">{{
+                      sample.activationDate | dateFormat
+                    }}</span>
+                    <span class="client-fact-value" *ngIf="!sample.activationDate">—</span>
+                  </div>
+                  <div class="client-fact" [class.is-empty]="!sample.staff">
+                    <span class="client-fact-label">Asesor</span>
+                    <span class="client-fact-value" *ngIf="sample.staff">{{ sample.staff }}</span>
+                    <span class="client-fact-value" *ngIf="!sample.staff">No asignado</span>
+                  </div>
+                  <div class="client-fact" [class.is-empty]="!sample.mobile">
+                    <span class="client-fact-label">Teléfono móvil</span>
+                    <span class="client-fact-value" *ngIf="sample.mobile">
+                      <mifosx-external-identifier
+                        [externalId]="sample.mobile"
+                        [completed]="true"
+                      ></mifosx-external-identifier>
+                    </span>
+                    <span class="client-fact-value" *ngIf="!sample.mobile">—</span>
+                  </div>
+                </div>
+                <div class="client-profile-facts client-profile-facts-secondary">
+                  <div class="client-fact" [class.is-empty]="!sample.promoter">
+                    <span class="client-fact-label">Promotor</span>
+                    <span class="client-fact-value" *ngIf="sample.promoter">{{ sample.promoter }}</span>
+                    <span class="client-fact-value" *ngIf="!sample.promoter">No asignado</span>
+                  </div>
+                  <div class="client-fact" [class.is-empty]="!sample.executive">
+                    <span class="client-fact-label">Ejecutivo</span>
+                    <span class="client-fact-value" *ngIf="sample.executive">{{ sample.executive }}</span>
+                    <span class="client-fact-value" *ngIf="!sample.executive">No asignado</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-header>
+        </mat-card>
+      </mifosx-style-guide-specimen>
+    </section>
+  </div>
+</div>

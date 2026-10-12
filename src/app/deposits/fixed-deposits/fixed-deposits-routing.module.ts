@@ -23,6 +23,7 @@ import { FixedDepositsAccountActionsResolver } from './common-resolvers/fixed-de
 import { FixedDepositsAccountTemplateResolver } from './common-resolvers/fixed-deposit-account-template.resolver';
 import { FixedDepositsAccountAndTemplateResolver } from './common-resolvers/fixed-deposit-account-and-template.resolver';
 import { GeneralTabComponent } from './fixed-deposit-account-view/general-tab/general-tab.component';
+import { DepositAccountPrerequisiteGuard } from '../deposit-account-prerequisite/deposit-account-prerequisite.guard';
 
 const routes: Routes = [
   {
@@ -33,6 +34,7 @@ const routes: Routes = [
         path: 'create',
         data: { title: 'Create Fixed Deposit Account', breadcrumb: 'Create Fixed Deposit Account' },
         component: CreateFixedDepositAccountComponent,
+        canActivate: [DepositAccountPrerequisiteGuard],
         resolve: {
           fixedDepositsAccountTemplate: FixedDepositsAccountTemplateResolver
         }

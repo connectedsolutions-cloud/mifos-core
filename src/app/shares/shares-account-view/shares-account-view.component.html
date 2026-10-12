@@ -4,83 +4,80 @@
     [ngClass]="sharesAccountData.status.code | statusLookup"
     [matTooltip]="sharesAccountData.status.value"
   ></div>
-  <mat-card-header class="header layout-column">
-    <mat-card-title-group class="header-title-group">
-      <div class="profile-image-container">
-        <div>
-          <img
-            mat-card-md-image
-            class="profile-image"
-            matTooltip="{{ 'tooltips.Shares Account' | translate }}"
-            src="assets/images/shares_account_placeholder.png"
-          />
+  <mat-card-header class="header account-header">
+    <div class="account-header-body">
+      <img
+        class="account-header-mark"
+        matTooltip="{{ 'tooltips.Shares Account' | translate }}"
+        src="assets/images/shares_account_placeholder.png"
+        alt=""
+      />
+
+      <div class="account-header-identity">
+        <div class="account-header-title-row">
+          <mifosx-account-status-mark
+            accountKind="share"
+            [statusCode]="sharesAccountData.status.code"
+            [statusLabel]="sharesAccountData.status.value"
+            [colorCode]="sharesAccountData.status.code"
+            [stepDates]="{
+              submitted: sharesAccountData.timeline?.submittedOnDate,
+              approved: sharesAccountData.timeline?.approvedDate,
+              active: sharesAccountData.timeline?.activatedDate
+            }"
+          ></mifosx-account-status-mark>
+          <h3 class="account-header-title">
+            <mifosx-long-text textValue="{{ sharesAccountData.productName }}"></mifosx-long-text>
+          </h3>
+          <span class="account-header-status">{{ sharesAccountData.status.value }}</span>
+          <span class="account-header-spacer"></span>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="accountMenu"
+            aria-label="Share account actions"
+            yPosition="below"
+            *ngIf="buttonConfig.singleButtons.length > 0"
+          >
+            <mat-icon matListIcon class="actions-menu">
+              <fa-icon icon="bars" size="sm"></fa-icon>
+            </mat-icon>
+          </button>
+        </div>
+
+        <div class="account-header-facts">
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Account No' | translate }}</span>
+            <span class="account-header-value">
+              <mifosx-account-number
+                accountNo="{{ sharesAccountData.accountNo }}"
+                display="left"
+              ></mifosx-account-number>
+            </span>
+          </div>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.text.' + entityType | translate }}</span>
+            <span class="account-header-value">
+              {{ sharesAccountData.clientName || sharesAccountData.groupName }}
+              <mifosx-account-number
+                *ngIf="sharesAccountData.clientAccountNo"
+                accountNo="{{ sharesAccountData.clientAccountNo }}"
+              ></mifosx-account-number>
+            </span>
+          </div>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Current Market Price' | translate }}</span>
+            <span class="account-header-value">{{ sharesAccountData.currentMarketPrice | formatNumber }}</span>
+          </div>
+          <div class="account-header-fact" *ngIf="sharesAccountData.lockinPeriod">
+            <span class="account-header-label">{{ 'labels.inputs.Lockin Period' | translate }}</span>
+            <span class="account-header-value">
+              {{ sharesAccountData.lockinPeriod }}
+              {{ sharesAccountData.lockPeriodTypeEnum.value | translateKey: 'catalogs' }}
+            </span>
+          </div>
         </div>
       </div>
-
-      <div class="mat-typography account-card-title">
-        <mat-card-title>
-          <div class="layout-row responsive-column">
-            <div class="flex-60">
-              <h3>
-                <i
-                  class="fa fa-stop"
-                  [ngClass]="sharesAccountData.status.code | statusLookup"
-                  [matTooltip]="sharesAccountData.status.value"
-                ></i>
-                <span class="m-r-5">{{ 'labels.inputs.Share Product' | translate }} :</span>
-                <span class="m-r-5"
-                  ><mifosx-long-text textValue="{{ sharesAccountData.productName }}"></mifosx-long-text
-                ></span>
-                <mifosx-account-number
-                  accountNo="{{ sharesAccountData.accountNo }}"
-                  display="left"
-                ></mifosx-account-number>
-              </h3>
-              <span class="shares-overview">
-                <span class="m-r-10"
-                  >{{ 'labels.text.' + entityType | translate }} {{ 'labels.inputs.name' | translate }} :</span
-                >{{ sharesAccountData.clientName || sharesAccountData.groupName }}
-                <span class="m-l-10" *ngIf="sharesAccountData.clientAccountNo">
-                  <mifosx-account-number accountNo="{{ sharesAccountData.clientAccountNo }}"></mifosx-account-number>
-                </span>
-              </span>
-              <div>
-                <table class="account-overview">
-                  <tbody>
-                    <tr>
-                      <td>{{ 'labels.inputs.Current Market Price' | translate }} :</td>
-                      <td>{{ sharesAccountData.currentMarketPrice | formatNumber }}</td>
-                    </tr>
-                    <tr *ngIf="sharesAccountData.lockinPeriod">
-                      <td>{{ 'labels.inputs.Lockin Period' | translate }} :</td>
-                      <td>
-                        {{ sharesAccountData.lockinPeriod }}
-                        {{ sharesAccountData.lockPeriodTypeEnum.value | translateKey: 'catalogs' }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <span class="flex-auto"></span>
-            <div class="flex-40">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="accountMenu"
-                aria-label="Share account actions"
-                yPosition="below"
-                *ngIf="buttonConfig.singleButtons.length > 0"
-              >
-                <mat-icon matListIcon class="actions-menu">
-                  <fa-icon icon="bars" size="sm"></fa-icon>
-                </mat-icon>
-              </button>
-            </div>
-          </div>
-        </mat-card-title>
-      </div>
-    </mat-card-title-group>
+    </div>
 
     <mat-menu #accountMenu="matMenu">
       <ng-container *ngFor="let item of buttonConfig.singleButtons">

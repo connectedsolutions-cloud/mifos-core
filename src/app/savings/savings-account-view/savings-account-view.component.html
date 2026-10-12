@@ -10,118 +10,124 @@
       savingsAccountData.subStatus.block ? savingsAccountData.subStatus.value : savingsAccountData.status.value
     "
   ></div>
-  <mat-card-header class="header layout-column">
-    <mat-card-title-group class="header-title-group">
-      <div class="profile-image-container">
-        <div>
-          <img
-            mat-card-md-image
-            class="profile-image"
-            matTooltip="{{ 'tooltips.Savings Account' | translate }}"
-            [src]="'assets/images/savings_account_placeholder.png'"
-          />
+  <mat-card-header class="header account-header">
+    <div class="account-header-body">
+      <div class="account-header-identity">
+        <div class="account-header-title-row">
+          <mifosx-account-status-mark
+            accountKind="savings"
+            appearance="square"
+            [statusCode]="savingsAccountData.status.code"
+            [statusLabel]="
+              savingsAccountData.subStatus.block ? savingsAccountData.subStatus.value : savingsAccountData.status.value
+            "
+            [colorCode]="
+              savingsAccountData.subStatus.block ? savingsAccountData.subStatus.value : savingsAccountData.status.code
+            "
+            [stepDates]="{
+              submitted: savingsAccountData.timeline?.submittedOnDate,
+              approved: savingsAccountData.timeline?.approvedOnDate,
+              active: savingsAccountData.timeline?.activatedOnDate
+            }"
+          ></mifosx-account-status-mark>
+          <h3 class="account-header-title">
+            <mifosx-long-text textValue="{{ savingsAccountData.savingsProductName }}"></mifosx-long-text>
+          </h3>
+          <span class="account-header-spacer"></span>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="accountMenu"
+            aria-label="Savings account actions"
+            yPosition="below"
+          >
+            <mat-icon class="actions-menu">
+              <fa-icon icon="bars" size="sm"></fa-icon>
+            </mat-icon>
+          </button>
         </div>
-      </div>
 
-      <div class="mat-typography account-card-title">
-        <mat-card-title class="layout-row layout-lt-md-column">
-          <div class="flex-60">
-            <h3>
-              <i
-                class="fa fa-stop"
-                [ngClass]="savingsAccountData.status.code | statusLookup"
-                [matTooltip]="savingsAccountData.status.value"
-                *ngIf="!savingsAccountData.subStatus.block"
-              ></i>
-              <i
-                class="fa fa-stop"
-                [ngClass]="savingsAccountData.subStatus.value | statusLookup"
-                [matTooltip]="savingsAccountData.subStatus.value"
-                *ngIf="savingsAccountData.subStatus.block"
-              ></i>
-              <span class="m-r-5">{{ 'labels.inputs.Savings Product' | translate }} :</span>
-              <span class="m-r-5"
-                ><mifosx-long-text textValue="{{ savingsAccountData.savingsProductName }}"></mifosx-long-text
-              ></span>
+        <div class="account-header-facts">
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Account No' | translate }}</span>
+            <span class="account-header-value">
               <mifosx-account-number
                 accountNo="{{ savingsAccountData.accountNo }}"
                 display="left"
               ></mifosx-account-number>
-            </h3>
-            <span class="account-overview">
-              {{ 'labels.text.' + entityType | translate }} {{ 'labels.inputs.name' | translate }}:
+            </span>
+          </div>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.text.' + entityType | translate }}</span>
+            <span class="account-header-value">
               {{ savingsAccountData.clientName || savingsAccountData.groupName }}
-              <span class="m-l-10" *ngIf="savingsAccountData.clientAccountNo">
-                <mifosx-account-number accountNo="{{ savingsAccountData.clientAccountNo }}"></mifosx-account-number>
-              </span>
+              <mifosx-account-number
+                *ngIf="savingsAccountData.clientAccountNo"
+                accountNo="{{ savingsAccountData.clientAccountNo }}"
+              ></mifosx-account-number>
             </span>
           </div>
-
-          <div
-            class="flex-30"
-            *ngIf="!savingsAccountData.status.rejected && !savingsAccountData.status.submittedAndPendingApproval"
-          >
-            <h3>{{ 'labels.heading.Account Overview' | translate }}</h3>
-            <table class="account-overview">
-              <tbody>
-                <tr>
-                  <td>{{ 'labels.inputs.Current Balance' | translate }}</td>
-                  <td class="r-amount">
-                    {{
-                      savingsAccountData.summary.accountBalance | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                    }}
-                  </td>
-                </tr>
-                <tr>
-                  <td>{{ 'labels.inputs.Available Balance' | translate }}</td>
-                  <td class="r-amount">
-                    {{
-                      savingsAccountData.summary.availableBalance | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                    }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Status' | translate }}</span>
+            <span class="account-header-value">{{
+              savingsAccountData.subStatus.block ? savingsAccountData.subStatus.value : savingsAccountData.status.value
+            }}</span>
           </div>
-
-          <div class="flex-5">
-            <button
-              mat-icon-button
-              [matMenuTriggerFor]="accountMenu"
-              aria-label="Loan account actions"
-              yPosition="below"
-            >
-              <mat-icon matListIcon class="actions-menu">
-                <fa-icon icon="bars" size="sm"></fa-icon>
-              </mat-icon>
-            </button>
-          </div>
-        </mat-card-title>
+        </div>
       </div>
+    </div>
 
-      <mat-menu #accountMenu="matMenu">
-        <ng-container *ngFor="let item of buttonConfig.singleButtons">
-          <button mat-menu-item *mifosxHasPermission="item.taskPermissionName" (click)="doAction(item.name)">
-            <mat-icon matListIcon>
-              <fa-icon icon="{{ item.icon }}" size="sm"></fa-icon>
-            </mat-icon>
-            <span> {{ 'labels.menus.' + item.name | translate }} </span>
-          </button>
-        </ng-container>
+    <mat-menu #accountMenu="matMenu">
+      <ng-container *ngFor="let item of buttonConfig.singleButtons">
+        <button mat-menu-item *mifosxHasPermission="item.taskPermissionName" (click)="doAction(item.name)">
+          <mat-icon matListIcon>
+            <fa-icon icon="{{ item.icon }}" size="sm"></fa-icon>
+          </mat-icon>
+          <span> {{ 'labels.menus.' + item.name | translate }} </span>
+        </button>
+      </ng-container>
 
-        <ng-container *ngIf="buttonConfig.options && !savingsAccountData.subStatus.block">
-          <button mat-menu-item [matMenuTriggerFor]="More">{{ 'labels.menus.More' | translate }}</button>
-          <mat-menu #More="matMenu">
-            <span *ngFor="let option of buttonConfig.options">
-              <button mat-menu-item *mifosxHasPermission="option.taskPermissionName" (click)="doAction(option.name)">
-                {{ 'labels.menus.' + option.name | translate }}
-              </button>
-            </span>
-          </mat-menu>
-        </ng-container>
-      </mat-menu>
-    </mat-card-title-group>
+      <ng-container *ngIf="buttonConfig.options && !savingsAccountData.subStatus.block">
+        <button mat-menu-item [matMenuTriggerFor]="More">{{ 'labels.menus.More' | translate }}</button>
+        <mat-menu #More="matMenu">
+          <span *ngFor="let option of buttonConfig.options">
+            <button mat-menu-item *mifosxHasPermission="option.taskPermissionName" (click)="doAction(option.name)">
+              {{ 'labels.menus.' + option.name | translate }}
+            </button>
+          </span>
+        </mat-menu>
+      </ng-container>
+    </mat-menu>
   </mat-card-header>
+
+  <div
+    class="balance-metrics"
+    *ngIf="!savingsAccountData.status.rejected && !savingsAccountData.status.submittedAndPendingApproval"
+  >
+    <div class="metric">
+      <span class="metric-label">{{ 'labels.inputs.Current Balance' | translate }}</span>
+      <span class="metric-value">{{
+        savingsAccountData.summary.accountBalance | currency: currency.code : 'symbol-narrow' : '1.2-2'
+      }}</span>
+      <span class="metric-hint">{{ savingsAccountData.currency.name }}</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">{{ 'labels.inputs.Available Balance' | translate }}</span>
+      <span class="metric-value">{{
+        savingsAccountData.summary.availableBalance | currency: currency.code : 'symbol-narrow' : '1.2-2'
+      }}</span>
+      <span class="metric-hint" *ngIf="savingsAccountData.onHoldFunds; else noHold">
+        {{ savingsAccountData.onHoldFunds | currency: currency.code : 'symbol-narrow' : '1.2-2' }}
+      </span>
+      <ng-template #noHold>
+        <span class="metric-hint">{{ 'labels.heading.No Funds On Hold' | translate }}</span>
+      </ng-template>
+    </div>
+    <div class="metric">
+      <span class="metric-label">{{ 'labels.inputs.Nominal Interest Rate' | translate }}</span>
+      <span class="metric-value">{{ savingsAccountData.nominalAnnualInterestRate || 0 | formatNumber }}%</span>
+      <span class="metric-hint">{{ 'labels.text.per annum' | translate }}</span>
+    </div>
+  </div>
 
   <mat-card-content class="content">
     <nav mat-tab-nav-bar class="navigation-tabs" *ngIf="isActive" [tabPanel]="tabPanel">

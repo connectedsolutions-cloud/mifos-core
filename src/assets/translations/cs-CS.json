@@ -1190,7 +1190,9 @@
       "Not Yet Amortized Amount": "Dosud neamortizovana castka",
       "Adjusted Amount": "Upravená částka",
       "Charged Off Amount": "Odepsaná částka",
-      "Date": "Datum"
+      "Date": "Datum",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

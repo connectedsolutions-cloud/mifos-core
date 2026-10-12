@@ -1192,7 +1192,9 @@
       "Not Yet Amortized Amount": "Not Yet Amortized Amount",
       "Adjusted Amount": "조정된 금액",
       "Charged Off Amount": "상각 금액",
-      "Date": "날짜"
+      "Date": "날짜",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

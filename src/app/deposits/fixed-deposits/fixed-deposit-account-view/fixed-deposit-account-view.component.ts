@@ -16,14 +16,7 @@ import { FixedDepositsButtonsConfiguration } from './fixed-deposits-buttons.conf
 import { FixedDepositsService } from '../fixed-deposits.service';
 import { SavingsService } from 'app/savings/savings.service';
 import { Currency } from 'app/shared/models/general.model';
-import {
-  MatCard,
-  MatCardHeader,
-  MatCardTitleGroup,
-  MatCardMdImage,
-  MatCardTitle,
-  MatCardContent
-} from '@angular/material/card';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgClass, NgIf, NgFor, CurrencyPipe } from '@angular/common';
 import { AccountNumberComponent } from '../../../shared/account-number/account-number.component';
@@ -33,6 +26,7 @@ import { MatIcon } from '@angular/material/icon';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { StatusLookupPipe } from '../../../pipes/status-lookup.pipe';
+import { AccountStatusMarkComponent } from '../../../shared/account-status-progress/account-status-mark.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -45,10 +39,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     MatCardHeader,
-    MatCardTitleGroup,
-    MatCardMdImage,
     MatTooltip,
-    MatCardTitle,
     NgClass,
     AccountNumberComponent,
     MatIconButton,
@@ -63,7 +54,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatTabNavPanel,
     RouterOutlet,
     CurrencyPipe,
-    StatusLookupPipe
+    StatusLookupPipe,
+    AccountStatusMarkComponent
   ]
 })
 export class FixedDepositAccountViewComponent implements OnInit {

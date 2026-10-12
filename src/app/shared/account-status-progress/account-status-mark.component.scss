@@ -1,0 +1,29 @@
+:host {
+  display: inline;
+}
+
+.account-status-mark {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 1;
+  vertical-align: baseline;
+  cursor: pointer;
+  color: inherit;
+}
+
+.status-square {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  border-radius: 2px;
+  background-color: currentcolor;
+
+  &.status-active {
+    color: #8bc53f;
+  }
+}

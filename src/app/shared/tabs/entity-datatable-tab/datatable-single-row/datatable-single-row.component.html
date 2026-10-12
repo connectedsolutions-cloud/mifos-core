@@ -1,5 +1,5 @@
 <div class="tab-container mat-typography">
-  <h3>{{ datatableName }}</h3>
+  <h3 *ngIf="!twoColumnTable">{{ datatableName }}</h3>
   <div class="layout-row align-end m-b-20">
     <ng-container *ngIf="datatableName !== 'credesal_client_datos_personales'">
       <button mat-raised-button color="primary" (click)="add()" *ngIf="!hasRowData()">
@@ -35,77 +35,98 @@
 
   <mat-divider></mat-divider>
 
-  <div class="m-t-10" *ngIf="displayColumns.length > 0">
-    <div
-      class="flex-fill"
-      *ngFor="let columnHeader of displayColumns"
-      [ngClass]="setAttributeClass(columnHeader.columnName)"
-    >
-      <div class="mat-body-strong left flex-40">
-        {{ columnHeader.columnDisplayName }}
-        {{ getInputName(columnHeader.columnName) }}
-      </div>
-
-      <div [ngSwitch]="getColumnType(columnHeader.columnDisplayType, columnHeader.columnType)" class="right flex-60">
-        <span *ngSwitchCase="'DATE'">
-          {{
-            hasDisplayValue(getRowValue(columnHeader))
-              ? (getRowValue(columnHeader) | dateFormat)
-              : emptyValuePlaceholder
-          }}
-        </span>
-        <span *ngSwitchCase="'DATETIME'">
-          {{
-            hasDisplayValue(getRowValue(columnHeader))
-              ? (getRowValue(columnHeader) | datetimeFormat)
-              : emptyValuePlaceholder
-          }}
-        </span>
-        <span *ngSwitchCase="'INTEGER'">
-          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
-        </span>
-        <span *ngSwitchCase="'DECIMAL'">
-          {{
-            hasDisplayValue(getRowValue(columnHeader))
-              ? (getRowValue(columnHeader) | formatNumber)
-              : emptyValuePlaceholder
-          }}
-        </span>
-        <span *ngSwitchCase="'TEXT'" class="long-text">
-          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
-        </span>
-        <ng-container *ngSwitchCase="'JSON'">
-          <textarea
-            *ngIf="hasDisplayValue(getRowValue(columnHeader)?.value); else emptyJsonValue"
-            cdkTextareaAutosize="true"
-            cdkAutosizeMaxRows="20"
-            cdkAutosizeMinRows="1"
-            class="json-textarea"
-            [innerHTML]="getRowValue(columnHeader).value | prettyPrint"
-          >
-          </textarea>
-          <ng-template #emptyJsonValue>
-            <span>{{ emptyValuePlaceholder }}</span>
-          </ng-template>
-        </ng-container>
-        <span *ngSwitchDefault>
-          <span
-            class="m-r-5"
-            *ngIf="hasDisplayValue(getRowValue(columnHeader)) && isValidUrl(getRowValue(columnHeader))"
-          >
-            <button
-              mat-icon-button
-              matTooltip="{{ 'tooltips.View Link' | translate }}"
-              (click)="openSite(getRowValue(columnHeader))"
-              matTooltipPosition="right"
-              class="small-icon"
-            >
-              <fa-icon icon="eye" size="lg"></fa-icon>
-            </button>
-          </span>
-          {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
-        </span>
-      </div>
+  <div class="client-data-tables m-t-10" *ngIf="twoColumnTable && displayColumns.length > 0; else stackedFields">
+    <div class="details-column" *ngFor="let column of fieldColumns; trackBy: trackByIndex">
+      <table>
+        <tbody>
+          <tr *ngFor="let columnHeader of column" [ngClass]="setAttributeClass(columnHeader.columnName)">
+            <td>
+              {{ columnHeader.columnDisplayName }}
+              {{ getInputName(columnHeader.columnName) }}
+            </td>
+            <td>
+              <ng-container *ngTemplateOutlet="fieldValue; context: { $implicit: columnHeader }"></ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
+  <ng-template #stackedFields>
+    <div class="m-t-10" *ngIf="displayColumns.length > 0">
+      <div
+        class="flex-fill"
+        *ngFor="let columnHeader of displayColumns"
+        [ngClass]="setAttributeClass(columnHeader.columnName)"
+      >
+        <div class="mat-body-strong left flex-40">
+          {{ columnHeader.columnDisplayName }}
+          {{ getInputName(columnHeader.columnName) }}
+        </div>
+
+        <div class="right flex-60">
+          <ng-container *ngTemplateOutlet="fieldValue; context: { $implicit: columnHeader }"></ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #fieldValue let-columnHeader>
+    <div [ngSwitch]="getColumnType(columnHeader.columnDisplayType, columnHeader.columnType)">
+      <span *ngSwitchCase="'DATE'">
+        {{
+          hasDisplayValue(getRowValue(columnHeader)) ? (getRowValue(columnHeader) | dateFormat) : emptyValuePlaceholder
+        }}
+      </span>
+      <span *ngSwitchCase="'DATETIME'">
+        {{
+          hasDisplayValue(getRowValue(columnHeader))
+            ? (getRowValue(columnHeader) | datetimeFormat)
+            : emptyValuePlaceholder
+        }}
+      </span>
+      <span *ngSwitchCase="'INTEGER'">
+        {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
+      </span>
+      <span *ngSwitchCase="'DECIMAL'">
+        {{
+          hasDisplayValue(getRowValue(columnHeader))
+            ? (getRowValue(columnHeader) | formatNumber)
+            : emptyValuePlaceholder
+        }}
+      </span>
+      <span *ngSwitchCase="'TEXT'" class="long-text">
+        {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
+      </span>
+      <ng-container *ngSwitchCase="'JSON'">
+        <textarea
+          *ngIf="hasDisplayValue(getRowValue(columnHeader)?.value); else emptyJsonValue"
+          cdkTextareaAutosize="true"
+          cdkAutosizeMaxRows="20"
+          cdkAutosizeMinRows="1"
+          class="json-textarea"
+          [innerHTML]="getRowValue(columnHeader).value | prettyPrint"
+        >
+        </textarea>
+        <ng-template #emptyJsonValue>
+          <span>{{ emptyValuePlaceholder }}</span>
+        </ng-template>
+      </ng-container>
+      <span *ngSwitchDefault>
+        <span class="m-r-5" *ngIf="hasDisplayValue(getRowValue(columnHeader)) && isValidUrl(getRowValue(columnHeader))">
+          <button
+            mat-icon-button
+            matTooltip="{{ 'tooltips.View Link' | translate }}"
+            (click)="openSite(getRowValue(columnHeader))"
+            matTooltipPosition="right"
+            class="small-icon"
+          >
+            <fa-icon icon="eye" size="lg"></fa-icon>
+          </button>
+        </span>
+        {{ hasDisplayValue(getRowValue(columnHeader)) ? getRowValue(columnHeader) : emptyValuePlaceholder }}
+      </span>
+    </div>
+  </ng-template>
 </div>

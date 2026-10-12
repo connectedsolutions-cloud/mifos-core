@@ -2,9 +2,9 @@
 
 ## Colors Used
 
-- **Background Color**: `#DBE9F2` (light blue)
+- **Background Color**: `var(--mifosx-header-surface)` (`#e4eef6`, defined as `$header-surface` in `src/assets/styles/_colours.scss`)
 - **Text Color**: `#505050` (dark gray)
-- **Signature Button Background**: `#DBE9F2` (matches header)
+- **Signature Button Background**: `var(--mifosx-header-surface)` (matches header)
 - **Signature Button Hover**: `#C8DDE8` (slightly darker for hover effect)
 
 ## Strategy
@@ -30,7 +30,7 @@
 .account-card {
   .header {
     // Override background
-    background-color: #dbe9f2 !important;
+    background-color: var(--mifosx-header-surface) !important;
 
     // Override text colors
     .header-title-group {
@@ -52,7 +52,7 @@
 
     // Override signature button if present
     .signature {
-      background-color: #dbe9f2 !important;
+      background-color: var(--mifosx-header-surface) !important;
       color: #505050;
 
       &:hover {

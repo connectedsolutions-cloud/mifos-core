@@ -1,0 +1,18 @@
+<article class="specimen" [class.is-referenced]="active" [attr.data-style-id]="styleId || null">
+  <header class="specimen-head">
+    <h3>{{ displayTitle }}</h3>
+    <span class="specimen-source">{{ displaySource }}</span>
+    <button *ngIf="styleId" type="button" class="copy-style" (click)="copyReference()">
+      {{ copied ? 'Copied' : 'Copy' }}
+    </button>
+  </header>
+  <div class="specimen-canvas">
+    <ng-content></ng-content>
+  </div>
+  <p class="spec-strip" *ngIf="styleId || displayToken || displayValue || displayNote">
+    <code *ngIf="styleId">{{ styleId }}</code>
+    <code *ngIf="displayToken">{{ displayToken }}</code>
+    <span *ngIf="displayValue">{{ displayValue }}</span>
+    <span *ngIf="displayNote">{{ displayNote }}</span>
+  </p>
+</article>

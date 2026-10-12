@@ -18,6 +18,7 @@ export class EntityDatatableTabComponent {
   @Input() entityDatatable: any;
   @Input() entityType: string;
   @Input() entityId: string;
+  @Input() twoColumnTable = false;
 
   constructor() {}
 }

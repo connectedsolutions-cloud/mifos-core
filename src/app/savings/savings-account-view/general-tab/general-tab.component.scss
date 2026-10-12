@@ -2,6 +2,28 @@ $bar: 160px;
 $foo: $bar * 8;
 $color: #e2e4ec;
 
+.savings-account-tables {
+  table {
+    border: none;
+  }
+}
+
+@media (width <= 900px) {
+  .savings-account-tables {
+    flex-direction: column;
+  }
+}
+
+.performance-empty {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f7f9fb;
+  color: #60707c;
+  font-size: 13px;
+  line-height: normal;
+}
+
 .loader {
   margin-bottom: 39px;
   overflow: auto;

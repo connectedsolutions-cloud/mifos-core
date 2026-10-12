@@ -29,6 +29,7 @@
       max-width: 90rem;
       width: 90%;
       padding: 0;
+      overflow: hidden;
 
       i,
       img:hover {
@@ -36,18 +37,34 @@
       }
 
       .header {
-        background-color: mat.m2-get-color-from-palette($primary, 500);
-        padding: 1%;
+        background-color: var(--mifosx-header-surface);
+        padding: 16px 20px;
+      }
+
+      .account-status-ribbon {
+        display: block;
+        width: 100%;
+        margin: 0;
+      }
+
+      .account-status-ribbon + .header {
+        margin-top: 0;
+      }
+
+      h3 > .fa-stop,
+      h3 mifosx-account-status-mark .fa-stop {
+        font-size: 20px;
+        margin-right: 6px;
       }
 
       .header-title-group {
         .account-card-title {
-          color: white;
+          color: rgb(0 0 0 / 87%);
           width: 90%;
         }
 
         p {
-          color: white;
+          color: rgb(0 0 0 / 87%);
         }
 
         .account-overview {
@@ -91,44 +108,26 @@
 
       .content {
         .savings-account-tables {
-          padding: 1%;
-          margin: 1%;
+          display: flex;
+          gap: 32px;
+          align-items: flex-start;
+          margin: 0;
+          padding: 20px 24px 24px;
 
           .table-headers {
-            margin: 0;
-            padding: 6px;
+            margin: 0 0 4px;
+            padding: 0;
           }
 
-          td {
-            padding: 3px;
+          .details-column,
+          .summary-column {
+            display: flex;
+            flex: 1 1 0;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
           }
         }
-      }
-    }
-  }
-
-  mifosx-fixed-deposit-account-view,
-  mifosx-loans-view,
-  mifosx-shares-account-view,
-  mifosx-recurring-deposits-account-view,
-  mifosx-savings-account-view {
-    .account-card {
-      overflow: hidden;
-
-      .account-status-ribbon {
-        display: block;
-        height: 12px;
-        width: 100%;
-        margin: 0;
-      }
-
-      .account-status-ribbon + .header {
-        margin-top: 0;
-      }
-
-      h3 > .fa-stop {
-        font-size: 20px;
-        margin-right: 6px;
       }
     }
   }

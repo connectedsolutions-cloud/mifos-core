@@ -1191,7 +1191,9 @@
       "Not Yet Amortized Amount": "Not Yet Amortized Amount",
       "Adjusted Amount": "समायोजित रकम",
       "Charged Off Amount": "चार्ज गरिएको रकम",
-      "Date": "मिति"
+      "Date": "मिति",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

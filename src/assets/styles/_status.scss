@@ -40,11 +40,23 @@
   color: $status-matured;
 }
 
+.status-transfer-progress {
+  color: $status-transfer-progress;
+}
+
+.status-transfer-hold {
+  color: $status-transfer-hold;
+}
+
 .subStatus-contract-termination {
   color: $subStatus-contract-termination;
 }
 
 .account-status-ribbon {
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin: 0;
   background-color: $status-inactive;
 
   &.status-active {
@@ -74,6 +86,14 @@
 
   &.status-matured {
     background-color: $status-matured;
+  }
+
+  &.status-transfer-progress {
+    background-color: $status-transfer-progress;
+  }
+
+  &.status-transfer-hold {
+    background-color: $status-transfer-hold;
   }
 
   &.subStatus-contract-termination {

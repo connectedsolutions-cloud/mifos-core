@@ -4,114 +4,106 @@
     [ngClass]="recurringDepositsAccountData.status.code | statusLookup"
     [matTooltip]="recurringDepositsAccountData.status.value"
   ></div>
-  <mat-card-header class="header layout-column">
-    <mat-card-title-group class="header-title-group">
-      <div class="profile-image-container">
-        <div>
-          <img
-            mat-card-md-image
-            class="profile-image"
-            matTooltip="{{ 'tooltips.Recurring Deposits Account' | translate }}"
-            [src]="'assets/images/recurring-deposits_account_placeholder.png'"
-          />
+  <mat-card-header class="header account-header">
+    <div class="account-header-body">
+      <img
+        class="account-header-mark"
+        matTooltip="{{ 'tooltips.Recurring Deposits Account' | translate }}"
+        src="assets/images/recurring-deposits_account_placeholder.png"
+        alt=""
+      />
+
+      <div class="account-header-identity">
+        <div class="account-header-title-row">
+          <mifosx-account-status-mark
+            accountKind="recurringDeposit"
+            [statusCode]="recurringDepositsAccountData.status.code"
+            [statusLabel]="recurringDepositsAccountData.status.value"
+            [colorCode]="recurringDepositsAccountData.status.code"
+            [stepDates]="{
+              submitted: recurringDepositsAccountData.timeline?.submittedOnDate,
+              approved: recurringDepositsAccountData.timeline?.approvedOnDate,
+              active: recurringDepositsAccountData.timeline?.activatedOnDate
+            }"
+          ></mifosx-account-status-mark>
+          <h3 class="account-header-title">{{ recurringDepositsAccountData.depositProductName }}</h3>
+          <span class="account-header-status">{{ recurringDepositsAccountData.status.value }}</span>
+          <span class="account-header-spacer"></span>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="accountMenu"
+            aria-label="Recurring deposit account actions"
+            yPosition="below"
+          >
+            <mat-icon matListIcon class="actions-menu">
+              <fa-icon icon="bars" size="sm"></fa-icon>
+            </mat-icon>
+          </button>
+        </div>
+
+        <div class="account-header-facts">
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.inputs.Account No' | translate }}</span>
+            <span class="account-header-value">
+              <mifosx-account-number accountNo="{{ recurringDepositsAccountData.accountNo }}"></mifosx-account-number>
+            </span>
+          </div>
+          <div class="account-header-fact">
+            <span class="account-header-label">{{ 'labels.text.' + entityType | translate }}</span>
+            <span class="account-header-value">
+              {{ recurringDepositsAccountData.clientName || recurringDepositsAccountData.groupName }}
+              <mifosx-account-number
+                *ngIf="recurringDepositsAccountData.clientAccountNo"
+                accountNo="{{ recurringDepositsAccountData.clientAccountNo }}"
+              ></mifosx-account-number>
+            </span>
+          </div>
+          <ng-container
+            *ngIf="
+              !recurringDepositsAccountData.status.rejected &&
+              !recurringDepositsAccountData.status.submittedAndPendingApproval
+            "
+          >
+            <div class="account-header-fact">
+              <span class="account-header-label">{{ 'labels.inputs.Current Balance' | translate }}</span>
+              <span class="account-header-value">{{
+                recurringDepositsAccountData.summary.accountBalance
+                  | currency: currency.code : 'symbol-narrow' : '1.2-2'
+              }}</span>
+            </div>
+            <div class="account-header-fact">
+              <span class="account-header-label">{{ 'labels.inputs.Deposit Amount' | translate }}</span>
+              <span class="account-header-value">{{
+                recurringDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2'
+              }}</span>
+            </div>
+            <div class="account-header-fact">
+              <span class="account-header-label">{{ 'labels.inputs.Deposit Period' | translate }}</span>
+              <span class="account-header-value">{{ recurringDepositsAccountData.depositPeriod | number }}</span>
+            </div>
+          </ng-container>
         </div>
       </div>
+    </div>
 
-      <div class="mat-typography account-card-title">
-        <mat-card-title>
-          <div class="layout-row responsive-column">
-            <div class="flex-60">
-              <h3>
-                <i
-                  class="fa fa-stop"
-                  [ngClass]="recurringDepositsAccountData.status.code | statusLookup"
-                  [matTooltip]="recurringDepositsAccountData.status.value"
-                ></i>
-                {{ 'labels.inputs.Recurring Deposit' | translate }} :
-                {{ recurringDepositsAccountData.depositProductName }}
-                <mifosx-account-number accountNo="{{ recurringDepositsAccountData.accountNo }}"></mifosx-account-number>
-              </h3>
-              <span class="account-overview">
-                {{ 'labels.text.' + entityType | translate }} {{ 'labels.inputs.name' | translate }}:
-                {{ recurringDepositsAccountData.clientName || recurringDepositsAccountData.groupName }}
-                <span class="m-l-10" *ngIf="recurringDepositsAccountData.clientAccountNo">
-                  <mifosx-account-number
-                    accountNo="{{ recurringDepositsAccountData.clientAccountNo }}"
-                  ></mifosx-account-number>
-                </span>
-              </span>
-            </div>
+    <mat-menu #accountMenu="matMenu">
+      <ng-container *ngFor="let item of buttonConfig.singleButtons">
+        <button mat-menu-item *mifosxHasPermission="item.taskPermissionName" (click)="doAction(item.name)">
+          <i ngClass="{{ item.icon }}"></i> {{ 'labels.menus.' + item.name | translate }}
+        </button>
+      </ng-container>
 
-            <div
-              class="flex-30"
-              *ngIf="
-                !recurringDepositsAccountData.status.rejected &&
-                !recurringDepositsAccountData.status.submittedAndPendingApproval
-              "
-            >
-              <h3>{{ 'labels.heading.Account Overview' | translate }}</h3>
-              <table class="account-overview">
-                <tbody>
-                  <tr>
-                    <td>{{ 'labels.inputs.Current Balance' | translate }}</td>
-                    <td class="r-amount">
-                      {{
-                        recurringDepositsAccountData.summary.accountBalance
-                          | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                      }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>{{ 'labels.inputs.Deposit Amount' | translate }}</td>
-                    <td class="r-amount">
-                      {{
-                        recurringDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                      }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>{{ 'labels.inputs.Deposit Period' | translate }}</td>
-                    <td class="r-amount">{{ recurringDepositsAccountData.depositPeriod | number }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="flex-5">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="accountMenu"
-                aria-label="Loan account actions"
-                yPosition="below"
-              >
-                <mat-icon matListIcon class="actions-menu">
-                  <fa-icon icon="bars" size="sm"></fa-icon>
-                </mat-icon>
-              </button>
-            </div>
-          </div>
-        </mat-card-title>
-      </div>
-
-      <mat-menu #accountMenu="matMenu">
-        <ng-container *ngFor="let item of buttonConfig.singleButtons">
-          <button mat-menu-item *mifosxHasPermission="item.taskPermissionName" (click)="doAction(item.name)">
-            <i ngClass="{{ item.icon }}"></i> {{ 'labels.menus.' + item.name | translate }}
-          </button>
-        </ng-container>
-
-        <ng-container *ngIf="buttonConfig.options.length">
-          <button mat-menu-item [matMenuTriggerFor]="More">{{ 'labels.menus.More' | translate }}</button>
-          <mat-menu #More="matMenu">
-            <span *ngFor="let option of buttonConfig.options">
-              <button mat-menu-item *mifosxHasPermission="option.taskPermissionName" (click)="doAction(option.name)">
-                {{ 'labels.menus.' + option.name | translate }}
-              </button>
-            </span>
-          </mat-menu>
-        </ng-container>
-      </mat-menu>
-    </mat-card-title-group>
+      <ng-container *ngIf="buttonConfig.options.length">
+        <button mat-menu-item [matMenuTriggerFor]="More">{{ 'labels.menus.More' | translate }}</button>
+        <mat-menu #More="matMenu">
+          <span *ngFor="let option of buttonConfig.options">
+            <button mat-menu-item *mifosxHasPermission="option.taskPermissionName" (click)="doAction(option.name)">
+              {{ 'labels.menus.' + option.name | translate }}
+            </button>
+          </span>
+        </mat-menu>
+      </ng-container>
+    </mat-menu>
   </mat-card-header>
 
   <mat-card-content class="content">

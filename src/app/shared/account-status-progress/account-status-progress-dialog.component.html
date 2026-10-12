@@ -1,0 +1,31 @@
+<header class="account-status-dialog-header">
+  <h1 mat-dialog-title class="account-status-dialog-title">
+    {{ 'labels.accountStatusProgress.Title' | translate }}
+  </h1>
+  <p class="account-status-dialog-subtitle">{{ subtitle | translate }}</p>
+</header>
+<div mat-dialog-content class="account-status-dialog-content">
+  <p *ngIf="!progress.onPath" class="account-status-off-path">{{ offPathLabel | translate }}</p>
+  <ol class="account-status-steps">
+    <li *ngFor="let step of progress.steps; let index = index" [ngClass]="'is-' + step.state">
+      <span class="step-track" [class.has-prev]="index > 0" [class.has-next]="index < progress.steps.length - 1">
+        <span class="step-marker" aria-hidden="true">
+          <i *ngIf="step.state === 'completed'" class="fa fa-check"></i>
+        </span>
+      </span>
+      <span class="step-color" [ngClass]="stepStatusClass(step.id)" aria-hidden="true"></span>
+      <div class="step-body">
+        <span class="step-copy">
+          <span class="step-name">{{ step.labelKey | translate }}</span>
+          <span *ngIf="step.changedOn" class="step-date">{{ step.changedOn | dateFormat }}</span>
+        </span>
+        <span class="step-state">{{ stepStateLabel(step.state) | translate }}</span>
+      </div>
+    </li>
+  </ol>
+</div>
+<mat-dialog-actions class="account-status-dialog-actions" align="end">
+  <button mat-stroked-button mat-dialog-close class="account-status-dialog-close" type="button">
+    {{ 'labels.buttons.Close' | translate }}
+  </button>
+</mat-dialog-actions>

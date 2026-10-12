@@ -16,9 +16,11 @@ export class DatatableTabComponent {
   entityId: string;
   entityDatatable: any;
   multiRowDatatableFlag: boolean;
+  twoColumnTable = false;
 
   constructor(private route: ActivatedRoute) {
     this.entityId = this.route.parent.parent.snapshot.paramMap.get('clientId');
+    this.twoColumnTable = this.route.pathFromRoot.some((path) => path.routeConfig?.path === 'datos-cliente');
 
     this.route.data.subscribe((data: { clientDatatable: any }) => {
       this.entityDatatable = data.clientDatatable;

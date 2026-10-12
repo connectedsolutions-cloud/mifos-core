@@ -1,0 +1,91 @@
+.mat-mdc-card-header.account-header {
+  display: block;
+  background-color: var(--mifosx-header-surface);
+  padding: 16px 20px;
+}
+
+.account-header-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.account-header-mark {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  object-fit: contain;
+
+  img,
+  .icon {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+  }
+}
+
+.account-header-identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.account-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-header-title {
+  margin: 0;
+  color: rgb(0 0 0 / 87%);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.account-header-status {
+  color: #5f6368;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.account-header-spacer {
+  flex: 1;
+}
+
+.account-header-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+}
+
+.account-header-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+}
+
+.account-header-label {
+  color: #5f6368;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.account-header-value {
+  color: rgb(0 0 0 / 87%);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.account-header-controls {
+  padding-top: 12px;
+  border-top: 1px solid rgb(16 116 185 / 18%);
+}

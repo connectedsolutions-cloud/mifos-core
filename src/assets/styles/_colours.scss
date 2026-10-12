@@ -62,6 +62,17 @@ $base: $dark-grey;
 $highlight: $belize-hole;
 $accent: $peter-river;
 
+// Light surface for profile and account header sections
+$header-surface: #e4eef6;
+
+:root {
+  --mifosx-header-surface: #{$header-surface};
+}
+
+.bg-header-surface {
+  background-color: var(--mifosx-header-surface);
+}
+
 //Status Colors Defined Here
 $status-active: #5cb85c;
 $status-inactive: #666f73;

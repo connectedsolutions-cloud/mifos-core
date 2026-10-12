@@ -1,0 +1,249 @@
+@use 'assets/styles/colours' as *;
+
+.account-status-progress-panel {
+  .mat-mdc-dialog-surface {
+    padding: 0;
+    border: 1px solid $mid-grey;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-title,
+    .mat-mdc-dialog-content,
+    .mat-mdc-dialog-actions {
+      margin: 0;
+    }
+
+    .account-status-dialog-title.mat-mdc-dialog-title {
+      margin: 0;
+      padding: 0;
+      color: $dark-grey;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+
+    .account-status-dialog-content.mat-mdc-dialog-content {
+      padding: 16px 12px;
+      color: $dark-grey;
+    }
+  }
+}
+
+mifosx-account-status-progress-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 460px;
+  max-width: 100%;
+  color: $dark-grey;
+  font-family: Roboto, sans-serif;
+
+  .account-status-dialog-header {
+    padding: 20px 20px 20px 24px;
+    border-bottom: 1px solid $mid-grey;
+  }
+
+  .account-status-dialog-title {
+    margin: 0;
+    padding: 0;
+    color: $dark-grey;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .account-status-dialog-subtitle {
+    margin: 4px 0 0;
+    color: $status-inactive;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .account-status-dialog-content {
+    padding: 16px 12px;
+  }
+
+  .account-status-off-path {
+    margin: 0 12px 8px;
+    color: $status-inactive;
+    font-size: 12px;
+  }
+
+  .account-status-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 72px;
+      padding: 0 12px;
+      border-radius: 6px;
+    }
+
+    li.is-current {
+      background-color: $header-surface;
+    }
+
+    li.is-unavailable {
+      opacity: 0.45;
+    }
+  }
+
+  .step-track {
+    position: relative;
+    display: flex;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 72px;
+
+    &.has-prev::before,
+    &.has-next::after {
+      content: '';
+      position: absolute;
+      left: 11px;
+      width: 2px;
+      height: 24px;
+      background-color: $mid-grey;
+    }
+
+    &.has-prev::before {
+      top: 0;
+    }
+
+    &.has-next::after {
+      bottom: 0;
+    }
+  }
+
+  .step-marker {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    border: 1.5px solid $silver;
+    border-radius: 50%;
+    background-color: $white;
+    color: $status-inactive;
+
+    .fa {
+      font-size: 10px;
+    }
+  }
+
+  .is-completed .step-marker {
+    border-color: $status-inactive;
+  }
+
+  .is-current .step-marker {
+    border-width: 2px;
+    border-color: var(--mdc-filled-button-container-color, #1074b9);
+
+    &::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--mdc-filled-button-container-color, #1074b9);
+    }
+  }
+
+  .step-color {
+    display: block;
+    flex: 0 0 12px;
+    width: 12px;
+    height: 24px;
+    border-radius: 2px;
+    background-color: currentcolor;
+  }
+
+  .step-body {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 100%;
+    min-width: 0;
+  }
+
+  li:not(.is-current, :last-child) .step-body {
+    border-bottom: 1px solid $mid-grey;
+  }
+
+  .step-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .step-name {
+    color: $dark-grey;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .step-date {
+    color: $status-inactive;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .is-completed .step-name {
+    color: $status-inactive;
+  }
+
+  .is-current .step-name {
+    font-weight: 600;
+  }
+
+  .step-state {
+    flex: 0 0 auto;
+    color: $status-inactive;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .is-current .step-state {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: $white;
+    color: var(--mdc-filled-button-container-color, #1074b9);
+    font-weight: 600;
+  }
+
+  .account-status-dialog-actions {
+    min-height: 0;
+    padding: 16px 24px;
+    border-top: 1px solid $mid-grey;
+  }
+
+  .account-status-dialog-close {
+    height: 36px;
+    padding: 0 20px;
+    border-radius: 4px;
+
+    --mdc-outlined-button-outline-color: #{$mid-grey};
+    --mdc-outlined-button-label-text-color: #{$dark-grey};
+    --mdc-outlined-button-hover-label-text-color: #{$dark-grey};
+    --mdc-outlined-button-focus-label-text-color: #{$dark-grey};
+    --mdc-outlined-button-pressed-label-text-color: #{$dark-grey};
+
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: normal;
+  }
+}

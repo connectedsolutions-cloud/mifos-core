@@ -26,6 +26,7 @@ import { RecurringDepositsAccountAndTemplateResolver } from './common-resolvers/
 import { RecurringDepositsAccountTransactionResolver } from './common-resolvers/recurring-deposit-account-transaction.resolver';
 import { RecurringDepositsAccountTransactionTemplateResolver } from './common-resolvers/recurring-deposit-account-transaction-template.resolver';
 import { GeneralTabComponent } from './recurring-deposits-account-view/general-tab/general-tab.component';
+import { DepositAccountPrerequisiteGuard } from '../deposit-account-prerequisite/deposit-account-prerequisite.guard';
 
 const routes: Routes = [
   {
@@ -36,6 +37,7 @@ const routes: Routes = [
         path: 'create-recurring-deposits-account',
         data: { title: 'Create Recurring Deposits Account', breadcrumb: 'Create Recurring Deposits Account' },
         component: CreateRecurringDepositsAccountComponent,
+        canActivate: [DepositAccountPrerequisiteGuard],
         resolve: {
           recurringDepositsAccountTemplate: RecurringDepositsAccountTemplateResolver
         }

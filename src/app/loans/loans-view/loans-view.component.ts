@@ -22,7 +22,7 @@ import { DelinquencyPausePeriod } from '../models/loan-account.model';
 import { TranslateService } from '@ngx-translate/core';
 import { LoanTransaction } from 'app/products/loan-products/models/loan-account.model';
 import { OptionData } from 'app/shared/models/option-data.model';
-import { MatCardHeader, MatCardTitleGroup, MatCardTitle } from '@angular/material/card';
+import { MatCardHeader } from '@angular/material/card';
 import { SvgIconComponent } from '../../shared/svg-icon/svg-icon.component';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgClass, CurrencyPipe } from '@angular/common';
@@ -34,6 +34,7 @@ import { MatIcon } from '@angular/material/icon';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { StatusLookupPipe } from '../../pipes/status-lookup.pipe';
+import { AccountStatusMarkComponent } from '../../shared/account-status-progress/account-status-mark.component';
 import { DateFormatPipe } from '../../pipes/date-format.pipe';
 import { FormatNumberPipe } from '../../pipes/format-number.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
@@ -48,10 +49,8 @@ import { CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE } from './credesal-loan-staff-
     ...STANDALONE_SHARED_IMPORTS,
     FormsModule,
     MatCardHeader,
-    MatCardTitleGroup,
     SvgIconComponent,
     MatTooltip,
-    MatCardTitle,
     NgClass,
     LongTextComponent,
     AccountNumberComponent,
@@ -68,6 +67,7 @@ import { CREDESAL_LOAN_STAFF_ASSIGNMENT_DATATABLE } from './credesal-loan-staff-
     RouterOutlet,
     CurrencyPipe,
     StatusLookupPipe,
+    AccountStatusMarkComponent,
     DateFormatPipe,
     FormatNumberPipe
   ]

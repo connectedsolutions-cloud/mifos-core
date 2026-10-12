@@ -17,9 +17,11 @@
 }
 
 .account-card {
+  overflow: hidden;
+
   .header {
     display: block;
-    background-color: #e4eef6 !important;
+    background-color: var(--mifosx-header-surface) !important;
     padding: 16px 20px;
 
     .client-profile {
@@ -88,6 +90,10 @@
       display: flex;
       align-items: center;
       gap: 10px;
+
+      mifosx-account-status-mark .fa-stop {
+        font-size: 20px;
+      }
 
       h3 {
         margin: 0;

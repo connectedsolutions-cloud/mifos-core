@@ -1191,7 +1191,9 @@
       "Not Yet Amortized Amount": "Montant pas encore amorti",
       "Adjusted Amount": "Montant ajusté",
       "Charged Off Amount": "Montant radié",
-      "Date": "Date"
+      "Date": "Date",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

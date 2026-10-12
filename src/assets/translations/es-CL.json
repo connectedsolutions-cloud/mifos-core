@@ -368,6 +368,7 @@
       "Chargeback": "Contracargo",
       "Charges Overview": "Resumen de cargos",
       "Client Screen Reports": "Reportes de pantalla del cliente",
+      "Clear Filters": "Limpiar filtros",
       "Close": "Cerrar",
       "Close Config. Wizard": "Cerrar",
       "Close Configuration Wizard": "Cerrar el asistente de configuración",
@@ -1234,7 +1235,9 @@
       "Not Yet Amortized Amount": "Monto aun no amortizado",
       "Adjusted Amount": "Importe ajustado",
       "Charged Off Amount": "Importe cancelado",
-      "Date": "Fecha"
+      "Date": "Fecha",
+      "No Savings Performance": "Aún no hay depósitos ni intereses contabilizados.",
+      "No Funds On Hold": "Sin fondos retenidos"
     },
     "inputs": {
       "accounting": {
@@ -1503,6 +1506,7 @@
       "Core Report": "Reporte base",
       "Count": "Contar",
       "ClientData": "Datos cliente",
+      "credesal_member_profile": "Perfil de socio",
       "credesal_client_datos_personales": "Datos personales (solicitud)",
       "credesal_client_pep": "PEP (persona políticamente expuesta)",
       "credesal_client_trabajo": "Trabajo / negocio",
@@ -3075,6 +3079,10 @@
       "Pending Task": "Tarea pendiente",
       "Create New Flow": "Crear nuevo flujo",
       "Pending scope toggle": "Alternar alcance de pendientes",
+      "Pending filters": "Filtros",
+      "Pending options": "Opciones",
+      "Client filter shows every related pending item": "Muestra todos los pendientes relacionados con este cliente, incluidos los asignados a otras personas.",
+      "No client pending items": "No hay pendientes para este cliente",
       "Pending scope assigned to me": "Asignados a mí",
       "Pending scope created by me others": "Creados por mí (asignados a otros)",
       "created by me": "creados por mí",
@@ -3681,6 +3689,7 @@
     "Capture Image": "Capturar imagen",
     "Chart Of Accounts": "Catálogo de cuentas",
     "Checker Inbox and Tasks": "Bandeja de entrada y tareas de Checker",
+    "Pendientes": "Pendientes y flujos",
     "Color Schemes": "Esquemas de color",
     "Create Journal Entry": "Crear entrada de diario",
     "Create Recurring Deposit Product": "Crear producto de Depósito Recurrente",

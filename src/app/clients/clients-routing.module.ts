@@ -14,6 +14,7 @@ import { EditFamilyMemberComponent } from './clients-view/family-members-tab/edi
 import { IdentitiesTabComponent } from './clients-view/identities-tab/identities-tab.component';
 import { NotesTabComponent } from './clients-view/notes-tab/notes-tab.component';
 import { DocumentsTabComponent } from './clients-view/documents-tab/documents-tab.component';
+import { ClientPendientesTabComponent } from './clients-view/client-pendientes-tab/client-pendientes-tab.component';
 import { DatatableTabComponent } from './clients-view/datatable-tab/datatable-tab.component';
 import { ClientDatosClienteTabComponent } from './clients-view/client-datos-cliente-tab/client-datos-cliente-tab.component';
 import { AddressTabComponent } from './clients-view/address-tab/address-tab.component';
@@ -153,6 +154,11 @@ const routes: Routes = [
               resolve: {
                 clientDocuments: ClientDocumentsResolver
               }
+            },
+            {
+              path: 'pendientes',
+              component: ClientPendientesTabComponent,
+              data: { title: 'Pendientes', breadcrumb: 'Pendientes', routeParamBreadcrumb: false }
             },
             {
               path: 'notes',

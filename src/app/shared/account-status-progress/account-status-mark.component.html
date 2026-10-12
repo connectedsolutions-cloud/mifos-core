@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="account-status-mark"
+  [matTooltip]="statusLabel"
+  [attr.aria-label]="statusLabel"
+  (click)="openProgress($event)"
+>
+  <i
+    [class.fa]="appearance === 'stop'"
+    [class.fa-stop]="appearance === 'stop'"
+    [class.status-square]="appearance === 'square'"
+    [ngClass]="colorCode || statusCode | statusLookup"
+  ></i>
+</button>

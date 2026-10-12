@@ -20,7 +20,6 @@ export interface ComprobanteVoucher {
   sequence: number;
   number: string;
   entryDate: string;
-  registrationDate: string;
   officeName: string;
   auxiliaryName: string;
   statusName: string;
@@ -53,7 +52,6 @@ const REQUIRED_COLUMNS = [
   'voucher_sequence',
   'voucher_number',
   'entry_date',
-  'registration_date',
   'office_name',
   'auxiliary_name',
   'status_name',
@@ -82,14 +80,12 @@ export function buildComprobanteContableViewModel(
   const records = resultsetToRecords(result).sort(compareRecords);
   const batches = new Map<string, ComprobanteBatch>();
   const vouchers = new Map<string, ComprobanteVoucher>();
-  const groups = new Map<string, ComprobanteGroup>();
 
   for (const record of records) {
     const batchKey = requiredString(record, 'batch_key');
     const voucherNumber = requiredString(record, 'voucher_number');
     const groupCode = requiredString(record, 'group_code');
     const voucherKey = `${batchKey}\u0000${voucherNumber}`;
-    const groupKey = `${voucherKey}\u0000${groupCode}`;
 
     let batch = batches.get(batchKey);
     if (!batch) {
@@ -109,7 +105,6 @@ export function buildComprobanteContableViewModel(
         sequence: requiredNumber(record, 'voucher_sequence'),
         number: voucherNumber,
         entryDate: formatDate(record.entry_date),
-        registrationDate: formatDate(record.registration_date),
         officeName: requiredString(record, 'office_name'),
         auxiliaryName: requiredString(record, 'auxiliary_name'),
         statusName: requiredString(record, 'status_name'),
@@ -122,14 +117,13 @@ export function buildComprobanteContableViewModel(
       batch.vouchers.push(voucher);
     }
 
-    let group = groups.get(groupKey);
-    if (!group) {
+    let group = voucher.groups[voucher.groups.length - 1];
+    if (!group || group.code !== groupCode) {
       group = {
         code: groupCode,
         name: requiredString(record, 'group_name'),
         lines: []
       };
-      groups.set(groupKey, group);
       voucher.groups.push(group);
     }
 

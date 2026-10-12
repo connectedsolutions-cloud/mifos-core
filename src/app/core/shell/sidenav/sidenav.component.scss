@@ -133,6 +133,19 @@
   }
 }
 
+:host ::ng-deep mat-nav-list .mat-line {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .sidebar-compact mat-nav-list .mat-line {
+  display: none;
+}
+
 .sidebar-compact {
   .app-brand {
     .app-logo {
@@ -167,6 +180,12 @@
         display: none;
       }
     }
+
+    .mat-nav-list {
+      .mat-line {
+        display: none;
+      }
+    }
   }
 }
 
@@ -184,4 +203,22 @@
 
 .active-menu {
   background-color: #e0e0e0;
+}
+
+:host ::ng-deep mat-nav-list .mat-mdc-list-item-unscoped-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep mat-nav-list .mat-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  line-height: 1;
+}
+
+:host ::ng-deep .sidebar-compact mat-nav-list .mat-mdc-list-item-unscoped-content {
+  justify-content: center;
 }

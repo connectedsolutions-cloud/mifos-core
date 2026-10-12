@@ -67,5 +67,12 @@
       [result]="result"
       [generatedBy]="reportOperator"
     ></mifosx-loan-arrears-report>
+    <mifosx-movimientos-partidas-report
+      *ngIf="rendererKey === 'VisualPartidaMoves'"
+      [result]="result"
+      [generatedBy]="reportOperator"
+      [selectedFrom]="dataObject?.formData?.R_startDate ?? ''"
+      [selectedTo]="dataObject?.formData?.R_endDate ?? ''"
+    ></mifosx-movimientos-partidas-report>
   </div>
 </div>

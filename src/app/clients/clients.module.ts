@@ -19,6 +19,7 @@ import { UploadDocumentDialogComponent } from './clients-view/custom-dialogs/upl
 import { NotesTabComponent } from './clients-view/notes-tab/notes-tab.component';
 import { EditNotesDialogComponent } from './clients-view/custom-dialogs/edit-notes-dialog/edit-notes-dialog.component';
 import { DocumentsTabComponent } from './clients-view/documents-tab/documents-tab.component';
+import { ClientPendientesTabComponent } from './clients-view/client-pendientes-tab/client-pendientes-tab.component';
 import { DatatableTabComponent } from './clients-view/datatable-tab/datatable-tab.component';
 import { AddressTabComponent } from './clients-view/address-tab/address-tab.component';
 import { ChargesOverviewComponent } from './clients-view/charges/charges-overview/charges-overview.component';
@@ -79,6 +80,7 @@ import { ClientDatatableStepComponent } from './client-stepper/client-datatable-
     NotesTabComponent,
     EditNotesDialogComponent,
     DocumentsTabComponent,
+    ClientPendientesTabComponent,
     DatatableTabComponent,
     AddressTabComponent,
     ChargesOverviewComponent,

@@ -1,6 +1,28 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SettingsService } from 'app/settings/settings.service';
 import moment from 'moment';
+import 'moment/locale/cs';
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/it';
+import 'moment/locale/ko';
+import 'moment/locale/lt';
+import 'moment/locale/lv';
+import 'moment/locale/ne';
+import 'moment/locale/pt';
+import 'moment/locale/sw';
+
+moment.locale('en');
+
+export function momentLocaleForLanguage(languageCode: string | undefined): string {
+  const code = (languageCode || 'en').toLowerCase();
+  if (code === 'en' || code.startsWith('en-')) {
+    return 'en';
+  }
+  const twoLetter = code.slice(0, 2);
+  return moment.locales().includes(twoLetter) ? twoLetter : 'en';
+}
 
 @Pipe({ name: 'dateFormat' })
 export class DateFormatPipe implements PipeTransform {
@@ -12,7 +34,7 @@ export class DateFormatPipe implements PipeTransform {
       return '';
     }
     let dateVal;
-    moment.locale(this.settingsService.language.code);
+    moment.locale(momentLocaleForLanguage(this.settingsService.language?.code));
     if (value instanceof Array) {
       dateVal = moment(value.join('-'), 'YYYY-MM-DD');
     } else {

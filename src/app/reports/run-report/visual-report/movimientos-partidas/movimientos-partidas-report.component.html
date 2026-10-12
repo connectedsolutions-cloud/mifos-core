@@ -1,0 +1,49 @@
+<div class="partida-error" *ngIf="error">{{ error }}</div>
+<ng-container *ngIf="document as report">
+  <article class="partida-page" *ngFor="let page of report.pages">
+    <header class="partida-header">
+      <img src="assets/images/credesal-imagotipo.png" alt="Credesal" />
+      <div>
+        <h1>CREDESAL S.C. DE R.L. DE C.V.</h1>
+        <h2>Movimientos de Partidas</h2>
+        <p>Del {{ report.from }} al {{ report.to }}</p>
+        <small>Cifras en Dólares de los Estados Unidos de Norte América ($)</small>
+      </div>
+      <span>Pág {{ page.number }} de {{ report.pages.length }}</span>
+    </header>
+    <div class="partida-columns">
+      <span>No. Cuenta</span><span>Concepto</span><span>Sucursal</span> <span>Cargos</span><span>Abonos</span
+      ><span>Saldo</span>
+    </div>
+    <div class="partida-period">Período: {{ page.period }}</div>
+    <div class="partida-branch">Sucursal: {{ page.branch }}</div>
+    <section class="partida-entry" *ngFor="let segment of page.segments">
+      <div class="partida-identity">
+        <strong>Partida: {{ segment.entry.number }}</strong>
+        <span>Concepto: {{ segment.entry.concept }}</span>
+        <em *ngIf="segment.continued">(continuación)</em>
+      </div>
+      <div class="partida-meta"><strong>Estado:</strong> {{ segment.entry.status }}</div>
+      <div class="partida-meta">
+        <strong>Fecha:</strong> {{ segment.entry.date | date: 'd/M/yyyy' : 'UTC' }}
+        <strong class="partida-description-label">Descripción:</strong> {{ segment.entry.description }}
+      </div>
+      <div class="partida-line" *ngFor="let line of segment.lines">
+        <span>{{ line.account }}</span
+        ><span>{{ line.concept }}</span
+        ><span>{{ line.branch }}</span> <span>{{ amount(line.debit) }}</span
+        ><span>{{ amount(line.credit) }}</span>
+        <span [class.negative]="line.balance < 0">{{ amount(line.balance) }}</span>
+      </div>
+      <div class="partida-total" *ngIf="segment.showTotal">
+        <span></span><span></span><span></span> <strong>{{ amount(segment.entry.debit) }}</strong
+        ><strong>{{ amount(segment.entry.credit) }}</strong
+        ><strong>{{ amount(0) }}</strong>
+      </div>
+    </section>
+    <footer class="partida-footer">
+      <span>{{ report.generatedBy }}</span
+      ><span>d_rpt_movimientos_por_partidas</span><span>{{ report.generatedOn }}</span>
+    </footer>
+  </article>
+</ng-container>

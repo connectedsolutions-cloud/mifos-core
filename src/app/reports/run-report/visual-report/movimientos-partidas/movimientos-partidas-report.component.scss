@@ -1,0 +1,180 @@
+/* stylelint-disable no-descending-specificity */
+:host {
+  display: block;
+  font-family: 'Courier New', monospace;
+}
+
+.partida-page {
+  box-sizing: border-box;
+  position: relative;
+  width: 816px;
+  height: 1056px;
+  padding: 35px 36px 32px;
+  background: #fff;
+  color: #111;
+  break-after: page;
+  font-size: 10px;
+  line-height: 1.25;
+  overflow: hidden;
+}
+
+.partida-page:last-child {
+  break-after: auto;
+}
+
+.partida-header {
+  display: grid;
+  grid-template-columns: 130px calc(100% - 220px) 90px;
+  align-items: start;
+  text-align: center;
+  min-height: 100px;
+}
+
+.partida-header img {
+  width: 72px;
+  margin: 0 auto;
+}
+
+.partida-header h1,
+.partida-header h2,
+.partida-header p {
+  margin: 0 0 3px;
+}
+
+.partida-header h1 {
+  font-size: 16px;
+}
+
+.partida-header h2 {
+  font-size: 14px;
+}
+
+.partida-header p {
+  font-size: 12px;
+}
+
+.partida-header small {
+  font-size: 9px;
+}
+
+.partida-header > span {
+  text-align: right;
+  font-size: 9px;
+}
+
+.partida-columns,
+.partida-line,
+.partida-total {
+  display: grid;
+  grid-template-columns: 16% 36% 19% 10% 10% 9%;
+  align-items: start;
+}
+
+.partida-columns {
+  border-bottom: 1px solid #111;
+  font-weight: 700;
+  padding: 2px 0 4px;
+}
+
+.partida-columns span:nth-child(n + 4),
+.partida-line span:nth-child(n + 4),
+.partida-total strong {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.partida-period {
+  padding: 5px 0;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.partida-branch {
+  padding: 4px 0;
+  border-bottom: 1px solid #111;
+  text-align: center;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.partida-entry {
+  border-bottom: 1px solid #111;
+  padding: 5px 0 7px;
+  break-inside: avoid;
+}
+
+.partida-identity {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 4px 18px;
+}
+
+.partida-identity strong {
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.partida-identity span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.partida-identity em {
+  white-space: nowrap;
+}
+
+.partida-meta {
+  margin: 0 0 3px 24px;
+}
+
+.partida-description-label {
+  margin-left: 26px;
+}
+
+.partida-line {
+  padding: 2px 0;
+  min-height: 15px;
+}
+
+.partida-line span:nth-child(2) {
+  overflow-wrap: anywhere;
+}
+
+.partida-line .negative {
+  color: #ba1a1a;
+}
+
+.partida-total {
+  padding-top: 5px;
+  font-weight: 700;
+}
+
+.partida-footer {
+  position: absolute;
+  bottom: 19px;
+  left: 36px;
+  right: 36px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #111;
+  padding-top: 3px;
+}
+
+.partida-error {
+  padding: 16px;
+  color: #b00020;
+}
+
+@media print {
+  .partida-page {
+    width: 816px;
+    height: 1056px;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+}

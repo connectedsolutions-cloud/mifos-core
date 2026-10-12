@@ -50,6 +50,14 @@ export class PendientesService {
     return this.http.post(this.flowsUrl, payload);
   }
 
+  getStepsByClient(clientId: number, closed?: boolean): Observable<any> {
+    let params = new HttpParams().set('clientId', String(clientId));
+    if (closed != null) {
+      params = params.set('closed', String(closed));
+    }
+    return this.http.get(this.stepsUrl, { params });
+  }
+
   getStepsByFlow(flowId: number): Observable<any> {
     const params = new HttpParams().set('flowId', String(flowId));
     return this.http.get(this.stepsUrl, { params });

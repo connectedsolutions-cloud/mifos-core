@@ -1,3 +1,66 @@
-mat-card-title {
-  display: flex;
+:host {
+  .account-card {
+    border: 1px solid #e3e8ec;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
+    overflow: hidden;
+  }
+
+  .account-status-ribbon.status-active {
+    background-color: #8bc53f;
+  }
+
+  .balance-metrics {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+  }
+
+  .metric {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f3f7fb;
+  }
+
+  .metric-label,
+  .metric-hint {
+    color: #60707c;
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  .metric-label {
+    font-weight: 500;
+  }
+
+  .metric-value {
+    color: #1c242b;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .content {
+    padding: 0;
+  }
+
+  .navigation-tabs {
+    background-color: #fff;
+    border-bottom: 1px solid #e6ebef;
+    padding: 0 20px;
+  }
+}
+
+@media (width <= 768px) {
+  :host {
+    .balance-metrics {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 }

@@ -18,14 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 /** Environment Configuration */
 import { environment } from '../../../environments/environment';
-import {
-  MatCard,
-  MatCardHeader,
-  MatCardTitleGroup,
-  MatCardMdImage,
-  MatCardTitle,
-  MatCardContent
-} from '@angular/material/card';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NgIf, NgClass, NgFor, CurrencyPipe } from '@angular/common';
 import { LongTextComponent } from '../../shared/long-text/long-text.component';
@@ -36,6 +29,8 @@ import { MatIcon } from '@angular/material/icon';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { StatusLookupPipe } from '../../pipes/status-lookup.pipe';
+import { AccountStatusMarkComponent } from '../../shared/account-status-progress/account-status-mark.component';
+import { FormatNumberPipe } from '../../pipes/format-number.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -48,10 +43,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     MatCardHeader,
-    MatCardTitleGroup,
-    MatCardMdImage,
     MatTooltip,
-    MatCardTitle,
     NgClass,
     LongTextComponent,
     AccountNumberComponent,
@@ -67,7 +59,9 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatTabNavPanel,
     RouterOutlet,
     CurrencyPipe,
-    StatusLookupPipe
+    StatusLookupPipe,
+    AccountStatusMarkComponent,
+    FormatNumberPipe
   ]
 })
 export class SavingsAccountViewComponent implements OnInit {

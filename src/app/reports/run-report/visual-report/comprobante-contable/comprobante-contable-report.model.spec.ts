@@ -7,7 +7,6 @@ const columns = [
   'voucher_sequence',
   'voucher_number',
   'entry_date',
-  'registration_date',
   'office_name',
   'auxiliary_name',
   'status_name',
@@ -30,11 +29,6 @@ function row(lineSequence: number, debit: number, credit: number, glCode: string
       1,
       1,
       '2026090214',
-      [
-        2026,
-        9,
-        14
-      ],
       [
         2026,
         9,
@@ -76,6 +70,30 @@ describe('buildComprobanteContableViewModel', () => {
     expect(viewModel.batches[0].vouchers[0].groups).toHaveLength(2);
     expect(viewModel.batches[0].vouchers[0].debitTotal).toBe(3000);
     expect(viewModel.batches[0].vouchers[0].creditTotal).toBe(3000);
+  });
+
+  it('keeps repeated account families in source line order', () => {
+    const viewModel = buildComprobanteContableViewModel(
+      result([
+        row(1, 100, 0, '1141030101'),
+        row(2, 0, 100, '222099940102'),
+        row(3, 50, 0, '1141030101'),
+        row(4, 0, 50, '222099940102')])
+    );
+
+    const groups = viewModel.batches[0].vouchers[0].groups;
+    expect(groups.map((group) => group.code)).toEqual([
+      '114',
+      '222',
+      '114',
+      '222'
+    ]);
+    expect(groups.flatMap((group) => group.lines.map((line) => line.sequence))).toEqual([
+      1,
+      2,
+      3,
+      4
+    ]);
   });
 
   it('rejects an incomplete report contract', () => {

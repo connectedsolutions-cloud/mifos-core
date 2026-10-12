@@ -2,13 +2,15 @@
 
 <article class="voucher-document" *ngIf="viewModel as document">
   <header class="voucher-document-header">
-    <div class="voucher-brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="voucher-brand-mark" aria-hidden="true">C</div>
     <div class="voucher-document-heading">
-      <h1>{{ document.organizationName }}</h1>
-      <h2>{{ document.title }}</h2>
-      <p>{{ document.currencyLabel }}</p>
+      <p class="voucher-organization">{{ document.organizationName }}</p>
+      <h1>{{ document.title }}</h1>
+      <p class="voucher-currency">{{ document.currencyLabel }}</p>
     </div>
-    <div class="voucher-emission"><strong>Emisión:</strong> {{ document.generatedOn }}</div>
+    <div class="voucher-emission">
+      <span>Emisión</span><strong>{{ document.generatedOn }}</strong>
+    </div>
   </header>
 
   <section
@@ -26,38 +28,47 @@
       <thead>
         <tr class="voucher-metadata-row">
           <th colspan="4">
+            <div class="voucher-identity">
+              <div class="voucher-identity-main">
+                <span>Partida</span><strong>{{ voucher.number }}</strong>
+              </div>
+              <span class="voucher-status">{{ voucher.statusName }}</span>
+            </div>
             <div class="voucher-metadata">
-              <span><strong>Sucursal:</strong> {{ voucher.officeName }}</span>
-              <span><strong>Fecha:</strong> {{ voucher.entryDate }}</span>
-              <span><strong>Auxiliar:</strong> {{ voucher.auxiliaryName }}</span>
-              <span><strong>Partida:</strong> {{ voucher.number }}</span>
-              <span><strong>Estado:</strong> {{ voucher.statusName }}</span>
-              <span><strong>Fecha Registro:</strong> {{ voucher.registrationDate }}</span>
+              <span
+                ><small>Sucursal</small><strong>{{ voucher.officeName }}</strong></span
+              >
+              <span
+                ><small>Fecha</small><strong>{{ voucher.entryDate }}</strong></span
+              >
+              <span
+                ><small>Auxiliar</small><strong>{{ voucher.auxiliaryName }}</strong></span
+              >
             </div>
           </th>
         </tr>
         <tr class="voucher-columns">
-          <th>CUENTAS</th>
-          <th>DESCRIPCIÓN</th>
-          <th>DEBE</th>
-          <th>HABER</th>
+          <th>Cuenta</th>
+          <th>Descripción</th>
+          <th>Debe</th>
+          <th>Haber</th>
         </tr>
       </thead>
       <tbody>
         <ng-container *ngFor="let group of voucher.groups">
           <tr class="voucher-group">
-            <td>{{ group.code }}</td>
-            <td>{{ group.name }}</td>
-            <td></td>
-            <td></td>
+            <td colspan="4">
+              <span>{{ group.code }}</span
+              >{{ group.name }}
+            </td>
           </tr>
           <tr class="voucher-line" *ngFor="let line of group.lines">
             <td>{{ line.glCode }}</td>
             <td>
-              <strong>{{ line.glName }}</strong>
+              <strong class="voucher-account-name">{{ line.glName }}</strong>
               <span class="voucher-line-description">
-                {{ line.sourceBranchCode }} {{ line.description }} Monto:
-                {{ line.debit || line.credit | currency: 'USD' : 'symbol' : '1.2-2' }}
+                <span class="voucher-line-office">{{ line.sourceBranchCode }}</span>
+                {{ line.description }}
               </span>
             </td>
             <td class="voucher-amount">
@@ -70,8 +81,11 @@
         </ng-container>
       </tbody>
       <tfoot>
+        <tr class="voucher-concept-row">
+          <td colspan="4"><span>Concepto</span>{{ voucher.concept }}</td>
+        </tr>
         <tr class="voucher-total-row">
-          <td colspan="2" class="voucher-concept">{{ voucher.concept }}</td>
+          <td colspan="2">Total de la partida</td>
           <td class="voucher-amount">
             <strong>{{ voucher.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
           </td>
@@ -84,9 +98,13 @@
 
     <footer class="voucher-batch-close">
       <div class="voucher-batch-summary">
-        <span><strong>Sucursal:</strong> {{ batch.officeName }}</span>
-        <span><strong>Total Partidas Contables:</strong> {{ batch.vouchers.length }}</span>
-        <span><strong>Fecha:</strong> {{ batch.entryDate }}</span>
+        <span
+          ><strong>{{ batch.officeName }}</strong> · {{ batch.entryDate }}</span
+        >
+        <span
+          >{{ batch.vouchers.length }}
+          {{ batch.vouchers.length === 1 ? 'partida contable' : 'partidas contables' }}</span
+        >
       </div>
     </footer>
   </section>

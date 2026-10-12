@@ -1191,7 +1191,9 @@
       "Not Yet Amortized Amount": "Importo non ancora ammortizzato",
       "Adjusted Amount": "Importo rettificato",
       "Charged Off Amount": "Importo stornato",
-      "Date": "Data"
+      "Date": "Data",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

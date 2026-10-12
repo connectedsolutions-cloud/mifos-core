@@ -2,8 +2,8 @@
   <mifosx-loader diameter="100"></mifosx-loader>
 </div>
 
-<div class="savings-account-tables layout-row gap-2percent" *ngIf="!isLoading">
-  <div class="flex-49 layout-column gap-4percent">
+<div class="savings-account-tables" *ngIf="!isLoading">
+  <div class="details-column">
     <div
       *ngIf="
         !savingsAccountData.status.rejected && !savingsAccountData.status.submittedAndPendingApproval;
@@ -38,15 +38,6 @@
             <td>{{ 'labels.inputs.Currency' | translate }}</td>
             <td>{{ savingsAccountData.currency.name }} [{{ savingsAccountData.currency.code }}]</td>
           </tr>
-          <tr>
-            <td>{{ 'labels.inputs.Nominal Interest Rate' | translate }}</td>
-            <td class="r-amount">
-              <span *ngIf="savingsAccountData.nominalAnnualInterestRate"
-                >{{ savingsAccountData.nominalAnnualInterestRate | formatNumber }} %</span
-              >
-              <span *ngIf="!savingsAccountData.nominalAnnualInterestRate">0 %</span>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -73,7 +64,12 @@
 
     <div *ngIf="!savingsAccountData.status.rejected && !savingsAccountData.status.submittedAndPendingApproval">
       <h4 class="table-headers">{{ 'labels.heading.Performance History' | translate }}</h4>
-      <table>
+      <table
+        *ngIf="
+          savingsAccountData.summary.totalDeposits || savingsAccountData.summary.totalInterestEarned >= 0;
+          else noPerformance
+        "
+      >
         <tbody>
           <tr *ngIf="savingsAccountData.summary.totalDeposits">
             <td>{{ 'labels.inputs.Total Deposits' | translate }}</td>
@@ -89,11 +85,14 @@
           </tr>
         </tbody>
       </table>
+      <ng-template #noPerformance>
+        <p class="performance-empty">{{ 'labels.heading.No Savings Performance' | translate }}</p>
+      </ng-template>
     </div>
   </div>
 
-  <div class="flex-49" *ngIf="isActive; else alternateSummary">
-    <h4 class="table-headers">{{ 'labels.heading.Account Summary' | translate }}</h4>
+  <div class="summary-column" *ngIf="isActive; else alternateSummary">
+    <h4 class="table-headers">{{ 'labels.inputs.Interest' | translate }}</h4>
     <table>
       <tbody>
         <tr *ngIf="savingsAccountData.summary.totalWithdrawals">
@@ -146,10 +145,6 @@
           <td class="r-amount">
             {{ savingsAccountData.summary.interestNotPosted | currency: currency.code : 'symbol-narrow' : '1.2-2' }}
           </td>
-        </tr>
-        <tr *ngIf="savingsAccountData.nominalAnnualInterestRate">
-          <td>{{ 'labels.inputs.Nominal Interest Rate' | translate }}</td>
-          <td class="r-amount">{{ savingsAccountData.nominalAnnualInterestRate | formatNumber }} %</td>
         </tr>
         <tr>
           <td>{{ 'labels.inputs.Interest Compounding Period' | translate }}</td>
@@ -247,7 +242,7 @@
   </div>
 
   <ng-template #alternateSummary>
-    <div class="flex-49">
+    <div class="summary-column">
       <h4 class="table-headers">{{ 'labels.heading.Account Summary' | translate }}</h4>
       <table>
         <tbody>

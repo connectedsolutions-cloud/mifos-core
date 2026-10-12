@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>{{ 'labels.text.Deposit account prerequisite title' | translate }}</h2>
+<mat-dialog-content>
+  <p class="prerequisite-intro">{{ 'labels.text.Deposit account prerequisite intro' | translate }}</p>
+  <ol class="prerequisite-steps">
+    <li>{{ 'labels.text.Create the savings account' | translate }}</li>
+    <li>{{ 'labels.text.Create the share account and approve it' | translate }}</li>
+    <li>{{ 'labels.text.Create the deposit account' | translate }}</li>
+  </ol>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" type="button" (click)="close()">
+    {{ 'labels.buttons.Understood' | translate }}
+  </button>
+</mat-dialog-actions>

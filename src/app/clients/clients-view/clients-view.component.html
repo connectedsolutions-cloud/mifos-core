@@ -1,4 +1,9 @@
 <mat-card class="account-card">
+  <div
+    class="account-status-ribbon"
+    [ngClass]="clientViewData.status.code | statusLookup"
+    matTooltip="{{ 'labels.status.' + clientViewData.status.value | translate }}"
+  ></div>
   <mat-card-header class="header">
     <div class="client-profile">
       <div class="profile-image-container">
@@ -37,11 +42,15 @@
 
       <div class="client-profile-identity">
         <div class="client-profile-name">
-          <i
-            class="fa fa-stop"
-            [ngClass]="clientViewData.status.code | statusLookup"
-            matTooltip="{{ 'labels.status.' + clientViewData.status.value | translate }}"
-          ></i>
+          <mifosx-account-status-mark
+            accountKind="client"
+            [statusCode]="clientViewData.status.code"
+            [statusLabel]="'labels.status.' + clientViewData.status.value | translate"
+            [stepDates]="{
+              pending: clientViewData.timeline?.submittedOnDate,
+              active: clientViewData.timeline?.activatedOnDate
+            }"
+          ></mifosx-account-status-mark>
           <h3>
             <mifosx-entity-name entityName="{{ clientViewData.displayName }}"></mifosx-entity-name>
           </h3>
@@ -201,6 +210,13 @@
           <span>{{ 'labels.buttons.' + role.unassignAction | translate }}</span>
         </button>
       </ng-container>
+
+      <button mat-menu-item (click)="openCrearPendienteDialog()" *mifosxHasPermission="'start_pending_flow'">
+        <mat-icon matListIcon>
+          <fa-icon icon="tasks" size="sm"></fa-icon>
+        </mat-icon>
+        <span>{{ 'labels.buttons.Create Pending' | translate }}</span>
+      </button>
 
       <button mat-menu-item [matMenuTriggerFor]="More">{{ 'labels.buttons.More' | translate }}</button>
     </mat-menu>
@@ -378,6 +394,16 @@
         *mifosxHasPermission="'READ_DOCUMENT'"
       >
         {{ 'labels.inputs.Documents' | translate }}
+      </a>
+      <a
+        mat-tab-link
+        [routerLink]="['./pendientes']"
+        routerLinkActive
+        #pendientes="routerLinkActive"
+        [active]="pendientes.isActive"
+        *mifosxHasPermission="'view_pendientes'"
+      >
+        {{ 'labels.inputs.Pendientes' | translate }}
       </a>
       <a
         mat-tab-link

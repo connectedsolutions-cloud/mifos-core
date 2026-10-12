@@ -1191,7 +1191,9 @@
       "Not Yet Amortized Amount": "Vel nav amortizeta summa",
       "Adjusted Amount": "Koriģētā summa",
       "Charged Off Amount": "Norakstītā summa",
-      "Date": "Datums"
+      "Date": "Datums",
+      "No Savings Performance": "No deposits or posted interest yet.",
+      "No Funds On Hold": "No funds on hold"
     },
     "inputs": {
       "accounting": {

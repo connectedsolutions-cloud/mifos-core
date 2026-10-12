@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { WarningDialogComponent } from './warning-dialog/warning-dialog.component';
 import { SessionTimeoutDialogComponent } from './timeout-dialog/session-timeout-dialog.component';
 import { DtePrintPreviewComponent } from '../teller/invoice-widget/dte-print-preview.component';
+import { StyleGuideComponent } from '../style-guide/style-guide.component';
 
 /**
  * Home Component
@@ -37,7 +38,8 @@ import { DtePrintPreviewComponent } from '../teller/invoice-widget/dte-print-pre
     ClientTrendsBarComponent,
     WarningDialogComponent,
     SessionTimeoutDialogComponent,
-    DtePrintPreviewComponent
+    DtePrintPreviewComponent,
+    StyleGuideComponent
   ],
   providers: []
 })

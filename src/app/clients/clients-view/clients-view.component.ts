@@ -12,6 +12,8 @@ import { DeleteSignatureDialogComponent } from './custom-dialogs/delete-signatur
 import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.component';
 import { UploadImageDialogComponent } from './custom-dialogs/upload-image-dialog/upload-image-dialog.component';
 import { CaptureImageDialogComponent } from './custom-dialogs/capture-image-dialog/capture-image-dialog.component';
+import { CrearPendienteClienteDialogComponent } from './custom-dialogs/crear-pendiente-cliente-dialog/crear-pendiente-cliente-dialog.component';
+import { ClientPendientesRefreshService } from './client-pendientes-refresh.service';
 
 /** Custom Services */
 import { ClientViewRefreshService } from '../client-view-refresh.service';
@@ -29,6 +31,7 @@ import { AccountNumberComponent } from '../../shared/account-number/account-numb
 import { ExternalIdentifierComponent } from '../../shared/external-identifier/external-identifier.component';
 import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
 import { StatusLookupPipe } from '../../pipes/status-lookup.pipe';
+import { AccountStatusMarkComponent } from '../../shared/account-status-progress/account-status-mark.component';
 import { DateFormatPipe } from '../../pipes/date-format.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import {
@@ -74,7 +77,8 @@ import {
     MatTabNavPanel,
     RouterOutlet,
     StatusLookupPipe,
-    DateFormatPipe
+    DateFormatPipe,
+    AccountStatusMarkComponent
   ]
 })
 export class ClientsViewComponent implements OnInit {
@@ -101,7 +105,8 @@ export class ClientsViewComponent implements OnInit {
     private clientViewRefreshService: ClientViewRefreshService,
     private cdr: ChangeDetectorRef,
     private _sanitizer: DomSanitizer,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private clientPendientesRefreshService: ClientPendientesRefreshService
   ) {
     this.route.data.subscribe((data: { clientViewData: any; clientTemplateData: any; clientDatatables: any }) => {
       this.clientViewData = data.clientViewData;
@@ -447,6 +452,21 @@ export class ClientsViewComponent implements OnInit {
           this.deleteSignature();
         }
       });
+    });
+  }
+
+  openCrearPendienteDialog(): void {
+    const dialogRef = this.dialog.open(CrearPendienteClienteDialogComponent, {
+      width: '500px',
+      data: {
+        clientId: this.clientViewData.id,
+        displayName: this.clientViewData.displayName
+      }
+    });
+    dialogRef.afterClosed().subscribe((created: boolean) => {
+      if (created) {
+        this.clientPendientesRefreshService.notify(this.clientViewData.id);
+      }
     });
   }
 

@@ -15,6 +15,7 @@ import { InformeAuxiliarMayorReportComponent } from './informe-auxiliar-mayor/in
 import { BalanceComprobacionReportComponent } from './balance-comprobacion/balance-comprobacion-report.component';
 import { ConcentracionMovimientosReportComponent } from './concentracion-movimientos/concentracion-movimientos-report.component';
 import { LoanArrearsReportComponent } from './loan-arrears/loan-arrears-report.component';
+import { MovimientosPartidasReportComponent } from './movimientos-partidas/movimientos-partidas-report.component';
 import { balanceSaldosCsv, buildBalanceSaldosViewModel } from './balance-saldos/balance-saldos-report.model';
 import { visualReportCsv } from './visual-report-csv';
 import { downloadVisualReportPdf } from './visual-report-pdf';
@@ -29,6 +30,7 @@ export const VISUAL_AUXILIARY_LEDGER_RENDERER = 'VisualAuxLedger';
 export const VISUAL_TRIAL_BALANCE_RENDERER = 'VisualTrialBalance';
 export const VISUAL_DAILY_MOVEMENT_RENDERER = 'VisualDailyMovement';
 export const VISUAL_LOAN_ARREARS_RENDERER = 'VisualLoanArrears';
+export const VISUAL_PARTIDA_MOVES_RENDERER = 'VisualPartidaMoves';
 
 @Component({
   selector: 'mifosx-visual-report',
@@ -45,7 +47,8 @@ export const VISUAL_LOAN_ARREARS_RENDERER = 'VisualLoanArrears';
     InformeAuxiliarMayorReportComponent,
     BalanceComprobacionReportComponent,
     ConcentracionMovimientosReportComponent,
-    LoanArrearsReportComponent
+    LoanArrearsReportComponent,
+    MovimientosPartidasReportComponent
   ],
   templateUrl: './visual-report.component.html',
   styleUrls: ['./visual-report.component.scss']
@@ -87,7 +90,8 @@ export class VisualReportComponent implements OnChanges {
       VISUAL_AUXILIARY_LEDGER_RENDERER,
       VISUAL_TRIAL_BALANCE_RENDERER,
       VISUAL_DAILY_MOVEMENT_RENDERER,
-      VISUAL_LOAN_ARREARS_RENDERER
+      VISUAL_LOAN_ARREARS_RENDERER,
+      VISUAL_PARTIDA_MOVES_RENDERER
     ].includes(this.rendererKey);
   }
 
