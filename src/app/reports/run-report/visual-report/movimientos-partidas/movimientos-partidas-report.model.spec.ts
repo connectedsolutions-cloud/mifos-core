@@ -77,4 +77,30 @@ describe('Movimientos de Partidas report model', () => {
     result.data.pop();
     expect(() => buildPartidaDocument(result)).toThrow('líneas necesarias');
   });
+  it('shows a native posting group flagged as unbalanced', () => {
+    const result = sample();
+    for (const data of result.data) {
+      data.row[7] = 'DESCUADRADA';
+      data.row[16] = 400;
+      data.row[17] = 100;
+    }
+    result.data[1].row[13] = 400;
+    result.data[1].row[14] = 100;
+    const document = buildPartidaDocument(result);
+    expect(document.entries[0].status).toBe('DESCUADRADA');
+    expect(document.entries[0].lines[1].balance).toBe(100);
+  });
+
+  it('shows a zero-value native line flagged as incomplete', () => {
+    const result = sample();
+    result.data = [result.data[0]];
+    const values = result.data[0].row;
+    values[7] = 'INCOMPLETA';
+    values[12] = 0;
+    values[14] = 0;
+    values[15] = 0;
+    values[16] = 0;
+    values[18] = 1;
+    expect(buildPartidaDocument(result).entries[0].lineCount).toBe(1);
+  });
 });

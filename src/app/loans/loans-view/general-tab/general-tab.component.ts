@@ -239,6 +239,9 @@ export class GeneralTabComponent implements OnInit {
   setloanDetailsTableData() {
     this.loanDetailsTableData = [
       {
+        key: 'Expected Disbursement Date'
+      },
+      {
         key: 'Disbursement Date'
       },
       {
@@ -277,6 +280,9 @@ export class GeneralTabComponent implements OnInit {
 
   setloanNonDetailsTableData() {
     this.loanDetailsTableData = [
+      {
+        key: 'Expected Disbursement Date'
+      },
       {
         key: 'Disbursement Date'
       },

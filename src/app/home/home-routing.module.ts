@@ -10,6 +10,7 @@ import { HomeComponent } from './home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DtePrintPreviewComponent } from '../teller/invoice-widget/dte-print-preview.component';
 import { StyleGuideComponent } from '../style-guide/style-guide.component';
+import { ComponentsGuideComponent } from '../components-guide/components-guide.component';
 
 /** Custom Resolvers */
 import { OfficesResolver } from '../accounting/common-resolvers/offices.resolver';
@@ -44,6 +45,16 @@ const routes: Routes = [
       path: 'style-guide/:styleId',
       component: StyleGuideComponent,
       data: { title: 'Style guide', breadcrumb: 'Style guide' }
+    },
+    {
+      path: 'components',
+      component: ComponentsGuideComponent,
+      data: { title: 'Components', breadcrumb: 'Components' }
+    },
+    {
+      path: 'components/:componentId',
+      component: ComponentsGuideComponent,
+      data: { title: 'Components', breadcrumb: 'Components' }
     },
     {
       path: 'dte-preview',

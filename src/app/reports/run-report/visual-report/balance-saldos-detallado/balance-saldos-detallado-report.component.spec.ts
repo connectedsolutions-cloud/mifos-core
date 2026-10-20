@@ -144,6 +144,24 @@ describe('BalanceSaldosDetalladoReportComponent', () => {
     expect(element.querySelector('footer')?.textContent).toContain('d_rpt_balance_saldos_det');
   });
 
+  it('prints the office name in the Sucursal column when the report supplies it', () => {
+    const named: VisualReportResult = {
+      columnHeaders: [
+        ...report.columnHeaders,
+        { columnName: 'branch_name' }],
+      data: report.data.map((item) => ({
+        row: [
+          ...item.row,
+          item.row[1] === 'DETAIL' ? 'SANTIAGO DE MARIA' : null
+        ]
+      }))
+    };
+    fixture.componentRef.setInput('result', named);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.detail-branch')?.textContent).toContain('SANTIAGO DE MARIA');
+  });
+
   it('uses minus signs for negative values and shares its layout with print', () => {
     expect(fixture.componentInstance.money(-5865.9)).toBe('-$5,865.90');
     expect(fixture.componentInstance.money(5865.9)).toBe('$5,865.90');

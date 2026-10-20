@@ -195,6 +195,7 @@
 .account-type table {
   margin-left: 40px;
   width: calc(100% - 40px);
+  min-width: 0;
 }
 
 .heading-content {

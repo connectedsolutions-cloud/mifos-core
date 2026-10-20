@@ -1,7 +1,7 @@
 <div class="daily-movement-error" role="alert" *ngIf="error">{{ error }}</div>
 
 <ng-container *ngIf="document as report">
-  <article class="daily-movement-page" *ngFor="let branch of report.branches; let pageIndex = index">
+  <article class="daily-movement-page" *ngFor="let branch of report.pages; let pageIndex = index">
     <header class="daily-movement-header">
       <img src="assets/images/credesal-imagotipo.png" alt="Credesal" class="daily-movement-logo" />
       <div class="daily-movement-heading">
@@ -10,7 +10,7 @@
         <p>Período {{ report.period }}</p>
         <p>Cifras en Dólares de los Estados Unidos de Norte América ($)</p>
       </div>
-      <span class="daily-movement-page-number">Pág {{ pageIndex + 1 }} de {{ report.branches.length }}</span>
+      <span class="daily-movement-page-number">Pág {{ pageIndex + 1 }} de {{ report.pages.length }}</span>
     </header>
 
     <div class="daily-movement-scope">
@@ -40,12 +40,12 @@
           <td>{{ account.debit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
           <td>{{ account.credit | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
         </tr>
-        <tr class="daily-movement-total">
+        <tr class="daily-movement-total" *ngIf="branch.showBranchTotal">
           <td colspan="2">Total por Sucursal</td>
           <td>{{ branch.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
           <td>{{ branch.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
         </tr>
-        <tr class="daily-movement-grand-total" *ngIf="pageIndex === report.branches.length - 1">
+        <tr class="daily-movement-grand-total" *ngIf="branch.showGrandTotal">
           <td colspan="2">Total General:</td>
           <td>{{ report.debitTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>
           <td>{{ report.creditTotal | currency: 'USD' : 'symbol' : '1.2-2' }}</td>

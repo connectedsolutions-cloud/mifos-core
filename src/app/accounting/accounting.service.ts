@@ -61,6 +61,14 @@ export class AccountingService {
     return this.http.post('/journalentries', journalEntry);
   }
 
+  getManualJournalAuxiliaries(): Observable<any> {
+    return this.http.get('/journalentries/auxiliaries');
+  }
+
+  getJournalAuxiliaries(): Observable<any> {
+    return this.http.get('/journalentries/auxiliaries', { params: { manualOnly: false } });
+  }
+
   /**
    * @returns {Observable<any>} GL Accounts.
    */

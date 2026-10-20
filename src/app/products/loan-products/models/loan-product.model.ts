@@ -154,8 +154,10 @@ export interface LoanProduct {
   incomeFromRecoveryAccountId?: number;
   interestOnLoanAccountId?: number;
   loanPortfolioAccountId?: number;
+  longTermLoanPortfolioAccountId?: number;
   overpaymentLiabilityAccountId?: number;
   receivableInterestAccountId?: number;
+  longTermInterestReceivableAccountId?: number;
   receivableFeeAccountId?: number;
   receivablePenaltyAccountId?: number;
   transfersInSuspenseAccountId?: number;

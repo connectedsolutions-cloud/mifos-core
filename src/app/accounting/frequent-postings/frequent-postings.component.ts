@@ -38,6 +38,7 @@ export class FrequentPostingsComponent implements OnInit {
   maxDate = new Date();
   /** Frequent postings form. */
   frequentPostingsForm: UntypedFormGroup;
+  manualAuxiliaries: { code: string; name: string }[] = [];
   /** Office data. */
   officeData: any;
   /** Accounting rule data. */
@@ -85,6 +86,9 @@ export class FrequentPostingsComponent implements OnInit {
   ngOnInit() {
     this.maxDate = this.settingsService.businessDate;
     this.createFrequentPostingsForm();
+    this.accountingService.getManualJournalAuxiliaries().subscribe((auxiliaries) => {
+      this.manualAuxiliaries = auxiliaries;
+    });
     this.setAffectedGLEntryForm();
   }
 
@@ -117,7 +121,15 @@ export class FrequentPostingsComponent implements OnInit {
       routingCode: [''],
       receiptNumber: [''],
       bankNumber: [''],
-      comments: ['']
+      comments: [''],
+      auxiliarCode: [
+        '',
+        Validators.required
+      ],
+      headerConcept: [
+        '',
+        Validators.required
+      ]
     });
   }
 

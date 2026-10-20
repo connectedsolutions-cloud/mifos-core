@@ -139,6 +139,8 @@ export class SharesAccountViewComponent implements OnInit {
       case 'Close':
       case 'Activate':
       case 'Undo Approval':
+      case 'Mark as Paid':
+      case 'Undo Payment':
       case 'Apply Additional Shares':
       case 'Redeem Shares':
       case 'Approve Additional Shares':

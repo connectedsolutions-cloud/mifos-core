@@ -19,6 +19,8 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .account-code-column {
@@ -177,23 +179,25 @@
   color: #b00020;
 }
 
-.detail-description {
-  overflow-wrap: anywhere;
-}
-
-.detail-date,
-.detail-branch {
-  display: inline-block;
-  margin-right: 8px;
-  white-space: nowrap;
+.detail-columns {
+  display: grid;
+  grid-template-columns: 64px 104px minmax(0, calc(100% - 184px));
+  column-gap: 8px;
+  align-items: start;
 }
 
 .detail-date {
-  width: 64px;
+  white-space: nowrap;
 }
 
 .detail-branch {
-  width: 52px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.detail-concept {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .detail-total-row td {

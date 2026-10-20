@@ -18,11 +18,12 @@ import { WarningDialogComponent } from './warning-dialog/warning-dialog.componen
 import { SessionTimeoutDialogComponent } from './timeout-dialog/session-timeout-dialog.component';
 import { DtePrintPreviewComponent } from '../teller/invoice-widget/dte-print-preview.component';
 import { StyleGuideComponent } from '../style-guide/style-guide.component';
+import { ComponentsGuideComponent } from '../components-guide/components-guide.component';
 
 /**
  * Home Component
  *
- * Home and dashboard components should be declared here.
+ * Home, dashboard, style guide, and components guide.
  */
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { StyleGuideComponent } from '../style-guide/style-guide.component';
     WarningDialogComponent,
     SessionTimeoutDialogComponent,
     DtePrintPreviewComponent,
-    StyleGuideComponent
+    StyleGuideComponent,
+    ComponentsGuideComponent
   ],
   providers: []
 })

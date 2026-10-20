@@ -8,6 +8,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatStepperPrevious, MatStepperNext } from '@angular/material/stepper';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { ClientsService } from 'app/clients/clients.service';
+import { OrganizationService } from 'app/organization/organization.service';
 
 /**
  * Shares Account Terms Step
@@ -30,6 +32,8 @@ export class SharesAccountTermsStepComponent implements OnChanges, OnInit {
   @Input() sharesAccountProductTemplate: any;
   /** [Optional] Shares Account Template */
   @Input() sharesAccountTemplate: any;
+  /** Collect the certificate promoter. Edit account does not open a certificate. */
+  @Input() capturePromoter = false;
 
   /** Minimum date allowed. */
   minDate = new Date(2000, 0, 1);
@@ -47,6 +51,8 @@ export class SharesAccountTermsStepComponent implements OnChanges, OnInit {
   isSavingsPatched = false;
 
   currency: Currency | null = null;
+  /** Office staff available as certificate promoters. */
+  staffOptions: any[] = [];
 
   /**
    * @param {FormBuilder} formBuilder Form Builder
@@ -54,7 +60,9 @@ export class SharesAccountTermsStepComponent implements OnChanges, OnInit {
    */
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private clientsService: ClientsService,
+    private organizationService: OrganizationService
   ) {
     this.createSharesAccountTermsForm();
   }
@@ -81,6 +89,10 @@ export class SharesAccountTermsStepComponent implements OnChanges, OnInit {
 
   ngOnInit() {
     this.maxDate = this.settingsService.businessDate;
+    if (this.capturePromoter) {
+      this.sharesAccountTermsForm.addControl('promoterStaffId', this.formBuilder.control('', Validators.required));
+      this.loadPromoters();
+    }
     if (this.sharesAccountTemplate) {
       this.sharesAccountTermsForm.patchValue({
         requestedShares: this.sharesAccountTemplate.summary.totalPendingForApprovalShares,
@@ -142,7 +154,24 @@ export class SharesAccountTermsStepComponent implements OnChanges, OnInit {
    * Returns shares account terms form value.
    */
   get sharesAccountTerms() {
-    return this.sharesAccountTermsForm.value;
+    const value = { ...this.sharesAccountTermsForm.value };
+    delete value.promoterStaffId;
+    return value;
+  }
+
+  private loadPromoters(): void {
+    const clientId = this.sharesAccountTemplate?.clientId;
+    if (!clientId) {
+      return;
+    }
+    this.clientsService.getClientData(String(clientId)).subscribe((client: any) => {
+      if (!client?.officeId) {
+        return;
+      }
+      this.organizationService.getStaff(client.officeId).subscribe((staff: any) => {
+        this.staffOptions = staff || [];
+      });
+    });
   }
 
   calculateCurrenValue(): number {

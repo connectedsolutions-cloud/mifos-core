@@ -22,6 +22,19 @@
       calculateCurrenValue() | currency: currency.code : 'symbol-narrow' : '1.2-2'
     }}</span>
 
+    <mat-form-field class="flex-48" *ngIf="capturePromoter">
+      <mat-label>{{ 'labels.inputs.Promoter' | translate }}</mat-label>
+      <mat-select formControlName="promoterStaffId" required>
+        <mat-option *ngFor="let staff of staffOptions" [value]="staff.id">
+          {{ staff.displayName }}
+        </mat-option>
+      </mat-select>
+      <mat-error>
+        {{ 'labels.inputs.Promoter' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
+    </mat-form-field>
+
     <mat-form-field class="flex-48">
       <mat-label>{{ 'labels.inputs.Default Savings Account' | translate }}</mat-label>
       <mat-select formControlName="savingsAccountId" required>

@@ -31,6 +31,11 @@ export class SharesService {
     return this.http.get(`/shareyield/accounts/${accountId}`);
   }
 
+  getApprovedUnpaidShareAccounts(officeId: number): Observable<any[]> {
+    const httpParams = new HttpParams().set('officeId', String(officeId));
+    return this.http.get<any[]>('/accounts/share/approved-unpaid', { params: httpParams });
+  }
+
   getShareCertificates(shareAccountId: string): Observable<any> {
     const httpParams = new HttpParams().set('shareAccountId', shareAccountId);
     return this.http.get('/sharecertificates', { params: httpParams });

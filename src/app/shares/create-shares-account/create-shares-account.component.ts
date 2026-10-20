@@ -131,6 +131,9 @@ export class CreateSharesAccountComponent {
       ...this.sharesAccount.shareCertificate,
       dateFormat,
       locale,
+      bookDate: this.sharesAccount.shareCertificate.bookDate
+        ? this.dateUtils.formatDate(this.sharesAccount.shareCertificate.bookDate, dateFormat)
+        : undefined,
       beneficiaries: (this.sharesAccount.shareCertificate.beneficiaries || []).map((beneficiary: any) => ({
         ...beneficiary,
         dateOfBirth: beneficiary.dateOfBirth

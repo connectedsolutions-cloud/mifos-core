@@ -129,7 +129,7 @@ export function buildComprobanteContableViewModel(
 
     const debit = money(record.debit);
     const credit = money(record.credit);
-    if ((debit === 0) === (credit === 0)) {
+    if ((debit === 0) === (credit === 0) && !(voucher.statusName === 'INCOMPLETA' && debit === 0 && credit === 0)) {
       throw new Error(`Voucher ${voucherNumber} line ${record.line_sequence} must contain exactly one amount side.`);
     }
     group.lines.push({
@@ -146,7 +146,7 @@ export function buildComprobanteContableViewModel(
   }
 
   for (const voucher of vouchers.values()) {
-    if (voucher.debitTotal !== voucher.creditTotal) {
+    if (voucher.debitTotal !== voucher.creditTotal && voucher.statusName !== 'DESCUADRADA') {
       throw new Error(
         `Voucher ${voucher.number} is unbalanced: ${voucher.debitTotal.toFixed(2)} / ${voucher.creditTotal.toFixed(2)}.`
       );

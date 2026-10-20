@@ -108,6 +108,10 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
   transactionId = new UntypedFormControl();
   /** Posted journal reference number (Fineract ref_num). */
   referenceNumber = new UntypedFormControl();
+  auxiliarCode = new UntypedFormControl('');
+  headerConcept = new UntypedFormControl('');
+  headerDescription = new UntypedFormControl('');
+  auxiliaries: { code: string; name: string }[] = [];
   /** Submitted on date from form control. */
   submittedOnDateFrom = new UntypedFormControl();
   /** Submitted on date to form control. */
@@ -118,6 +122,9 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
     'officeName',
     'transactionId',
     'referenceNumber',
+    'auxiliarCode',
+    'headerConcept',
+    'headerDescription',
     'transactionDate',
     'glAccountType',
     'createdByUserName',
@@ -150,6 +157,18 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
     },
     {
       type: 'referenceNumber',
+      value: ''
+    },
+    {
+      type: 'auxiliarCode',
+      value: ''
+    },
+    {
+      type: 'headerConcept',
+      value: ''
+    },
+    {
+      type: 'headerDescription',
       value: ''
     },
     {
@@ -211,6 +230,9 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
     this.maxDate = this.settingsService.businessDate;
     this.setFilteredOffices();
     this.setFilteredGlAccounts();
+    this.accountingService.getJournalAuxiliaries().subscribe((auxiliaries) => {
+      this.auxiliaries = auxiliaries;
+    });
     this.getJournalEntries();
   }
 
@@ -261,6 +283,16 @@ export class SearchJournalEntryComponent implements OnInit, AfterViewInit {
         })
       )
       .subscribe();
+
+    this.auxiliarCode.valueChanges.subscribe((value) => this.applyFilter(value, 'auxiliarCode'));
+
+    this.headerConcept.valueChanges
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((value) => this.applyFilter(value, 'headerConcept'));
+
+    this.headerDescription.valueChanges
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((value) => this.applyFilter(value, 'headerDescription'));
 
     this.transactionDateFrom.valueChanges
       .pipe(

@@ -1,6 +1,6 @@
 /** Angular Imports */
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 /** Custom Services. */
 import { ClientsService } from 'app/clients/clients.service';
@@ -19,7 +19,6 @@ import {
 import { NgClass, NgIf } from '@angular/common';
 import { AccountNumberComponent } from '../../../shared/account-number/account-number.component';
 import { LongTextComponent } from '../../../shared/long-text/long-text.component';
-import { MatTooltip } from '@angular/material/tooltip';
 import { StatusLookupPipe } from '../../../pipes/status-lookup.pipe';
 import { AccountsFilterPipe } from '../../../pipes/accounts-filter.pipe';
 import { DateFormatPipe } from '../../../pipes/date-format.pipe';
@@ -49,7 +48,6 @@ import { SharesService } from 'app/shares/shares.service';
     MatRow,
     AccountNumberComponent,
     LongTextComponent,
-    MatTooltip,
     StatusLookupPipe,
     AccountsFilterPipe,
     DateFormatPipe,
@@ -63,8 +61,7 @@ export class GeneralTabComponent {
     'Loan Account',
     'Original Loan',
     'Loan Balance',
-    'Amount Paid',
-    'Actions'
+    'Amount Paid'
   ];
   /** Closed Loan Accounts Columns */
   closedLoansColumns: string[] = [
@@ -80,8 +77,7 @@ export class GeneralTabComponent {
     'Account No',
     'Saving Account',
     'Last Active',
-    'Balance',
-    'Actions'
+    'Balance'
   ];
   /** Closed Savings Accounts Columns */
   closedSavingsColumns: string[] = [
@@ -95,8 +91,7 @@ export class GeneralTabComponent {
     'Share Account',
     'Approved Shares',
     'Pending For Approval Shares',
-    'Certificates',
-    'Actions'
+    'Certificates'
   ];
   /** Closed Shares Accounts Columns */
   closedSharesColumns: string[] = [
@@ -169,13 +164,11 @@ export class GeneralTabComponent {
   /**
    * @param {ActivatedRoute} route Activated Route
    * @param {ClientsService} clientService Clients Service
-   * @param {Router} router Router
    */
   constructor(
     private route: ActivatedRoute,
     private clientService: ClientsService,
-    private sharesService: SharesService,
-    private router: Router
+    private sharesService: SharesService
   ) {
     this.route.data.subscribe(
       (data: { clientAccountsData: any; clientChargesData: any; clientSummary: any; clientCollateralData: any }) => {
@@ -273,23 +266,6 @@ export class GeneralTabComponent {
    */
   routeEdit($event: MouseEvent) {
     $event.stopPropagation();
-  }
-
-  /**
-   * @param {any} loanId Loan Id
-   */
-  routeTransferFund(loanId: any) {
-    const queryParams: any = { loanId: loanId, accountType: 'fromloans' };
-    this.router.navigate(
-      [
-        '../',
-        'loans-accounts',
-        loanId,
-        'transfer-funds',
-        'make-account-transfer'
-      ],
-      { relativeTo: this.route, queryParams: queryParams }
-    );
   }
 
   viewAccountsLabel(closed: boolean): string {

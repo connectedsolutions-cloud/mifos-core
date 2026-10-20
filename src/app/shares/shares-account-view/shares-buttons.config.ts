@@ -47,6 +47,11 @@ export class SharesButtonsConfiguration {
             name: 'Redeem Shares',
             icon: 'arrow-left',
             taskPermissionName: 'WITHDRAW_SAVINGSACCOUNT'
+          },
+          {
+            name: 'Undo Payment',
+            icon: 'undo',
+            taskPermissionName: 'UNDOPAYMENT_SHAREACCOUNT'
           }
         ];
         break;
@@ -72,9 +77,9 @@ export class SharesButtonsConfiguration {
             taskPermissionName: 'APPROVALUNDO_SHAREACCOUNT'
           },
           {
-            name: 'Activate',
+            name: 'Mark as Paid',
             icon: 'check',
-            taskPermissionName: 'ACTIVATE_SHAREACCOUNT'
+            taskPermissionName: 'MARKASPAID_SHAREACCOUNT'
           }
         ];
         break;

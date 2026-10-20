@@ -13,6 +13,8 @@ import { ApplySharesComponent } from './apply-shares/apply-shares.component';
 import { RedeemSharesComponent } from './redeem-shares/redeem-shares.component';
 import { ApproveSharesComponent } from './approve-shares/approve-shares.component';
 import { RejectSharesComponent } from './reject-shares/reject-shares.component';
+import { MarkShareAccountPaidComponent } from './mark-share-account-paid/mark-share-account-paid.component';
+import { UndoShareAccountPaymentComponent } from './undo-share-account-payment/undo-share-account-payment.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
@@ -32,7 +34,9 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ApplySharesComponent,
     RedeemSharesComponent,
     ApproveSharesComponent,
-    RejectSharesComponent
+    RejectSharesComponent,
+    MarkShareAccountPaidComponent,
+    UndoShareAccountPaymentComponent
   ]
 })
 export class SharesAccountActionsComponent {
@@ -49,6 +53,8 @@ export class SharesAccountActionsComponent {
     'Redeem Shares': boolean;
     'Approve Additional Shares': boolean;
     'Reject Additional Shares': boolean;
+    'Mark as Paid': boolean;
+    'Undo Payment': boolean;
   } = {
     Approve: false,
     Reject: false,
@@ -58,7 +64,9 @@ export class SharesAccountActionsComponent {
     'Apply Additional Shares': false,
     'Redeem Shares': false,
     'Approve Additional Shares': false,
-    'Reject Additional Shares': false
+    'Reject Additional Shares': false,
+    'Mark as Paid': false,
+    'Undo Payment': false
   };
 
   /**

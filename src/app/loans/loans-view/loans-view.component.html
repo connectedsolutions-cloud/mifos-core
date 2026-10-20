@@ -96,7 +96,12 @@
             <span class="account-header-value">{{ loanDetailsData?.delinquent.delinquentDays | formatNumber }}</span>
           </div>
           <div class="account-header-fact" *ngIf="loanDetailsData.summary">
-            <span class="account-header-label">{{ 'labels.inputs.Current Balance' | translate }}</span>
+            <span
+              class="account-header-label"
+              [matTooltip]="'tooltips.Loan summary includes scheduled future interest' | translate"
+            >
+              {{ 'labels.inputs.Remaining Scheduled Repayment' | translate }}
+            </span>
             <span class="account-header-value">{{
               loanDetailsData.summary.totalOutstanding | currency: currency.code : 'symbol-narrow' : '1.2-2'
             }}</span>

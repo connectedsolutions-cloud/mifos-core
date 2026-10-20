@@ -40,6 +40,9 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  border: 0;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 .description-column {
@@ -56,11 +59,13 @@
 
 .trial-balance-table tr {
   break-inside: avoid;
+  border: 0;
+  background: transparent;
 }
 
 .trial-balance-table th,
 .trial-balance-table td {
-  padding: 3px 3px 2px;
+  padding: 2px 3px 1px;
   vertical-align: top;
 }
 

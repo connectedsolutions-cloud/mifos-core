@@ -31,4 +31,11 @@ export class GeneralTabComponent {
       this.sharesAccountData = data.sharesAccountData;
     });
   }
+
+  get recordedPayment(): any {
+    const purchases = this.sharesAccountData?.purchasedShares || [];
+    return purchases.find(
+      (purchase: any) => purchase.paymentTypeName || purchase.checkNumber || purchase.cashierTransactionId
+    );
+  }
 }

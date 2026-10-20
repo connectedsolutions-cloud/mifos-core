@@ -3,6 +3,9 @@
     <form [formGroup]="disbursementLoanForm" (ngSubmit)="submit()">
       <mat-card-content>
         <div class="layout-column">
+          <p>
+            {{ 'tooltips.Early actual disbursement keeps the approved repayment schedule' | translate }}
+          </p>
           <mat-form-field (click)="actualDisbursementDatePicker.open()">
             <mat-label>{{ 'labels.inputs.Disbursed On' | translate }}</mat-label>
             <input

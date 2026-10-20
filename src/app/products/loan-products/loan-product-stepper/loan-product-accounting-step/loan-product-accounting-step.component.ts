@@ -15,7 +15,7 @@ import {
 import { DeferredIncomeRecognition } from '../loan-product-payment-strategy-step/payment-allocation-model';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
 import { MatDivider } from '@angular/material/divider';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { GlAccountSelectorComponent } from '../../../../shared/accounting/gl-account-selector/gl-account-selector.component';
 import { MatIconButton } from '@angular/material/button';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -73,6 +73,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
   @Input() deferredIncomeRecognition: DeferredIncomeRecognition;
 
   loanProductAccountingForm: UntypedFormGroup;
+  termBasedPortfolioAccounting = false;
 
   chargeData: any;
   penaltyData: any;
@@ -148,6 +149,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       case 4:
         this.loanProductAccountingForm.patchValue({
           receivableInterestAccountId: accountingMappings.receivableInterestAccount.id,
+          longTermInterestReceivableAccountId: accountingMappings.longTermInterestReceivableAccount?.id || null,
           receivableFeeAccountId: accountingMappings.receivableFeeAccount.id,
           receivablePenaltyAccountId: accountingMappings.receivablePenaltyAccount.id
         });
@@ -178,6 +180,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
         this.loanProductAccountingForm.patchValue({
           fundSourceAccountId: accountingMappings.fundSourceAccount.id,
           loanPortfolioAccountId: accountingMappings.loanPortfolioAccount.id,
+          longTermLoanPortfolioAccountId: accountingMappings.longTermLoanPortfolioAccount?.id || null,
           transfersInSuspenseAccountId: accountingMappings.transfersInSuspenseAccount.id,
           interestOnLoanAccountId: accountingMappings.interestOnLoanAccount.id,
           incomeFromFeeAccountId: accountingMappings.incomeFromFeeAccount.id,
@@ -221,6 +224,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
               ? true
               : false
         });
+        this.setTermBasedPortfolioAccounting(Boolean(accountingMappings.longTermLoanPortfolioAccount));
 
         this.loanProductAccountingForm.setControl(
           'paymentChannelToFundSourceMappings',
@@ -302,6 +306,35 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
     });
   }
 
+  onTermBasedPortfolioAccountingChange(change: MatCheckboxChange) {
+    this.setTermBasedPortfolioAccounting(change.checked);
+  }
+
+  private setTermBasedPortfolioAccounting(enabled: boolean) {
+    this.termBasedPortfolioAccounting = enabled;
+    const accountControl = this.loanProductAccountingForm.get('longTermLoanPortfolioAccountId');
+    const interestControl = this.loanProductAccountingForm.get('longTermInterestReceivableAccountId');
+    if (!accountControl) {
+      return;
+    }
+    if (enabled) {
+      accountControl.setValidators(Validators.required);
+    } else {
+      accountControl.clearValidators();
+      accountControl.setValue(null);
+    }
+    accountControl.updateValueAndValidity();
+    if (interestControl) {
+      if (enabled) {
+        interestControl.setValidators(Validators.required);
+      } else {
+        interestControl.clearValidators();
+        interestControl.setValue(null);
+      }
+      interestControl.updateValueAndValidity();
+    }
+  }
+
   setConditionalControls() {
     this.loanProductAccountingForm.get('accountingRule').valueChanges.subscribe((accountingRule: any) => {
       if (accountingRule >= 2 && accountingRule <= 4) {
@@ -313,6 +346,8 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
           'loanPortfolioAccountId',
           new UntypedFormControl('', Validators.required)
         );
+        this.loanProductAccountingForm.addControl('longTermLoanPortfolioAccountId', new UntypedFormControl(null));
+        this.setTermBasedPortfolioAccounting(this.termBasedPortfolioAccounting);
         this.loanProductAccountingForm.addControl(
           'transfersInSuspenseAccountId',
           new UntypedFormControl('', Validators.required)
@@ -424,6 +459,8 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
       } else {
         this.loanProductAccountingForm.removeControl('fundSourceAccountId');
         this.loanProductAccountingForm.removeControl('loanPortfolioAccountId');
+        this.loanProductAccountingForm.removeControl('longTermLoanPortfolioAccountId');
+        this.termBasedPortfolioAccounting = false;
         this.loanProductAccountingForm.removeControl('transfersInSuspenseAccountId');
         this.loanProductAccountingForm.removeControl('interestOnLoanAccountId');
         this.loanProductAccountingForm.removeControl('incomeFromFeeAccountId');
@@ -448,6 +485,8 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
           'receivableInterestAccountId',
           new UntypedFormControl('', Validators.required)
         );
+        this.loanProductAccountingForm.addControl('longTermInterestReceivableAccountId', new UntypedFormControl(null));
+        this.setTermBasedPortfolioAccounting(this.termBasedPortfolioAccounting);
         this.loanProductAccountingForm.addControl(
           'receivableFeeAccountId',
           new UntypedFormControl('', Validators.required)
@@ -459,6 +498,7 @@ export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
         this.loanProductAccountingForm.addControl('enableAccrualActivityPosting', new UntypedFormControl(false));
       } else {
         this.loanProductAccountingForm.removeControl('receivableInterestAccountId');
+        this.loanProductAccountingForm.removeControl('longTermInterestReceivableAccountId');
         this.loanProductAccountingForm.removeControl('receivableFeeAccountId');
         this.loanProductAccountingForm.removeControl('receivablePenaltyAccountId');
         this.loanProductAccountingForm.removeControl('enableAccrualActivityPosting');

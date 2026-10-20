@@ -1,20 +1,96 @@
 <form [formGroup]="certificateForm">
   <div class="layout-row-wrap gap-2percent">
     <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Certificate Number' | translate }}</mat-label>
+      <input matInput [value]="'labels.inputs.Assigned on save' | translate" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-48">
+      <mat-label>{{ 'labels.inputs.Certificate Date' | translate }}</mat-label>
+      <input matInput [value]="applicationDate | dateFormat" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Number of shares' | translate }}</mat-label>
+      <input matInput [value]="requestedShares" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Initial Share Number' | translate }}</mat-label>
+      <input matInput [value]="'labels.inputs.Assigned on save' | translate" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Final Share Number' | translate }}</mat-label>
+      <input matInput [value]="'labels.inputs.Assigned on save' | translate" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Share Value' | translate }}</mat-label>
+      <input matInput [value]="unitPrice" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Share Balance' | translate }}</mat-label>
+      <input matInput value="0.00" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Pledged Balance' | translate }}</mat-label>
+      <input matInput value="0.00" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-48">
       <mat-label>{{ 'labels.inputs.Promoter' | translate }}</mat-label>
-      <input matInput type="number" formControlName="promoterStaffId" />
+      <input matInput [value]="promoterName" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Share Book' | translate }}</mat-label>
+      <input matInput [value]="shareBook" disabled />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Series' | translate }}</mat-label>
+      <input matInput formControlName="series" required maxlength="25" />
+      <mat-error>
+        {{ 'labels.inputs.Series' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="flex-23">
+      <mat-label>{{ 'labels.inputs.Book Number' | translate }}</mat-label>
+      <input matInput formControlName="bookNumber" readonly maxlength="25" />
+    </mat-form-field>
+
+    <mat-form-field class="flex-23" (click)="bookDatePicker.open()">
+      <mat-label>{{ 'labels.inputs.Book Date' | translate }}</mat-label>
+      <input matInput [matDatepicker]="bookDatePicker" formControlName="bookDate" required />
+      <mat-datepicker-toggle matSuffix [for]="bookDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #bookDatePicker></mat-datepicker>
+      <mat-error>
+        {{ 'labels.inputs.Book Date' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field class="flex-23">
       <mat-label>{{ 'labels.inputs.Folio' | translate }}</mat-label>
       <input matInput type="number" formControlName="folio" required />
-      <mat-error>{{ 'labels.inputs.Folio' | translate }}</mat-error>
+      <mat-error>
+        {{ 'labels.inputs.Folio' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field class="flex-23">
       <mat-label>{{ 'labels.inputs.Line' | translate }}</mat-label>
       <input matInput type="number" formControlName="lineNumber" required />
-      <mat-error>{{ 'labels.inputs.Line' | translate }}</mat-error>
+      <mat-error>
+        {{ 'labels.inputs.Line' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
     </mat-form-field>
   </div>
 
@@ -46,7 +122,7 @@
         <input matInput formControlName="address" />
       </mat-form-field>
       <mat-form-field class="flex-23">
-        <mat-label>{{ 'labels.inputs.Phone' | translate }}</mat-label>
+        <mat-label>{{ 'labels.inputs.Phone Number' | translate }}</mat-label>
         <input matInput formControlName="phone" />
       </mat-form-field>
       <mat-form-field class="flex-23">
@@ -55,9 +131,6 @@
         <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
         <mat-datepicker #dobPicker></mat-datepicker>
       </mat-form-field>
-      <mat-checkbox formControlName="notifyDesignation">
-        {{ 'labels.inputs.Notify Designation' | translate }}
-      </mat-checkbox>
       <button mat-button type="button" color="warn" (click)="removeBeneficiary(i)">
         {{ 'labels.buttons.Delete' | translate }}
       </button>
@@ -68,14 +141,5 @@
     {{ 'labels.inputs.Add Beneficiary' | translate }}
   </button>
 
-  <div class="layout-row align-end gap-5px responsive-column m-t-20">
-    <button mat-raised-button matStepperPrevious>
-      <fa-icon icon="arrow-left" class="m-r-10"></fa-icon>
-      {{ 'labels.buttons.Previous' | translate }}
-    </button>
-    <button mat-raised-button matStepperNext color="primary" [disabled]="certificateForm.invalid">
-      {{ 'labels.buttons.Next' | translate }}
-      <fa-icon icon="arrow-right" class="m-l-10"></fa-icon>
-    </button>
-  </div>
+  <mifosx-stepper-buttons [disableNext]="certificateForm.invalid"></mifosx-stepper-buttons>
 </form>

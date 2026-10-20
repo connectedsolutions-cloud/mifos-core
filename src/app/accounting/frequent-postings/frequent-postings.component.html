@@ -189,6 +189,26 @@
             <input matInput formControlName="bankNumber" />
           </mat-form-field>
 
+          <mat-form-field class="flex-48">
+            <mat-label>{{ 'labels.inputs.Auxiliar' | translate }}</mat-label>
+            <mat-select formControlName="auxiliarCode" required>
+              @for (auxiliar of manualAuxiliaries; track auxiliar.code) {
+                <mat-option [value]="auxiliar.code">{{ auxiliar.code }} — {{ auxiliar.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="flex-98">
+            <mat-label>{{ 'labels.inputs.Voucher Concept' | translate }}</mat-label>
+            <textarea
+              matInput
+              formControlName="headerConcept"
+              required
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="2"
+            ></textarea>
+          </mat-form-field>
+
           <mat-form-field class="flex-98">
             <mat-label>{{ 'labels.inputs.Comments' | translate }}</mat-label>
             <textarea matInput formControlName="comments" cdkTextareaAutosize cdkAutosizeMinRows="2"></textarea>

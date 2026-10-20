@@ -112,4 +112,23 @@ describe('buildComprobanteContableViewModel', () => {
       )
     ).toThrow(/unbalanced/);
   });
+  it('shows a native posting group flagged as unbalanced', () => {
+    const data = [
+      row(1, 3000, 0, '1141030101'),
+      row(2, 0, 2999, '222099940102')];
+    data.forEach((item) => {
+      item.row[7] = 'DESCUADRADA';
+    });
+    const voucher = buildComprobanteContableViewModel(result(data)).batches[0].vouchers[0];
+    expect(voucher.statusName).toBe('DESCUADRADA');
+    expect(voucher.debitTotal - voucher.creditTotal).toBe(1);
+  });
+
+  it('shows a zero-value native line flagged as incomplete', () => {
+    const data = [row(1, 0, 0, '1141030101')];
+    data[0].row[7] = 'INCOMPLETA';
+    const voucher = buildComprobanteContableViewModel(result(data)).batches[0].vouchers[0];
+    expect(voucher.statusName).toBe('INCOMPLETA');
+    expect(voucher.groups[0].lines).toHaveLength(1);
+  });
 });

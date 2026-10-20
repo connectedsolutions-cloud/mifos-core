@@ -58,6 +58,26 @@
     <input matInput [formControl]="referenceNumber" />
   </mat-form-field>
 
+  <mat-form-field class="flex-31">
+    <mat-label>{{ 'labels.inputs.Auxiliar' | translate }}</mat-label>
+    <mat-select [formControl]="auxiliarCode">
+      <mat-option value="">{{ 'labels.inputs.All' | translate }}</mat-option>
+      @for (auxiliar of auxiliaries; track auxiliar.code) {
+        <mat-option [value]="auxiliar.code">{{ auxiliar.code }} — {{ auxiliar.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="flex-31">
+    <mat-label>{{ 'labels.inputs.Voucher Concept' | translate }}</mat-label>
+    <input matInput [formControl]="headerConcept" />
+  </mat-form-field>
+
+  <mat-form-field class="flex-31">
+    <mat-label>{{ 'labels.inputs.Voucher Description' | translate }}</mat-label>
+    <input matInput [formControl]="headerDescription" />
+  </mat-form-field>
+
   <mat-form-field class="flex-31" (click)="submittedOnDateFromPicker.open()">
     <mat-label>{{ 'labels.inputs.Submitted on Date From' | translate }}</mat-label>
     <input
@@ -111,6 +131,21 @@
         {{ 'labels.inputs.Journal Number' | translate }}
       </th>
       <td mat-cell *matCellDef="let journalEntry">{{ journalEntry.referenceNumber }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="auxiliarCode">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Auxiliar' | translate }}</th>
+      <td mat-cell *matCellDef="let journalEntry">{{ journalEntry.auxiliarCode }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="headerConcept">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Voucher Concept' | translate }}</th>
+      <td mat-cell *matCellDef="let journalEntry">{{ journalEntry.headerConcept }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="headerDescription">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Voucher Description' | translate }}</th>
+      <td mat-cell *matCellDef="let journalEntry">{{ journalEntry.headerDescription }}</td>
     </ng-container>
 
     <ng-container matColumnDef="transactionDate">

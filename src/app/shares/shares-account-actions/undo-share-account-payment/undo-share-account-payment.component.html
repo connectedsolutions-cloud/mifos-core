@@ -1,0 +1,15 @@
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <p>{{ 'labels.teller.UndoSharePaymentConfirm' | translate }}</p>
+    </mat-card-content>
+    <mat-card-actions class="layout-row align-center gap-5px responsive-column">
+      <button type="button" mat-raised-button [routerLink]="['../../']">
+        {{ 'labels.buttons.Cancel' | translate }}
+      </button>
+      <button mat-raised-button color="warn" (click)="submit()">
+        {{ 'labels.buttons.Confirm' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

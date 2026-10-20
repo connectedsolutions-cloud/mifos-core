@@ -55,6 +55,21 @@
       <td>{{ data.journalEntry.referenceNumber }}</td>
     </tr>
 
+    <tr *ngIf="data.journalEntry.voucherId">
+      <th>{{ 'labels.inputs.Auxiliar' | translate }}</th>
+      <td>{{ data.journalEntry.auxiliarCode }}</td>
+    </tr>
+
+    <tr *ngIf="data.journalEntry.voucherId">
+      <th>{{ 'labels.inputs.Voucher Concept' | translate }}</th>
+      <td>{{ data.journalEntry.headerConcept }}</td>
+    </tr>
+
+    <tr *ngIf="data.journalEntry.headerDescription">
+      <th>{{ 'labels.inputs.Voucher Description' | translate }}</th>
+      <td>{{ data.journalEntry.headerDescription }}</td>
+    </tr>
+
     <tr *ngIf="data.journalEntry.comments">
       <th>{{ 'labels.inputs.Comments' | translate }}</th>
       <td>{{ data.journalEntry.comments }}</td>

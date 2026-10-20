@@ -57,9 +57,11 @@
           <tr class="detail-heading-row">
             <th scope="col">Partida</th>
             <th scope="col" colspan="2">
-              <span class="detail-date">Fecha</span>
-              <span class="detail-branch">Sucursal</span>
-              <span>Concepto</span>
+              <div class="detail-columns">
+                <span>Fecha</span>
+                <span>Sucursal</span>
+                <span>Concepto</span>
+              </div>
             </th>
             <th scope="col" class="amount">Debe</th>
             <th scope="col" class="amount">Haber</th>
@@ -68,9 +70,11 @@
           <tr class="detail-row" *ngFor="let entry of account.entries">
             <td>{{ entry.journalNumber }}</td>
             <td colspan="2" class="detail-description">
-              <span class="detail-date">{{ entry.date }}</span>
-              <span class="detail-branch">{{ entry.branchCode }}</span>
-              <span>{{ entry.description }}</span>
+              <div class="detail-columns">
+                <span class="detail-date">{{ entry.date }}</span>
+                <span class="detail-branch">{{ entry.branchName }}</span>
+                <span class="detail-concept">{{ entry.description }}</span>
+              </div>
             </td>
             <td class="amount">{{ entry.debit ? money(entry.debit) : '' }}</td>
             <td class="amount">{{ entry.credit ? money(entry.credit) : '' }}</td>

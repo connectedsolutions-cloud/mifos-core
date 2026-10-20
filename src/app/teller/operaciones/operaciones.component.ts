@@ -37,6 +37,7 @@ import {
   CierreCajaDialogResult
 } from '../cierre-caja-dialog/cierre-caja-dialog.component';
 import { OperacionManualDialogComponent } from '../operacion-manual-dialog/operacion-manual-dialog.component';
+import { ShareCertificateCollectionDialogComponent } from '../share-certificate-collection-dialog/share-certificate-collection-dialog.component';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -112,6 +113,7 @@ export class OperacionesComponent implements OnInit, OnDestroy {
 
   /** Current cashier session (set when session is loaded). */
   currentSession: CashierSession | null = null;
+  tellerOfficeId: number | null = null;
 
   /** Whether there is already a pending teller-vault-transfer for this session. */
   hasPendingTellerVaultTransfer = false;
@@ -194,6 +196,7 @@ export class OperacionesComponent implements OnInit, OnDestroy {
             this.organizationService.getTeller(String(session.tellerId)).subscribe((teller: any) => {
               const max = teller?.maxTellerCashAmount;
               this.limiteCaja = max != null && max !== '' ? Number(max) : null;
+              this.tellerOfficeId = teller?.officeId != null ? Number(teller.officeId) : null;
             });
             return this.organizationService.getCurrencies().pipe(
               switchMap((currencies: any) => {
@@ -409,6 +412,25 @@ export class OperacionesComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.translate.instant('labels.teller.RequerirFondosCreated'), undefined, {
           duration: 4000
         });
+      }
+    });
+  }
+
+  onCobroCertificado(): void {
+    const cashierId = this.currentSession?.cashierId;
+    if (cashierId == null || this.tellerOfficeId == null) {
+      this.snackBar.open(this.translate.instant('labels.teller.OperacionManualNoSession'), undefined, {
+        duration: 4000
+      });
+      return;
+    }
+    const dialogRef = this.dialog.open(ShareCertificateCollectionDialogComponent, {
+      width: '520px',
+      data: { cashierId, officeId: this.tellerOfficeId }
+    });
+    dialogRef.afterClosed().subscribe((saved: boolean | undefined) => {
+      if (saved) {
+        this.loadData(undefined, () => this.cdr.detectChanges());
       }
     });
   }

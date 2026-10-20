@@ -271,6 +271,67 @@ describe('Concentración de Movimientos Diarios adapter', () => {
     expect(buildDailyMovementDocument(centralOnly).creditTotal).toBe(1420.77);
   });
 
+  it('accepts deeper account codes and paginates a long branch without repeating its totals', () => {
+    const accountRows = Array.from({ length: 55 }, (_, index) => ({ row: [
+        index + 1,
+        'CUENTA',
+        1,
+        '1',
+        'SANTIAGO DE MARÍA',
+        String(1110000000 + index),
+        `Cuenta ${index + 1}`,
+        1,
+        1,
+        '2026-10-16'
+      ] }));
+    const result: VisualReportResult = {
+      columnHeaders: columns.map((columnName) => ({ columnName })),
+      data: [
+        ...accountRows,
+        { row: [
+            56,
+            'TOTAL_SUCURSAL',
+            1,
+            '1',
+            'SANTIAGO DE MARÍA',
+            null,
+            'Total por Sucursal',
+            55,
+            55,
+            '2026-10-16'
+          ] },
+        { row: [
+            57,
+            'TOTAL_GENERAL',
+            null,
+            null,
+            null,
+            null,
+            'Total General',
+            55,
+            55,
+            '2026-10-16'
+          ] }]
+    };
+    const report = buildDailyMovementDocument(result);
+    expect(report.pages.map((page) => page.accounts.length)).toEqual([
+      27,
+      27,
+      1
+    ]);
+    expect(report.pages.map((page) => page.showBranchTotal)).toEqual([
+      false,
+      false,
+      true
+    ]);
+    expect(report.pages.map((page) => page.showGrandTotal)).toEqual([
+      false,
+      false,
+      true
+    ]);
+    expect(report.debitTotal).toBe(55);
+  });
+
   it('rejects a branch subtotal that does not reconcile', () => {
     const result = sample();
     result.data[2].row[7] = 15266.93;

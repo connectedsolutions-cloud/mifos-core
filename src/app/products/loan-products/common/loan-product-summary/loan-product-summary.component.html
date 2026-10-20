@@ -994,8 +994,20 @@
     <div class="flex-100 layout-row-wrap responsive-column">
       <mifosx-gl-account-display
         class="flex-100"
-        [accountTitle]="'Loan portfolio'"
+        [accountTitle]="
+          accountingMappings.longTermLoanPortfolioAccount
+            ? 'Short-term loan portfolio (up to 366 days)'
+            : 'Loan portfolio'
+        "
         [glAccount]="accountingMappings.loanPortfolioAccount"
+        [withTitle]="'47%'"
+      >
+      </mifosx-gl-account-display>
+      <mifosx-gl-account-display
+        *ngIf="accountingMappings.longTermLoanPortfolioAccount"
+        class="flex-100"
+        [accountTitle]="'Long-term loan portfolio (over 366 days)'"
+        [glAccount]="accountingMappings.longTermLoanPortfolioAccount"
         [withTitle]="'47%'"
       >
       </mifosx-gl-account-display>
@@ -1005,8 +1017,20 @@
       >
         <mifosx-gl-account-display
           class="flex-100"
-          [accountTitle]="'Interest Receivable'"
+          [accountTitle]="
+            accountingMappings.longTermInterestReceivableAccount
+              ? 'Short-term interest receivable (up to 366 days)'
+              : 'Interest Receivable'
+          "
           [glAccount]="accountingMappings.receivableInterestAccount"
+          [withTitle]="'47%'"
+        >
+        </mifosx-gl-account-display>
+        <mifosx-gl-account-display
+          *ngIf="accountingMappings.longTermInterestReceivableAccount"
+          class="flex-100"
+          [accountTitle]="'Long-term interest receivable (over 366 days)'"
+          [glAccount]="accountingMappings.longTermInterestReceivableAccount"
           [withTitle]="'47%'"
         >
         </mifosx-gl-account-display>

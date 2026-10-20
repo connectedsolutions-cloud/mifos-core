@@ -5,7 +5,9 @@ import { UntypedFormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
+import { CreateFlowComponent } from '../create-flow/create-flow.component';
 import { LoaderComponent } from 'app/shared/loader/loader.component';
 import { MatCardModule, MatCardContent } from '@angular/material/card';
 import { PendientesService } from '../pendientes.service';
@@ -50,6 +52,7 @@ export class PendientesDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private dialog: MatDialog,
     private pendientesService: PendientesService,
     private clientsService: ClientsService,
     private translate: TranslateService
@@ -80,6 +83,16 @@ export class PendientesDashboardComponent implements OnInit, OnDestroy {
 
   onClientSelected(event: MatAutocompleteSelectedEvent): void {
     this.selectedClient = event.option.value;
+    this.reload();
+  }
+
+  clearClientFilter(): void {
+    if (!this.selectedClient) {
+      return;
+    }
+    this.selectedClient = null;
+    this.clientOptions = [];
+    this.clientSearch.setValue('', { emitEvent: false });
     this.reload();
   }
 
@@ -143,6 +156,10 @@ export class PendientesDashboardComponent implements OnInit, OnDestroy {
     this.reload();
   }
 
+  get visibleCount(): number {
+    return this.viewMode === 'closed' ? this.completedSteps.length : this.mySteps.length;
+  }
+
   get completedGroups(): { date: string; dateDisplay: string; steps: any[] }[] {
     const map = new Map<string, any[]>();
     for (const step of this.completedSteps) {
@@ -184,7 +201,18 @@ export class PendientesDashboardComponent implements OnInit, OnDestroy {
   }
 
   goToCreateFlow(): void {
-    this.router.navigate(['/pendientes/flows/create']);
+    const dialogRef = this.dialog.open(CreateFlowComponent, {
+      width: '480px',
+      autoFocus: 'first-tabbable'
+    });
+    dialogRef.afterClosed().subscribe((flow) => {
+      if (flow?.id != null) {
+        this.router.navigate([
+          '/pendientes/flows',
+          flow.id
+        ]);
+      }
+    });
   }
 
   private reload(): void {

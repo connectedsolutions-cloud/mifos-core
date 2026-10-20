@@ -1,14 +1,14 @@
-.container {
-  padding: 16px;
-}
-
-form mat-form-field {
+.full-width {
+  width: 100%;
   display: block;
-  max-width: 400px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
 }
 
 .error-message {
-  color: #f44336;
-  margin: 8px 0;
+  color: var(--mat-form-field-error-text-color, #b71c1c);
+  margin: 0 0 8px;
+}
+
+mat-dialog-actions {
+  margin: 8px 24px 16px;
 }

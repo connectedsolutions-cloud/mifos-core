@@ -36,6 +36,24 @@
     <p>{{ 'labels.inputs.Provisional Number' | translate }}: {{ selected.provisionalNumber }}</p>
     <p>{{ 'labels.inputs.Certificate Number' | translate }}: {{ selected.certificateNumber }}</p>
     <p>{{ 'labels.inputs.Status' | translate }}: {{ selected.status }}</p>
+    <p>{{ 'labels.inputs.Certificate Date' | translate }}: {{ selected.certificateDate | dateFormat }}</p>
+    <p>{{ 'labels.inputs.Number of shares' | translate }}: {{ selected.representedShares }}</p>
+    <p>
+      {{ 'labels.inputs.Initial Share Number' | translate }} – {{ 'labels.inputs.Final Share Number' | translate }}:
+      {{ selected.shareSerialStart }} – {{ selected.shareSerialEnd }}
+    </p>
+    <p>{{ 'labels.inputs.Share Value' | translate }}: {{ selected.unitPrice }}</p>
+    <p>{{ 'labels.inputs.Share Balance' | translate }}: {{ selected.currentBalance }}</p>
+    <p>{{ 'labels.inputs.Pledged Balance' | translate }}: {{ selected.pledgedBalance }}</p>
+    <p>{{ 'labels.inputs.Promoter' | translate }}: {{ selected.promoterStaffId }}</p>
+    <p>{{ 'labels.inputs.Share Book' | translate }}: {{ selected.bookId }}</p>
+    <p>{{ 'labels.inputs.Series' | translate }}: {{ selected.series }}</p>
+    <p>{{ 'labels.inputs.Book Number' | translate }}: {{ selected.bookNumber }}</p>
+    <p>{{ 'labels.inputs.Book Date' | translate }}: {{ selected.bookDate | dateFormat }}</p>
+    <p>
+      {{ 'labels.inputs.Folio' | translate }} / {{ 'labels.inputs.Line' | translate }}: {{ selected.folio }} /
+      {{ selected.lineNumber }}
+    </p>
     <h4>{{ 'labels.inputs.Beneficiaries' | translate }}</h4>
     <ul>
       <li *ngFor="let beneficiary of selected.beneficiaries">

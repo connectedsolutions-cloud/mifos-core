@@ -608,6 +608,11 @@ export class RunReportComponent implements OnInit {
         } else if (param.selectAll === 'Y') {
           this.reportForm.get(param.name)?.patchValue([allOption]);
         }
+      } else if (this.report.subType === 'VisualDailyMovement' && param.variable === 'level') {
+        const mayor = param.selectOptions.find((option) => String(option.id) === '3');
+        if (mayor) {
+          this.reportForm.get(param.name)?.patchValue(mayor);
+        }
       } else if (param.selectAll === 'Y') {
         this.reportForm.get(param.name)?.patchValue(allOption);
       }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,6 +19,7 @@ import { STANDALONE_SHARED_IMPORTS } from '../../standalone-shared.module';
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -33,7 +34,7 @@ export class CreateFlowComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
+    private dialogRef: MatDialogRef<CreateFlowComponent, any>,
     private pendientesService: PendientesService,
     private translate: TranslateService
   ) {
@@ -69,10 +70,7 @@ export class CreateFlowComponent implements OnInit {
     };
     this.pendientesService.createFlow(blueprintId, body).subscribe({
       next: (flow: any) => {
-        this.router.navigate([
-          '/pendientes/flows',
-          flow.id
-        ]);
+        this.dialogRef.close(flow);
       },
       error: (err) => {
         this.error =
@@ -84,7 +82,7 @@ export class CreateFlowComponent implements OnInit {
     });
   }
 
-  back(): void {
-    this.router.navigate(['/pendientes']);
+  cancel(): void {
+    this.dialogRef.close();
   }
 }

@@ -1,75 +1,251 @@
 <mat-drawer-container class="pendientes-shell" autosize>
   <mat-drawer #filtersDrawer mode="over" position="end" class="filters-drawer">
-    <div class="drawer-header">
-      <h3 class="drawer-title">{{ 'labels.teller.Filtros' | translate }}</h3>
-      <button mat-stroked-button type="button" (click)="filtersDrawer.close()">
-        {{ 'labels.buttons.Close' | translate }}
-      </button>
-    </div>
-
-    <div class="drawer-section" *mifosxHasPermission="'READ_CLIENT'">
-      <h4 class="drawer-section-title">{{ 'labels.text.Pending filters' | translate }}</h4>
-      <mat-form-field>
-        <mat-label>{{ 'labels.inputs.Client' | translate }}</mat-label>
-        <input matInput [formControl]="clientSearch" [matAutocomplete]="clientAutocomplete" />
-        <mat-autocomplete
-          #clientAutocomplete="matAutocomplete"
-          [displayWith]="displayClient"
-          (optionSelected)="onClientSelected($event)"
+    <div class="filters-panel">
+      <div class="drawer-header">
+        <h2 class="drawer-title">{{ 'labels.teller.Filtros' | translate }}</h2>
+        <button
+          type="button"
+          class="drawer-close"
+          (click)="filtersDrawer.close()"
+          [attr.aria-label]="'labels.buttons.Close' | translate"
         >
-          <mat-option *ngFor="let client of clientOptions" [value]="client">
-            {{ client.displayName }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <p class="drawer-note" *ngIf="selectedClient">
-        {{ 'labels.text.Client filter shows every related pending item' | translate }}
-      </p>
-    </div>
+          <svg
+            viewBox="0 0 24 24"
+            class="drawer-icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
 
-    <div class="drawer-section">
-      <h4 class="drawer-section-title">{{ 'labels.text.Pending options' | translate }}</h4>
-      <mat-form-field>
-        <mat-label>{{ 'labels.text.Pending scope toggle' | translate }}</mat-label>
-        <mat-select [value]="listScope" [disabled]="!!selectedClient" (selectionChange)="setListScope($event.value)">
-          <mat-option value="assignedToMe">{{ 'labels.text.assigned to me' | translate }}</mat-option>
-          <mat-option value="myFlowsOthers">{{ 'labels.text.created by me' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>{{ 'labels.inputs.Status' | translate }}</mat-label>
-        <mat-select [value]="viewMode" (selectionChange)="setViewMode($event.value)">
-          <mat-option value="open">{{ 'labels.text.pending items' | translate }}</mat-option>
-          <mat-option value="closed">{{ 'labels.text.completed pending items' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+      <div class="drawer-toolbar">
+        <button type="button" class="drawer-clear" (click)="clearFilters()">
+          {{ 'labels.text.Clear all filters' | translate }}
+        </button>
+        <button type="button" class="drawer-show" (click)="filtersDrawer.close()">
+          <span>{{
+            (viewMode === 'closed'
+              ? 'labels.text.Show closed filter results'
+              : 'labels.text.Show pending filter results'
+            ) | translate: { count: visibleCount }
+          }}</span>
+        </button>
+      </div>
 
-    <div class="drawer-actions">
-      <button mat-stroked-button type="button" (click)="clearFilters()">
-        {{ 'labels.buttons.Clear Filters' | translate }}
-      </button>
+      <div class="drawer-body">
+        <section class="drawer-section">
+          <h3 class="drawer-section-title">{{ 'labels.text.Filter scope' | translate }}</h3>
+          <p class="drawer-hint">{{ 'labels.text.Filter scope hint' | translate }}</p>
+          <div class="scope-cards" role="radiogroup" [attr.aria-label]="'labels.text.Filter scope' | translate">
+            <button
+              type="button"
+              role="radio"
+              class="scope-card"
+              [class.is-selected]="listScope === 'assignedToMe'"
+              [attr.aria-checked]="listScope === 'assignedToMe'"
+              [disabled]="!!selectedClient"
+              (click)="setListScope('assignedToMe')"
+            >
+              <span class="scope-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="scope-svg" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5.5 19.2c1.4-2.6 3.6-3.9 6.5-3.9s5.1 1.3 6.5 3.9" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="scope-copy">
+                <span class="scope-title">{{ 'labels.text.Filter scope assigned title' | translate }}</span>
+                <span class="scope-caption">{{ 'labels.text.Filter scope assigned caption' | translate }}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              class="scope-card"
+              [class.is-selected]="listScope === 'myFlowsOthers'"
+              [attr.aria-checked]="listScope === 'myFlowsOthers'"
+              [disabled]="!!selectedClient"
+              (click)="setListScope('myFlowsOthers')"
+            >
+              <span class="scope-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="scope-svg" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <path d="M4 20h4l10.2-10.2a2.2 2.2 0 0 0-3.1-3.1L4.9 16.9 4 20Z" stroke-linejoin="round" />
+                  <path d="M13.2 6.8 17.2 10.8" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="scope-copy">
+                <span class="scope-title">{{ 'labels.text.Filter scope created title' | translate }}</span>
+                <span class="scope-caption">{{ 'labels.text.Filter scope created caption' | translate }}</span>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section class="drawer-section" *mifosxHasPermission="'READ_CLIENT'">
+          <h3 class="drawer-section-title">{{ 'labels.text.Filter people' | translate }}</h3>
+          <label class="field-label" for="pending-client-search">{{ 'labels.inputs.Client' | translate }}</label>
+          <input
+            id="pending-client-search"
+            class="search-input"
+            [formControl]="clientSearch"
+            [matAutocomplete]="clientAutocomplete"
+            [placeholder]="'labels.text.Search client' | translate"
+            role="combobox"
+            aria-autocomplete="list"
+          />
+          <mat-autocomplete
+            #clientAutocomplete="matAutocomplete"
+            [displayWith]="displayClient"
+            (optionSelected)="onClientSelected($event)"
+          >
+            <mat-option *ngFor="let client of clientOptions" [value]="client">
+              {{ client.displayName }}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="drawer-note" *ngIf="selectedClient">
+            {{ 'labels.text.Client filter shows every related pending item' | translate }}
+          </p>
+        </section>
+
+        <section class="drawer-section">
+          <h3 class="drawer-section-title">{{ 'labels.inputs.Status' | translate }}</h3>
+          <p class="drawer-hint">{{ 'labels.text.Filter status hint' | translate }}</p>
+          <div class="status-pills" role="radiogroup" [attr.aria-label]="'labels.inputs.Status' | translate">
+            <button
+              type="button"
+              role="radio"
+              class="status-pill"
+              [class.is-selected]="viewMode === 'open'"
+              [attr.aria-checked]="viewMode === 'open'"
+              (click)="setViewMode('open')"
+            >
+              <svg
+                *ngIf="viewMode === 'open'"
+                viewBox="0 0 16 16"
+                class="status-check"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M3 8.2 6.2 11.4 13 4.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span *ngIf="viewMode !== 'open'" class="status-dot" aria-hidden="true"></span>
+              <span>{{ 'labels.text.Filter status pending' | translate }}</span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              class="status-pill"
+              [class.is-selected]="viewMode === 'closed'"
+              [attr.aria-checked]="viewMode === 'closed'"
+              (click)="setViewMode('closed')"
+            >
+              <svg
+                *ngIf="viewMode === 'closed'"
+                viewBox="0 0 16 16"
+                class="status-check"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M3 8.2 6.2 11.4 13 4.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span *ngIf="viewMode !== 'closed'" class="status-dot" aria-hidden="true"></span>
+              <span>{{ 'labels.text.Filter status closed' | translate }}</span>
+            </button>
+          </div>
+        </section>
+      </div>
     </div>
   </mat-drawer>
 
   <mat-drawer-content>
     <div class="container">
-      <div class="header-section">
-        <div class="header-row">
-          <div class="header-titles">
-            <h2 class="page-title">{{ 'labels.text.Pending Items' | translate }}</h2>
-            <p class="page-subtitle">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
+      <mat-card class="pendientes-header-card account-card">
+        <mat-card-header class="header account-header">
+          <div class="account-header-body">
+            <div class="account-header-identity">
+              <div class="account-header-title-row">
+                <div class="pendientes-heading">
+                  <h2 class="account-header-title">{{ 'labels.text.Pending Items' | translate }}</h2>
+                  <p class="account-header-status">{{ 'labels.text.Pending Items Subtitle' | translate }}</p>
+                </div>
+                <span class="account-header-spacer"></span>
+                <button mat-stroked-button type="button" (click)="filtersDrawer.toggle()">
+                  {{ 'labels.teller.Filtros' | translate }}
+                </button>
+              </div>
+
+              <div class="account-header-facts" [attr.aria-label]="'labels.text.Applied filters' | translate">
+                <div class="account-header-fact">
+                  <span class="account-header-label">{{ 'labels.text.Filter scope' | translate }}</span>
+                  <span class="account-header-value">
+                    {{
+                      (listScope === 'assignedToMe'
+                        ? 'labels.text.Filter scope assigned title'
+                        : 'labels.text.Filter scope created title'
+                      ) | translate
+                    }}
+                    <button
+                      *ngIf="listScope !== 'assignedToMe' && !selectedClient"
+                      type="button"
+                      class="header-fact-remove"
+                      (click)="setListScope('assignedToMe')"
+                      [attr.aria-label]="
+                        'labels.text.Remove applied filter'
+                          | translate: { label: ('labels.text.Filter scope' | translate) }
+                      "
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </span>
+                </div>
+                <div class="account-header-fact">
+                  <span class="account-header-label">{{ 'labels.inputs.Status' | translate }}</span>
+                  <span class="account-header-value">
+                    {{
+                      (viewMode === 'open' ? 'labels.text.Filter status pending' : 'labels.text.Filter status closed')
+                        | translate
+                    }}
+                    <button
+                      *ngIf="viewMode !== 'open'"
+                      type="button"
+                      class="header-fact-remove"
+                      (click)="setViewMode('open')"
+                      [attr.aria-label]="
+                        'labels.text.Remove applied filter' | translate: { label: ('labels.inputs.Status' | translate) }
+                      "
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </span>
+                </div>
+                <div class="account-header-fact" *ngIf="selectedClient">
+                  <span class="account-header-label">{{ 'labels.inputs.Client' | translate }}</span>
+                  <span class="account-header-value">
+                    {{ selectedClient.displayName }}
+                    <button
+                      type="button"
+                      class="header-fact-remove"
+                      (click)="clearClientFilter()"
+                      [attr.aria-label]="
+                        'labels.text.Remove applied filter' | translate: { label: ('labels.inputs.Client' | translate) }
+                      "
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="header-controls">
-            <span class="selected-client" *ngIf="selectedClient">
-              {{ 'labels.inputs.Client' | translate }}: {{ selectedClient.displayName }}
-            </span>
-            <button mat-stroked-button type="button" (click)="filtersDrawer.toggle()">
-              {{ 'labels.teller.Filtros' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
+        </mat-card-header>
+      </mat-card>
 
       <div *ngIf="loading && viewMode === 'open'" class="loading-container">
         <mifosx-loader diameter="40"></mifosx-loader>

@@ -5,6 +5,7 @@ export interface DetailedBalanceEntry {
   journalNumber: string;
   date: string;
   branchCode: string;
+  branchName: string;
   description: string;
   debit: number;
   credit: number;
@@ -143,6 +144,7 @@ export function buildBalanceSaldosDetalladoViewModel(
       journalNumber: requiredString(record, 'journal_number'),
       date: formatDate(record.journal_date),
       branchCode: requiredString(record, 'branch_code'),
+      branchName: optionalString(record.branch_name) || requiredString(record, 'branch_code'),
       description: requiredString(record, 'entry_description'),
       debit,
       credit

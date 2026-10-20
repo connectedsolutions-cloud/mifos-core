@@ -1,0 +1,17 @@
+<article class="specimen" [class.is-referenced]="active" [attr.data-component-id]="componentId || null">
+  <header class="specimen-head">
+    <h3>{{ reference?.name }}</h3>
+    <span class="specimen-source">{{ reference?.source }}</span>
+    <button *ngIf="componentId" type="button" class="copy-style" (click)="copyReference()">
+      {{ copied ? 'Copied' : 'Copy' }}
+    </button>
+  </header>
+  <div class="specimen-canvas">
+    <ng-content></ng-content>
+  </div>
+  <p class="spec-strip" *ngIf="reference">
+    <code>{{ reference.selector }}</code>
+    <code *ngIf="reference.inputs">{{ reference.inputs }}</code>
+    <span *ngIf="reference.note">{{ reference.note }}</span>
+  </p>
+</article>

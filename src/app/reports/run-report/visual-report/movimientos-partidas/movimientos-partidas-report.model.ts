@@ -130,15 +130,21 @@ export function buildPartidaDocument(
       credit: money(row['Abonos']),
       balance: signedMoney(row['Saldo'])
     };
-    if (line.debit > 0 === line.credit > 0)
+    if (
+      line.debit > 0 === line.credit > 0 &&
+      !(current.status === 'INCOMPLETA' && line.debit === 0 && line.credit === 0)
+    )
       throw new Error(`La partida ${number} contiene una línea sin lado contable único.`);
     const previous = current.lines.length ? current.lines[current.lines.length - 1].balance : 0;
     if (cents(previous + line.debit - line.credit) !== line.balance) {
       throw new Error(`El saldo progresivo de la partida ${number} no cuadra.`);
     }
     current.lines.push(line);
-    if (current.lines.length > current.lineCount || signedMoney(row['Saldo Partida']) !== 0) {
-      throw new Error(`La partida ${number} no está balanceada.`);
+    if (
+      current.lines.length > current.lineCount ||
+      signedMoney(row['Saldo Partida']) !== cents(current.debit - current.credit)
+    ) {
+      throw new Error(`La partida ${number} no cuadra con sus totales.`);
     }
   }
   if (current) validateEntry(current);
@@ -154,15 +160,16 @@ export function buildPartidaDocument(
 }
 
 function validateEntry(entry: PartidaEntry): void {
-  if (entry.lines.length < 2 || entry.lines.length !== entry.lineCount)
+  const exceptional = entry.status === 'DESCUADRADA' || entry.status === 'INCOMPLETA';
+  if (entry.lines.length !== entry.lineCount || (!exceptional && entry.lines.length < 2))
     throw new Error(`La partida ${entry.number} no contiene las líneas necesarias.`);
   const debit = cents(entry.lines.reduce((sum, line) => sum + line.debit, 0));
   const credit = cents(entry.lines.reduce((sum, line) => sum + line.credit, 0));
   if (
     debit !== entry.debit ||
     credit !== entry.credit ||
-    debit !== credit ||
-    entry.lines[entry.lines.length - 1].balance !== 0
+    (!exceptional && debit !== credit) ||
+    entry.lines[entry.lines.length - 1].balance !== cents(debit - credit)
   ) {
     throw new Error(`Los totales de la partida ${entry.number} no cuadran.`);
   }

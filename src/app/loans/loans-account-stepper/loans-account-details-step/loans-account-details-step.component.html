@@ -81,7 +81,7 @@
     </mat-form-field>
 
     <mat-form-field class="flex-48" (click)="disbursementPicker.open()">
-      <mat-label>{{ 'labels.inputs.Disbursement on' | translate }}</mat-label>
+      <mat-label>{{ 'labels.inputs.Expected Disbursement Date' | translate }}</mat-label>
       <input
         matInput
         [min]="loansAccountDetailsForm.value.submittedOnDate"
@@ -93,8 +93,11 @@
       />
       <mat-datepicker-toggle matSuffix [for]="disbursementPicker"></mat-datepicker-toggle>
       <mat-datepicker #disbursementPicker></mat-datepicker>
-      <mat-error *ngIf="loansAccountDetailsForm.controls.submittedOnDate?.hasError('required')">
-        {{ 'labels.inputs.Disbursement on' | translate }} {{ 'labels.commons.is' | translate }}
+      <mat-hint>{{
+        'tooltips.Changing expected disbursement date recalculates the repayment schedule' | translate
+      }}</mat-hint>
+      <mat-error *ngIf="loansAccountDetailsForm.controls.expectedDisbursementDate?.hasError('required')">
+        {{ 'labels.inputs.Expected Disbursement Date' | translate }} {{ 'labels.commons.is' | translate }}
         <strong>{{ 'labels.commons.required' | translate }}</strong>
       </mat-error>
     </mat-form-field>

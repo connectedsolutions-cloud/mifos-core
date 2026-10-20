@@ -39,7 +39,25 @@
         [inputFormControl]="loanProductAccountingForm.controls.loanPortfolioAccountId"
         [glAccountList]="assetAccountData"
         [required]="true"
-        [inputLabel]="'Loan portfolio'"
+        [inputLabel]="termBasedPortfolioAccounting ? 'Short-term loan portfolio (up to 366 days)' : 'Loan portfolio'"
+      >
+      </mifosx-gl-account-selector>
+
+      <mat-checkbox
+        class="flex-98"
+        [checked]="termBasedPortfolioAccounting"
+        (change)="onTermBasedPortfolioAccountingChange($event)"
+      >
+        {{ 'labels.inputs.Use term-based portfolio accounts' | translate }}
+      </mat-checkbox>
+
+      <mifosx-gl-account-selector
+        *ngIf="termBasedPortfolioAccounting"
+        class="flex-48"
+        [inputFormControl]="loanProductAccountingForm.controls.longTermLoanPortfolioAccountId"
+        [glAccountList]="assetAccountData"
+        [required]="true"
+        [inputLabel]="'Long-term loan portfolio (over 366 days)'"
       >
       </mifosx-gl-account-selector>
 
@@ -63,7 +81,19 @@
           [inputFormControl]="loanProductAccountingForm.controls.receivableInterestAccountId"
           [glAccountList]="assetAccountData"
           [required]="true"
-          [inputLabel]="'Interest Receivable'"
+          [inputLabel]="
+            termBasedPortfolioAccounting ? 'Short-term interest receivable (up to 366 days)' : 'Interest Receivable'
+          "
+        >
+        </mifosx-gl-account-selector>
+
+        <mifosx-gl-account-selector
+          *ngIf="termBasedPortfolioAccounting"
+          class="flex-48"
+          [inputFormControl]="loanProductAccountingForm.controls.longTermInterestReceivableAccountId"
+          [glAccountList]="assetAccountData"
+          [required]="true"
+          [inputLabel]="'Long-term interest receivable (over 366 days)'"
         >
         </mifosx-gl-account-selector>
 

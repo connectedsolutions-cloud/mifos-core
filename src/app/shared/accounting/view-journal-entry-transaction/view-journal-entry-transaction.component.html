@@ -50,6 +50,29 @@
             {{ dataSource.data[0].transactionId }}
           </div>
 
+          <ng-container *ngIf="dataSource.data[0].voucherId">
+            <div class="flex-25 header">
+              {{ 'labels.inputs.Auxiliar' | translate }}
+            </div>
+            <div class="flex-25">
+              {{ dataSource.data[0].auxiliarCode }}
+            </div>
+            <div class="flex-25 header">
+              {{ 'labels.inputs.Voucher Concept' | translate }}
+            </div>
+            <div class="flex-25">
+              {{ dataSource.data[0].headerConcept }}
+            </div>
+            <ng-container *ngIf="dataSource.data[0].headerDescription">
+              <div class="flex-25 header">
+                {{ 'labels.inputs.Voucher Description' | translate }}
+              </div>
+              <div class="flex-25">
+                {{ dataSource.data[0].headerDescription }}
+              </div>
+            </ng-container>
+          </ng-container>
+
           <div class="flex-25 header">
             {{ 'labels.inputs.Created By' | translate }}
           </div>

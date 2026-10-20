@@ -1,4 +1,7 @@
 <div class="container">
+  <p *ngIf="loansAccountAndTemplate?.portfolioAccountGlId">
+    {{ 'labels.inputs.Term account revision notice' | translate }}
+  </p>
   <mat-stepper
     orientation="vertical"
     [linear]="false"

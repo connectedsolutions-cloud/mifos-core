@@ -45,6 +45,7 @@ export class CreateJournalEntryComponent implements OnInit, AfterViewInit {
   maxDate = new Date();
   /** Journal entry form. */
   journalEntryForm: UntypedFormGroup;
+  manualAuxiliaries: { code: string; name: string }[] = [];
   /** Office data. */
   officeData: any;
   /** Currency data. */
@@ -101,6 +102,9 @@ export class CreateJournalEntryComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.maxDate = this.settingsService.businessDate;
     this.createJournalEntryForm();
+    this.accountingService.getManualJournalAuxiliaries().subscribe((auxiliaries) => {
+      this.manualAuxiliaries = auxiliaries;
+    });
   }
 
   /**
@@ -128,7 +132,15 @@ export class CreateJournalEntryComponent implements OnInit, AfterViewInit {
       routingCode: [''],
       receiptNumber: [''],
       bankNumber: [''],
-      comments: ['']
+      comments: [''],
+      auxiliarCode: [
+        '',
+        Validators.required
+      ],
+      headerConcept: [
+        '',
+        Validators.required
+      ]
     });
   }
 

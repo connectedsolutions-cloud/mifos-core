@@ -26,6 +26,21 @@
               {{ 'labels.inputs.Unassigned' | translate }}
             </td>
           </tr>
+          <tr *ngIf="recordedPayment">
+            <td>{{ 'labels.inputs.Payment Type' | translate }}</td>
+            <td>
+              <span *ngIf="recordedPayment.cashierTransactionId">
+                {{ 'labels.teller.CobroCertificado' | translate }} {{ recordedPayment.cashierTransactionId }}
+              </span>
+              <span *ngIf="!recordedPayment.cashierTransactionId">
+                {{ recordedPayment.paymentTypeName }}
+                <span *ngIf="recordedPayment.checkNumber"> · {{ recordedPayment.checkNumber }}</span>
+                <span *ngIf="recordedPayment.bankNumber"> · {{ recordedPayment.bankNumber }}</span>
+                <span *ngIf="recordedPayment.accountNumber"> · {{ recordedPayment.accountNumber }}</span>
+                <span *ngIf="recordedPayment.receiptNumber"> · {{ recordedPayment.receiptNumber }}</span>
+              </span>
+            </td>
+          </tr>
           <tr>
             <td>{{ 'labels.inputs.Linked Savings Account(Dividend Posting)' | translate }}</td>
             <td *ngIf="sharesAccountData.savingsAccountNumber">

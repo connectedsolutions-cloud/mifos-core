@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ 'labels.teller.CobroCertificado' | translate }}</h2>
+<mat-dialog-content>
+  <p *ngIf="submitError" class="submit-error">{{ submitError }}</p>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.inputs.Account No' | translate }}</mat-label>
+      <mat-select formControlName="shareAccountId" required>
+        <mat-option *ngFor="let account of accounts" [value]="account.id">
+          {{ account.accountNo }} — {{ account.clientName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="selectedAccount">
+      <mat-label>{{ 'labels.inputs.Amount' | translate }}</mat-label>
+      <input matInput [value]="selectedAccount.amountDue" disabled />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'labels.inputs.Transaction Date' | translate }}</mat-label>
+      <input matInput [matDatepicker]="transactionDatePicker" formControlName="transactionDate" required />
+      <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #transactionDatePicker></mat-datepicker>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="!form.valid">
+    {{ 'labels.buttons.Submit' | translate }}
+  </button>
+</mat-dialog-actions>

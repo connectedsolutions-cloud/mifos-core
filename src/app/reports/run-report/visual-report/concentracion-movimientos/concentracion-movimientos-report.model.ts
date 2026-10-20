@@ -22,6 +22,7 @@ export interface DailyMovementDocument {
   generatedOn: string;
   generatedBy: string;
   branches: DailyMovementBranch[];
+  pages: (DailyMovementBranch & { showBranchTotal: boolean; showGrandTotal: boolean })[];
   debitTotal: number;
   creditTotal: number;
 }
@@ -92,8 +93,8 @@ export function buildDailyMovementDocument(result: VisualReportResult, generated
         throw new Error('Falta el total de la sucursal anterior.');
       }
       const accountCode = requiredString(record, 'Cuenta');
-      if (!/^\d{3}$/.test(accountCode) || current.accounts.some((account) => account.code === accountCode)) {
-        throw new Error(`La cuenta ${accountCode} está duplicada o no es una familia de tres dígitos.`);
+      if (!/^\d{3,}$/.test(accountCode) || current.accounts.some((account) => account.code === accountCode)) {
+        throw new Error(`La cuenta ${accountCode} está duplicada o no tiene un código numérico válido.`);
       }
       current.accounts.push({ code: accountCode, description: requiredString(record, 'Concepto'), debit, credit });
       current.debitTotal = cents(current.debitTotal + debit);
@@ -130,6 +131,19 @@ export function buildDailyMovementDocument(result: VisualReportResult, generated
     throw new Error('El total general no cuadra con las sucursales.');
   }
 
+  // Keep the validated level-3 layout on one page per branch, while splitting
+  // deeper account levels into printable branch continuations.
+  const maxAccountsPerPage = 27;
+  const pages = branches.flatMap((branch, branchIndex) => {
+    const pageCount = Math.ceil(branch.accounts.length / maxAccountsPerPage);
+    return Array.from({ length: pageCount }, (_, pageIndex) => ({
+      ...branch,
+      accounts: branch.accounts.slice(pageIndex * maxAccountsPerPage, (pageIndex + 1) * maxAccountsPerPage),
+      showBranchTotal: pageIndex === pageCount - 1,
+      showGrandTotal: branchIndex === branches.length - 1 && pageIndex === pageCount - 1
+    }));
+  });
+
   const date = parseDate(reportDate);
   return {
     reportDate: date.display,
@@ -137,6 +151,7 @@ export function buildDailyMovementDocument(result: VisualReportResult, generated
     generatedOn: new Intl.DateTimeFormat('es-SV', { dateStyle: 'short', timeStyle: 'short' }).format(new Date()),
     generatedBy,
     branches,
+    pages,
     debitTotal: grandDebit,
     creditTotal: grandCredit
   };

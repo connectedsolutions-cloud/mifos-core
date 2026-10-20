@@ -45,7 +45,7 @@
 
   <div *ngIf="loanDetails.summary">
     <h3>{{ 'labels.heading.Loan Summary' | translate }}</h3>
-
+    <p class="loan-summary-explanation">{{ 'tooltips.Loan summary includes scheduled future interest' | translate }}</p>
     <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="Empty">
         <th mat-header-cell *matHeaderCellDef></th>
@@ -115,6 +115,9 @@
 
       <ng-container matColumnDef="Value">
         <td mat-cell *matCellDef="let ele">
+          <ng-container *ngIf="ele.key === 'Expected Disbursement Date'">
+            {{ loanDetails.timeline.expectedDisbursementDate | dateFormat }}
+          </ng-container>
           <ng-container *ngIf="ele.key === 'Disbursement Date'">
             <span *ngIf="loanDetails.timeline.actualDisbursementDate">
               {{ loanDetails.timeline.actualDisbursementDate | dateFormat }}
@@ -177,6 +180,9 @@
 
       <ng-container matColumnDef="Value">
         <td mat-cell *matCellDef="let ele">
+          <ng-container *ngIf="ele.key === 'Expected Disbursement Date'">
+            {{ loanDetails.timeline.expectedDisbursementDate | dateFormat }}
+          </ng-container>
           <ng-container *ngIf="ele.key === 'Disbursement Date'">
             <span *ngIf="loanDetails.timeline.actualDisbursementDate">
               {{ loanDetails.timeline.actualDisbursementDate | dateFormat }}

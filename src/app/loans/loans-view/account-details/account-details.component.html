@@ -186,8 +186,13 @@
       <span class="flex-50"> {{ loanDetails.timeline.approvedOnDate | dateFormat }} </span>
     </div>
 
-    <div class="flex-fill layout-row" *ngIf="isArisstoImported && loanDetails.timeline.expectedDisbursementDate">
-      <span class="flex-50"> {{ 'labels.inputs.Contractual start (Arissto)' | translate }}</span>
+    <div class="flex-fill layout-row" *ngIf="loanDetails.timeline.expectedDisbursementDate">
+      <span class="flex-50">
+        {{
+          (isArisstoImported ? 'labels.inputs.Contractual start (Arissto)' : 'labels.inputs.Expected disbursement')
+            | translate
+        }}
+      </span>
       <span class="flex-50"> {{ loanDetails.timeline.expectedDisbursementDate | dateFormat }} </span>
     </div>
 
@@ -200,6 +205,38 @@
       <span class="flex-50"> {{ 'labels.inputs.Matures on' | translate }}</span>
       <span class="flex-50"> {{ loanDetails.timeline.expectedMaturityDate | dateFormat }} </span>
     </div>
+
+    <ng-container *ngIf="loanDetails.portfolioAccountGlId">
+      <div class="flex-fill layout-row">
+        <span class="flex-50">{{ 'labels.inputs.Selected portfolio account' | translate }}</span>
+        <span class="flex-50">{{ loanDetails.portfolioAccountGlCode }} — {{ loanDetails.portfolioAccountGlName }}</span>
+      </div>
+      <div class="flex-fill layout-row">
+        <span class="flex-50">{{ 'labels.inputs.Contractual term in calendar days' | translate }}</span>
+        <span class="flex-50">{{ loanDetails.portfolioAccountTermDays }}</span>
+      </div>
+      <div class="flex-fill layout-row" *ngIf="loanDetails.portfolioInterestReceivableGlId">
+        <span class="flex-50">{{ 'labels.inputs.Selected interest receivable account' | translate }}</span>
+        <span class="flex-50"
+          >{{ loanDetails.portfolioInterestReceivableGlCode }} —
+          {{ loanDetails.portfolioInterestReceivableGlName }}</span
+        >
+      </div>
+      <div class="flex-fill layout-row">
+        <span class="flex-50">{{ 'labels.inputs.Account selection expected disbursement' | translate }}</span>
+        <span class="flex-50">{{ loanDetails.portfolioAccountExpectedDisbursementDate | dateFormat }}</span>
+      </div>
+      <div class="flex-fill layout-row">
+        <span class="flex-50">{{ 'labels.inputs.Account selection expected maturity' | translate }}</span>
+        <span class="flex-50">{{ loanDetails.portfolioAccountExpectedMaturityDate | dateFormat }}</span>
+      </div>
+      <div class="flex-fill layout-row">
+        <span class="flex-50">{{ 'labels.inputs.Accounting evidence' | translate }}</span>
+        <span class="flex-50">
+          <a [routerLink]="['../transactions']">{{ 'labels.inputs.Review loan transaction journals' | translate }}</a>
+        </span>
+      </div>
+    </ng-container>
 
     <div class="flex-fill layout-row" *ngIf="loanDetails.canDefineInstallmentAmount">
       <span class="flex-50"> {{ 'labels.inputs.Fixed EMI amount' | translate }}</span>

@@ -118,6 +118,20 @@ describe('buildBalanceSaldosDetalladoViewModel', () => {
     expect(viewModel.accounts[0].detailCreditTotal).toBe(1733.88);
   });
 
+  it('uses the native office name and falls back to the branch code for older results', () => {
+    const named = result();
+    named.columnHeaders.push({ columnName: 'branch_name' });
+    named.data = named.data.map((item) => ({
+      row: [
+        ...item.row,
+        item.row[1] === 'DETAIL' ? 'SANTIAGO DE MARIA' : null
+      ]
+    }));
+
+    expect(buildBalanceSaldosDetalladoViewModel(named).accounts[0].entries[0].branchName).toBe('SANTIAGO DE MARIA');
+    expect(buildBalanceSaldosDetalladoViewModel(result()).accounts[0].entries[0].branchName).toBe('001');
+  });
+
   it('accepts a partida with debit and credit movement on the same account', () => {
     const viewModel = buildBalanceSaldosDetalladoViewModel(
       result([

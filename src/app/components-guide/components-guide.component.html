@@ -1,0 +1,193 @@
+<div class="style-guide">
+  <nav class="style-guide-nav" aria-label="Component guide sections">
+    <a *ngFor="let section of sections" href="" (click)="scrollTo($event, section.id)">{{ section.label }}</a>
+  </nav>
+
+  <div class="style-guide-main">
+    <header class="style-guide-intro">
+      <h1>Components</h1>
+      <p>
+        Shared components used across the app. Tokens and control styles stay on
+        <a routerLink="/style-guide">the style guide</a>.
+      </p>
+      <p class="style-guide-lookup">
+        Each component has a unique id. Open <code>#/components/&lt;id&gt;</code> or copy the reference. The full list
+        is <code>components-guide.catalog.ts</code>.
+      </p>
+      <p class="unknown-style" *ngIf="unknownComponentId">Unknown component id: {{ unknownComponentId }}</p>
+    </header>
+
+    <section id="index" class="guide-section">
+      <button type="button" class="index-toggle" (click)="indexOpen = !indexOpen" [attr.aria-expanded]="indexOpen">
+        <span class="index-toggle-title">Index</span>
+        <span>{{ indexOpen ? 'Hide' : 'Show' }}</span>
+      </button>
+      <ng-container *ngIf="indexOpen">
+        <div class="style-index" *ngFor="let group of componentGroups">
+          <h3>{{ group }}</h3>
+          <ul>
+            <li *ngFor="let component of componentsIn(group)">
+              <a class="style-id" [routerLink]="['/components', component.id]">{{ component.id }}</a>
+              <span>{{ component.name }}</span>
+              <code class="style-id">{{ component.selector }}</code>
+              <button type="button" class="copy-style" (click)="copyComponent(component.id)">
+                {{ copiedId === component.id ? 'Copied' : 'Copy' }}
+              </button>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+    </section>
+
+    <section id="forms" class="guide-section">
+      <h2>Forms</h2>
+      <mifosx-components-guide-specimen
+        componentId="stepper-buttons"
+        [active]="activeComponentId === 'stepper-buttons'"
+      >
+        <mat-stepper orientation="vertical" [linear]="false">
+          <mat-step label="Certificado">
+            <mifosx-stepper-buttons></mifosx-stepper-buttons>
+          </mat-step>
+          <mat-step label="Siguiente">
+            <p>Siguiente paso</p>
+          </mat-step>
+        </mat-stepper>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen componentId="input-amount" [active]="activeComponentId === 'input-amount'">
+        <mifosx-input-amount
+          inputLabel="Amount"
+          [currency]="currency"
+          [inputFormControl]="amountControl"
+        ></mifosx-input-amount>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen componentId="input-password" [active]="activeComponentId === 'input-password'">
+        <form [formGroup]="form">
+          <mifosx-input-password formControlName="password" label="Contraseña"></mifosx-input-password>
+        </form>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen componentId="file-upload" [active]="activeComponentId === 'file-upload'">
+        <mifosx-file-upload></mifosx-file-upload>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen componentId="dropdown" [active]="activeComponentId === 'dropdown'">
+        <form [formGroup]="form">
+          <mifosx-dropdown
+            labelText="Office"
+            placeHolderText="Office"
+            [selectOptions]="officeOptions"
+            [controlSelect]="form.controls.controlSelect"
+          ></mifosx-dropdown>
+        </form>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen
+        componentId="gl-account-selector"
+        [active]="activeComponentId === 'gl-account-selector'"
+      >
+        <mifosx-gl-account-selector
+          inputLabel="Account"
+          [glAccountList]="glAccounts"
+          [inputFormControl]="glAccountControl"
+        ></mifosx-gl-account-selector>
+      </mifosx-components-guide-specimen>
+
+      <mifosx-components-guide-specimen
+        *ngFor="let component of withoutPreview('forms')"
+        [componentId]="component.id"
+        [active]="activeComponentId === component.id"
+      >
+        <p class="usage">{{ component.note }}</p>
+      </mifosx-components-guide-specimen>
+    </section>
+
+    <section id="identity" class="guide-section">
+      <h2>Identity</h2>
+      <mifosx-components-guide-specimen componentId="account-number" [active]="activeComponentId === 'account-number'">
+        <mifosx-account-number accountNo="000000004"></mifosx-account-number>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen componentId="entity-name" [active]="activeComponentId === 'entity-name'">
+        <mifosx-entity-name entityName="robert cliente 3 ayalaa"></mifosx-entity-name>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen
+        componentId="external-identifier"
+        [active]="activeComponentId === 'external-identifier'"
+      >
+        <mifosx-external-identifier externalId="EXT-000000004"></mifosx-external-identifier>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen componentId="long-text" [active]="activeComponentId === 'long-text'">
+        <mifosx-long-text
+          textValue="Cliente activo en Agencia Santiago de María desde enero."
+          [chars]="24"
+        ></mifosx-long-text>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen
+        componentId="account-status-mark"
+        [active]="activeComponentId === 'account-status-mark'"
+      >
+        <mifosx-account-status-mark
+          accountKind="share"
+          appearance="square"
+          statusCode="shareAccountStatusType.active"
+          statusLabel="Activo"
+          colorCode="shareAccountStatusType.active"
+        ></mifosx-account-status-mark>
+      </mifosx-components-guide-specimen>
+    </section>
+
+    <section id="display" class="guide-section">
+      <h2>Display</h2>
+      <mifosx-components-guide-specimen
+        componentId="gl-account-display"
+        [active]="activeComponentId === 'gl-account-display'"
+      >
+        <mifosx-gl-account-display [glAccount]="glAccount" accountTitle="Account"></mifosx-gl-account-display>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen componentId="loader" [active]="activeComponentId === 'loader'">
+        <mifosx-loader [diameter]="48"></mifosx-loader>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen componentId="svg-icon" [active]="activeComponentId === 'svg-icon'">
+        <mifosx-svg-icon iconFile="account_placeholder" iconName="LOAN_ACCOUNT" iconWidth="64"></mifosx-svg-icon>
+      </mifosx-components-guide-specimen>
+    </section>
+
+    <section id="chrome" class="guide-section">
+      <h2>Chrome</h2>
+      <mifosx-components-guide-specimen componentId="theme-toggle" [active]="activeComponentId === 'theme-toggle'">
+        <mifosx-theme-toggle></mifosx-theme-toggle>
+      </mifosx-components-guide-specimen>
+      <mifosx-components-guide-specimen
+        *ngFor="let component of withoutPreview('chrome')"
+        [componentId]="component.id"
+        [active]="activeComponentId === component.id"
+      >
+        <p class="usage">{{ component.note }}</p>
+      </mifosx-components-guide-specimen>
+    </section>
+
+    <section id="dialogs" class="guide-section">
+      <h2>Dialogs</h2>
+      <mifosx-components-guide-specimen
+        *ngFor="let component of withoutPreview('dialogs')"
+        [componentId]="component.id"
+        [active]="activeComponentId === component.id"
+      >
+        <p class="usage">{{ component.note }}</p>
+      </mifosx-components-guide-specimen>
+    </section>
+
+    <section id="data" class="guide-section">
+      <h2>Data</h2>
+      <mifosx-components-guide-specimen
+        *ngFor="let component of withoutPreview('data')"
+        [componentId]="component.id"
+        [active]="activeComponentId === component.id"
+      >
+        <p class="usage">{{ component.note }}</p>
+      </mifosx-components-guide-specimen>
+    </section>
+  </div>
+</div>

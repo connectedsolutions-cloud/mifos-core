@@ -176,10 +176,16 @@ export class LoanProductSummaryComponent implements OnInit, OnChanges {
         this.accountingMappings = {
           fundSourceAccount: this.glAccountLookUp(this.loanProduct.fundSourceAccountId, assetAndLiabilityAccountData),
           loanPortfolioAccount: this.glAccountLookUp(this.loanProduct.loanPortfolioAccountId, assetAccountData),
+          longTermLoanPortfolioAccount: this.loanProduct.longTermLoanPortfolioAccountId
+            ? this.glAccountLookUp(this.loanProduct.longTermLoanPortfolioAccountId, assetAccountData)
+            : null,
           receivableInterestAccount: this.glAccountLookUp(
             this.loanProduct.receivableInterestAccountId,
             assetAccountData
           ),
+          longTermInterestReceivableAccount: this.loanProduct.longTermInterestReceivableAccountId
+            ? this.glAccountLookUp(this.loanProduct.longTermInterestReceivableAccountId, assetAccountData)
+            : null,
           receivableFeeAccount: this.glAccountLookUp(this.loanProduct.receivableFeeAccountId, assetAccountData),
           receivablePenaltyAccount: this.glAccountLookUp(this.loanProduct.receivablePenaltyAccountId, assetAccountData),
           transfersInSuspenseAccount: this.glAccountLookUp(

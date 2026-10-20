@@ -113,7 +113,14 @@ export class CertificatesTabComponent implements OnInit {
         <tr><td>Acciones</td><td>${certificate.representedShares ?? ''}</td></tr>
         <tr><td>Números de acción</td><td>${certificate.shareSerialStart ?? ''} – ${certificate.shareSerialEnd ?? ''}</td></tr>
         <tr><td>Valor</td><td>${certificate.unitPrice ?? ''}</td></tr>
+        <tr><td>Fecha de certificado</td><td>${certificate.certificateDate ?? ''}</td></tr>
+        <tr><td>Libro</td><td>${certificate.bookId ?? ''}</td></tr>
+        <tr><td>Serie</td><td>${certificate.series ?? ''}</td></tr>
+        <tr><td>Número de libro</td><td>${certificate.bookNumber ?? ''}</td></tr>
+        <tr><td>Fecha de libro</td><td>${certificate.bookDate ?? ''}</td></tr>
         <tr><td>Folio / línea</td><td>${certificate.folio ?? ''} / ${certificate.lineNumber ?? ''}</td></tr>
+        <tr><td>Saldo de acciones</td><td>${certificate.currentBalance ?? ''}</td></tr>
+        <tr><td>Saldo pignorado</td><td>${certificate.pledgedBalance ?? ''}</td></tr>
       </table>
       <h2>Beneficiarios</h2>
       <ul>${beneficiaries}</ul>

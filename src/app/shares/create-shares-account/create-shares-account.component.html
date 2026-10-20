@@ -41,13 +41,20 @@
 
       <mifosx-shares-account-terms-step
         [sharesAccountProductTemplate]="sharesAccountProductTemplate"
+        [sharesAccountTemplate]="sharesAccountTemplate"
+        [capturePromoter]="true"
       ></mifosx-shares-account-terms-step>
     </mat-step>
 
     <mat-step [stepControl]="certificateForm">
       <ng-template matStepLabel>{{ 'labels.inputs.Certificates' | translate }}</ng-template>
 
-      <mifosx-shares-account-certificate-step [sharesAccountTemplate]="sharesAccountTemplate">
+      <mifosx-shares-account-certificate-step
+        [sharesAccountTemplate]="sharesAccountTemplate"
+        [sharesAccountProductTemplate]="sharesAccountProductTemplate"
+        [sharesAccountTermsForm]="sharesAccountTermsForm"
+        [staffOptions]="sharesAccountTermsStep.staffOptions"
+      >
       </mifosx-shares-account-certificate-step>
     </mat-step>
 
@@ -70,6 +77,7 @@
         [sharesAccountTemplate]="sharesAccountTemplate"
         [sharesAccountTermsForm]="sharesAccountTermsForm"
         [sharesAccount]="sharesAccount"
+        [staffOptions]="sharesAccountTermsStep.staffOptions"
         (submitEvent)="submit()"
       >
       </mifosx-shares-account-preview-step>
